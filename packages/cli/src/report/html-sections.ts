@@ -64,6 +64,7 @@ export function finding(f: Finding, readShot: ReadShot): string {
     `<h4>Expected</h4><p>${esc(f.expected)}</p><h4>Actual</h4><p>${esc(f.actual)}</p>`, source(f)];
   if (f.evidence.screenshots.length) o.push(`<h4>Screenshots</h4><div class="shots">${f.evidence.screenshots.map((r, i) => screenshot(f, r, i, readShot)).join("")}</div>`);
   if (f.evidence.console.length) o.push(`<h4>Console</h4><pre>${esc(f.evidence.console.join("\n"))}</pre>`);
+  if (f.evidence.trace) o.push(`<h4>Trace</h4><p><code>${esc(`npx playwright show-trace ${f.evidence.trace}`)}</code></p>`);
   if (f.evidence.network.length) o.push(`<h4>Network</h4><pre>${esc(f.evidence.network.map((n) => `${n.method} ${n.url} → ${n.status}`).join("\n"))}</pre>`);
   if (f.category !== "performance") o.push(`<h4>Regression test</h4><p><code>${esc(`tests/wreck-it/${f.id}.spec.ts`)}</code></p>`);
   o.push("</div></details>");
@@ -106,6 +107,7 @@ export function tail(d: ReportData): string {
       `Personas: ${esc(c.personas.length ? c.personas.join(", ") : "none")}`,
       `Routes visited: ${c.visitedRoutes.length}/${c.discoveredRoutes.length}${c.unvisitedRoutes.length ? `; not visited: ${c.unvisitedRoutes.map((r) => `<code>${esc(r)}</code>`).join(", ")}` : ""}`]),
     "</ul></div>"];
+  if (d.created.length) o.push(`<h2>Test data created</h2><div class="card cov"><p class="muted">wreck-it created these in the app (all runs so far). If it ran against a shared or production database, delete them.</p><ul>${li(d.created.map((c) => `${esc(c.what)} <span class="muted">(by ${esc(c.by)})</span>`))}</ul></div>`);
   if (d.unconfirmed.length) o.push(`<h2>Unconfirmed / flaky</h2><div class="card cov"><ul>${li(d.unconfirmed.map((f) => `<span class="id">${esc(f.id)}</span> ${esc(f.title)}`))}</ul></div>`);
   if (d.warnings.length) o.push(`<h2>Warnings</h2><div class="card cov"><ul>${li(d.warnings.map(esc))}</ul></div>`);
   return o.join("");

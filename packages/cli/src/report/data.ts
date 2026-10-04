@@ -1,7 +1,7 @@
 import { readFile, readdir, access } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { listFindings } from "../findings.js";
-import { readRun, STAGES, type Stage, type StageStatus } from "../run.js";
+import { readRun, listCreated, STAGES, type Created, type Stage, type StageStatus } from "../run.js";
 import { computeScore, type ScoreResult } from "../score.js";
 import { loadConfig } from "../config.js";
 import { wreckPaths } from "../paths.js";
@@ -24,6 +24,8 @@ export interface ReportData {
   coverage: Coverage;
   incomplete: Stage[];
   fixFirst: Finding | null;
+  /** Test data the run created in the app (log of `wreck-it run created` and fuzz writes), for cleanup. */
+  created: Created[];
   warnings: string[];
 }
 
@@ -36,6 +38,17 @@ async function readJson(file: string): Promise<any | undefined> {
 }
 async function exists(file: string): Promise<boolean> {
   try { await access(file); return true; } catch { return false; }
+}
+
+async function readLoadResults(dir: string, warnings: string[]): Promise<LoadResult[]> {
+  const load: LoadResult[] = [];
+  if (!(await exists(dir))) return load;
+  for (const name of (await readdir(dir)).filter((n) => n.endsWith(".json")).sort()) {
+    const parsed = LoadResultSchema.safeParse(await readJson(join(dir, name)));
+    if (parsed.success) load.push(parsed.data as LoadResult);
+    else warnings.push(`unreadable load result: ${name}`);
+  }
+  return load;
 }
 
 export async function buildReportData(root: string): Promise<ReportData> {
@@ -56,15 +69,7 @@ export async function buildReportData(root: string): Promise<ReportData> {
     }
   }
 
-  const load: LoadResult[] = [];
-  if (await exists(p.load)) {
-    for (const name of (await readdir(p.load)).filter((n) => n.endsWith(".json")).sort()) {
-      const r = await readJson(join(p.load, name));
-      const parsed = LoadResultSchema.safeParse(r);
-      if (parsed.success) load.push(parsed.data as LoadResult);
-      else warnings.push(`unreadable load result: ${name}`);
-    }
-  }
+  const load = await readLoadResults(p.load, warnings);
 
   const { run, visits } = await readRun(root);
   const stages = Object.fromEntries(STAGES.map((s) => [s, run?.stages?.[s] ?? "not run"])) as Coverage["stages"];
@@ -90,6 +95,6 @@ export async function buildReportData(root: string): Promise<ReportData> {
     generatedAt: new Date().toISOString(), projectName, baseUrl,
     score: computeScore(findings), confirmed, unconfirmed, load,
     coverage: { stages, personas, visitedRoutes, discoveredRoutes, unvisitedRoutes },
-    incomplete, fixFirst, warnings,
+    incomplete, fixFirst, created: await listCreated(root), warnings,
   };
 }

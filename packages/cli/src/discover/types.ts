@@ -4,7 +4,7 @@ export const AUTH_KINDS = ["none", "next-auth", "clerk", "supabase", "lucia", "b
 export type AuthKind = (typeof AUTH_KINDS)[number];
 
 export interface Page { path: string; file: string; dynamic: boolean }
-export interface Api { method: string; path: string; file: string; line?: number }
+export interface Api { method: string; path: string; file: string; line?: number; /** Paid or outward-facing work the handler can trigger. */ effects?: ("ai" | "sms" | "email" | "payments")[] }
 export interface Form { file: string; line: number; fields: string[]; action?: string }
 
 export interface Discovery {
@@ -15,8 +15,11 @@ export interface Discovery {
   pages: Page[];
   api: Api[];
   forms: Form[];
-  auth: { kind: AuthKind; evidence: string[] };
+  /** `sso`: sign-in methods a form login can't automate (Google, GitHub, hosted pages, email links); use `wreck-it login`. */
+  auth: { kind: AuthKind; evidence: string[]; sso?: string[] };
   database?: { kind: string; url?: string; remote: boolean };
+  /** Paid or outward-facing services (AI, SMS, email, payments), live payment keys, CAPTCHAs, email confirmation. */
+  services?: { uses: ("ai" | "sms" | "email" | "payments")[]; stripeMode?: "live" | "test"; captcha?: boolean; emailConfirmation?: boolean };
   warnings: string[];
 }
 

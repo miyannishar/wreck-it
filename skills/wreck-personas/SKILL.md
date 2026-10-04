@@ -5,6 +5,8 @@ description: Derive realistic user personas (the app's ideal customers plus buil
 
 # wreck-personas
 
+`WRECK` means `npx @miyannishar/wreck-it`.
+
 Output: `.wreck-it/personas.md`. The user may edit this file. If it already exists, **reuse it unchanged** and just summarize it. Regenerate only when the user asks.
 
 ## Inputs
@@ -39,7 +41,7 @@ Base each on who the product is clearly for. Give each one these fields:
 - **Who:** an ordinary user who reads labels and follows the intended path
 - **Goal:** complete every core flow once, correctly
 - **Tech-savviness:** medium · **Patience:** high · **Device:** desktop 1280x800 · **Network:** fast
-- **Missions:** every core flow from discovery: sign up, log in, create/read/update/delete each main entity, search, checkout/payment (with test data), settings, log out and back in
+- **Missions:** every core flow from discovery: sign up, log in, create/read/update/delete each main entity, search, checkout/payment (with test data), settings, and (with a throwaway account, never the shared saved one) log out and back in
 
 ## rushed-beginner
 - **Who:** first-time user on a phone, in a hurry, doesn't read instructions
@@ -58,4 +60,4 @@ Note: `chaos-monkey` is run by the **wreck-chaos** stage, not by wreck-explore.
 
 ## Finish
 
-Write the file, then print a short table: persona, device, top mission. Tell the user they can edit `.wreck-it/personas.md` and it will be reused on the next run. Mark the stage with `npx wreck-it run stage personas done`.
+Write the file, then print a short table: persona, device, top mission. Tell the user they can edit `.wreck-it/personas.md` and it will be reused on the next run. Mark the stage with `WRECK run stage personas done`.

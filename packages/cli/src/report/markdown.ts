@@ -23,6 +23,7 @@ function renderFinding(f: Finding): string[] {
   if (f.evidence.screenshots.length) {
     out.push(`- **Screenshots:** ${f.evidence.screenshots.map((p, i) => `![${f.id}-${i + 1}](<${p}>)`).join(" ")}`);
   }
+  if (f.evidence.trace) out.push(`- **Trace:** \`npx playwright show-trace ${f.evidence.trace}\``);
   if (f.category !== "performance") out.push(`- **Regression test:** \`tests/wreck-it/${f.id}.spec.ts\``);
   return out;
 }
@@ -78,6 +79,11 @@ export function renderMarkdown(d: ReportData): string {
   L.push(`- Routes visited: ${c.visitedRoutes.length}/${c.discoveredRoutes.length}${unvisited}`);
   L.push("");
 
+  if (d.created.length) {
+    L.push("## Test data created", "", "wreck-it created these in the app (all runs so far). If it ran against a shared or production database, delete them:");
+    for (const c of d.created) L.push(`- ${one(c.what)} _(by ${one(c.by)})_`);
+    L.push("");
+  }
   if (d.unconfirmed.length) {
     L.push("## Unconfirmed / flaky");
     for (const f of d.unconfirmed) L.push(`- ${f.id} · ${one(f.title)}`);

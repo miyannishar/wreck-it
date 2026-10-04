@@ -1,61 +1,22 @@
 import { readFile } from "node:fs/promises";
-import { homedir } from "node:os";
 import { join } from "node:path";
 import { isAllowedTarget } from "./target.js";
-import { loadConfig } from "./config.js";
-import { wreckPaths } from "./paths.js";
+import { loadTarget, readJson } from "./context.js";
+import { sessionStatus } from "./auth.js";
+import { findInbox } from "./email.js";
+import { mcpSources } from "./setup.js";
 
 export interface PreflightResult {
   url: string; allowed: boolean; reason: string; reachable: boolean; status?: number; devScript?: string;
   playwrightMcp: { found: boolean; sources: string[] };
-  installHints: Record<string, string>;
+  /** The first account's saved session (from `wreck-it login`), checked against a login-only page. */
+  session?: { label?: string; status: "valid" | "expired" | "missing" | "unknown"; page?: string };
+  /**
+   * What testing touches beyond the app. `ask` holds the questions to put to the user before any stage that writes:
+   * a remote (likely production) database, live payments, email without a readable inbox, paid AI/SMS calls.
+   */
+  safety: { remoteDb?: string; sideEffects: string[]; email: "inbox" | "testEmail" | "none" | "not-used"; ask: string[] };
   warnings: string[];
-}
-
-const PW = "npx @playwright/mcp@latest";
-const jsonHint = (file: string, key: string) =>
-  `Add to ${file}:\n${JSON.stringify({ [key]: { playwright: { command: "npx", args: ["@playwright/mcp@latest"] } } }, null, 2)}`;
-export const INSTALL_HINTS: Record<string, string> = {
-  "claude-code": `claude mcp add playwright -- ${PW}`,
-  codex: `codex mcp add playwright -- ${PW}`,
-  cursor: jsonHint(".cursor/mcp.json", "mcpServers"),
-  gemini: `gemini mcp add playwright ${PW}`,
-  vscode: jsonHint(".vscode/mcp.json", "servers"),
-};
-
-const readText = (f: string) => readFile(f, "utf8").catch(() => undefined);
-const readJson = async (f: string): Promise<any> => { try { return JSON.parse((await readText(f)) ?? ""); } catch { return undefined; } };
-
-function jsonHasPlaywright(v: unknown, inServers = false): boolean {
-  if (typeof v !== "object" || v === null) return false;
-  for (const [k, val] of Object.entries(v)) {
-    if (inServers && (k.toLowerCase().includes("playwright") || JSON.stringify(val).toLowerCase().includes("playwright"))) return true;
-    if (jsonHasPlaywright(val, k === "mcpServers" || k === "servers" || k === "mcp_servers")) return true;
-  }
-  return false;
-}
-
-export async function detectPlaywrightMcp(root: string, home = process.env.WRECK_IT_HOME ?? homedir()): Promise<{ found: boolean; sources: string[] }> {
-  const files = [
-    join(root, ".mcp.json"), join(root, ".claude-plugin", ".mcp.json"), join(root, ".cursor", "mcp.json"), join(root, ".vscode", "mcp.json"),
-    join(root, ".gemini", "settings.json"), join(home, ".claude.json"), join(home, ".cursor", "mcp.json"),
-    join(home, ".gemini", "settings.json"), join(home, ".codex", "config.toml"),
-  ];
-  const sources: string[] = [];
-  for (const f of files) {
-    const txt = await readText(f);
-    if (txt === undefined) continue;
-    if (f.endsWith(".toml")) { if (/playwright/i.test(txt)) sources.push(f); continue; }
-    let j: unknown;
-    try { j = JSON.parse(txt); } catch { if (/playwright/i.test(txt)) sources.push(f); continue; }
-    if (jsonHasPlaywright(j)) sources.push(f);
-  }
-  // Claude Code plugins (the wreck-it plugin bundles wreck-browser-1..3; the official playwright plugin bundles one).
-  const installed = await readJson(join(home, ".claude", "plugins", "installed_plugins.json"));
-  for (const k of Object.keys(installed?.plugins ?? {})) {
-    if (/^(wreck-it|playwright)@/.test(k)) sources.push(`claude-code plugin ${k}`);
-  }
-  return { found: sources.length > 0, sources };
 }
 
 export async function checkReachable(url: string, waitSec: number): Promise<{ reachable: boolean; status?: number }> {
@@ -71,24 +32,55 @@ export async function checkReachable(url: string, waitSec: number): Promise<{ re
   }
 }
 
+async function safetyOf(t: Awaited<ReturnType<typeof loadTarget>>): Promise<PreflightResult["safety"]> {
+  const { cfg, disc } = t;
+  const svc = disc?.services;
+  const uses = svc?.uses ?? [];
+  const email = !uses.includes("email") ? "not-used" : (await findInbox(cfg).catch(() => undefined)) ? "inbox" : cfg.testEmail ? "testEmail" : "none";
+  const remoteDb = disc?.database?.remote ? `${disc.database.kind}${disc.database.url ? ` (${disc.database.url})` : ""}` : undefined;
+  const ask: string[] = [];
+  if (remoteDb && !cfg.allowRemoteDb)
+    ask.push(`The app uses a hosted ${remoteDb} database, and testing creates accounts and data there. Is it a dev/test project, or production (then better: point the app at a dev project or Supabase branch first)? If they say go ahead, set "allowRemoteDb": true in .wreck-it/config.json.`);
+  if (svc?.stripeMode === "live")
+    ask.push("Stripe LIVE keys are configured, so a completed checkout is a real charge. Ask the user to switch to test keys (sk_test_/pk_test_); until then never submit a payment.");
+  if (email === "none")
+    ask.push('The app sends email (sign-up confirmation, resets, invites) and there is no local test inbox. Ask for an address they can read and set "testEmail" with {n} (e.g. "me+wreck{n}@gmail.com"). Never sign up with example.com: bounces get email sending throttled.');
+  const paid = uses.filter((e) => (e === "ai" || e === "sms") && !cfg.allowSideEffects.includes(e));
+  if (paid.length)
+    ask.push(`The app calls ${paid.map((e) => (e === "ai" ? "AI models (paid per call)" : "an SMS service (real texts)")).join(" and ")}. fuzz and load skip those endpoints, and the browser triggers them only a few times. If the user is fine with more, add ${JSON.stringify(paid)} to "allowSideEffects".`);
+  return { ...(remoteDb ? { remoteDb } : {}), sideEffects: uses, email, ask };
+}
+
 export async function runPreflight(opts: { root: string; url?: string; iOwnThis?: boolean; wait?: number }): Promise<PreflightResult> {
   const { root } = opts;
-  const cfg = await loadConfig(root);
-  const disc = await readJson(wreckPaths(root).discovery);
-  const pkg = await readJson(join(root, "package.json"));
-  const url = opts.url ?? cfg.baseUrl ?? disc?.baseUrl ?? "http://localhost:3000";
+  const t = await loadTarget(root, opts.url);
+  const { cfg, disc } = t;
+  const url = t.base;
   const check = isAllowedTarget(url, { iOwnThis: opts.iOwnThis || cfg.iOwnThis });
   const warnings: string[] = [];
-  const devScript: string | undefined = disc?.devScript ?? (typeof pkg?.scripts?.dev === "string" ? "npm run dev" : undefined);
-  const gi = await readText(join(root, ".gitignore"));
-  if (gi === undefined || !gi.includes(".wreck-it")) warnings.push(".gitignore does not mention .wreck-it/ (findings and screenshots may be committed)");
-  const playwrightMcp = await detectPlaywrightMcp(root);
-  if (!playwrightMcp.found) warnings.push("Playwright MCP not found in any known agent config; see installHints");
+  const pkg = await readJson<{ scripts?: Record<string, string> }>(join(root, "package.json"));
+  const devScript = disc?.devScript ?? (pkg?.scripts?.dev ? "npm run dev" : undefined);
+  if (!(await readFile(join(root, ".gitignore"), "utf8").catch(() => "")).includes(".wreck-it")) warnings.push(".gitignore does not mention .wreck-it/ (findings, screenshots and saved logins may be committed)");
+  const sources = await mcpSources(root, /playwright/i);
+  if (!sources.length) warnings.push("Playwright MCP not found in any agent config; run `npx @miyannishar/wreck-it setup --dry-run`, then `setup`");
+
   const net = check.ok ? await checkReachable(url, opts.wait ?? 0) : { reachable: false };
   if (check.ok && !net.reachable) warnings.push(devScript ? `app not reachable at ${url}; start it with: ${devScript}` : `app not reachable at ${url}`);
+  let session: PreflightResult["session"];
+  const acct = cfg.accounts[0];
+  if (acct?.storageState && net.reachable) {
+    session = await sessionStatus(root).catch(() => ({ label: acct.label, status: "unknown" as const }));
+    if (session.status === "expired" || session.status === "missing")
+      warnings.push(`saved session for "${acct.label}" is ${session.status}; run \`wreck-it login --label ${acct.label}\` (it opens a browser for the user to sign in)`);
+  }
+  if (disc?.auth?.sso?.length && !cfg.accounts.some((a) => a.storageState))
+    warnings.push(`the app signs in with ${disc.auth.sso.join(", ")}; run \`wreck-it login\` so the user signs in once and wreck-it can test logged in`);
+  const safety = await safetyOf(t);
+  if (disc?.services?.captcha) warnings.push("the app uses a CAPTCHA: flows behind it are blocked unless it uses test keys locally; report them as 'blocked by CAPTCHA', not as bugs");
+  for (const q of safety.ask) warnings.push(`ask the user: ${q}`);
   return {
     url, allowed: check.ok, reason: check.reason, reachable: net.reachable, ...("status" in net ? { status: net.status } : {}),
-    ...(devScript ? { devScript } : {}), playwrightMcp, installHints: INSTALL_HINTS, warnings,
+    ...(devScript ? { devScript } : {}), playwrightMcp: { found: sources.length > 0, sources }, ...(session ? { session } : {}), safety, warnings,
   };
 }
 
@@ -100,8 +92,10 @@ export function formatPreflight(r: PreflightResult): string {
     `reachable  ${r.reachable ? `yes (HTTP ${r.status})` : "no"}`,
     `dev script ${r.devScript ?? "unknown"}`,
     `playwright MCP  ${r.playwrightMcp.found ? `found in ${r.playwrightMcp.sources.join(", ")}` : "not found"}`,
+    ...(r.session ? [`session    ${r.session.label}: ${r.session.status}${r.session.page ? ` (checked ${r.session.page})` : ""}`] : []),
+    `data       ${r.safety.remoteDb ? `remote ${r.safety.remoteDb}` : "local or unknown database"}`,
+    ...(r.safety.sideEffects.length ? [`effects    ${r.safety.sideEffects.join(", ")}; email: ${r.safety.email}`] : []),
+    ...r.warnings.map((w) => `warning: ${w}`),
   ];
-  if (!r.playwrightMcp.found) for (const [a, h] of Object.entries(r.installHints)) l.push(`  ${a}: ${h.split("\n").join("\n    ")}`);
-  for (const w of r.warnings) l.push(`warning: ${w}`);
   return l.join("\n") + "\n";
 }

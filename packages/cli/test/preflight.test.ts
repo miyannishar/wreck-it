@@ -3,7 +3,8 @@ import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { runCli, tmpRoot } from "./helpers.js";
 import { writeTree } from "./fixtures.js";
-import { runPreflight, detectPlaywrightMcp, INSTALL_HINTS } from "../src/preflight.js";
+import { runPreflight } from "../src/preflight.js";
+import { mcpSources } from "../src/setup.js";
 
 let server: Server, base: string;
 beforeAll(async () => {
@@ -21,10 +22,7 @@ describe("preflight", () => {
     const r = await runPreflight({ root, url: base });
     expect(r).toMatchObject({ url: base, allowed: true, reachable: true, status: 404, devScript: "npm run dev" });
     expect(r.playwrightMcp).toEqual({ found: false, sources: [] });
-    expect(r.installHints["claude-code"]).toBe("claude mcp add playwright -- npx @playwright/mcp@latest");
-    expect(r.installHints.codex).toBe("codex mcp add playwright -- npx @playwright/mcp@latest");
-    expect(r.installHints.gemini).toBe("gemini mcp add playwright npx @playwright/mcp@latest");
-    expect(Object.keys(INSTALL_HINTS).sort()).toEqual(["claude-code", "codex", "cursor", "gemini", "vscode"]);
+    expect(r.warnings.some((w) => w.includes("setup --dry-run"))).toBe(true);
     expect(r.warnings.some((w) => w.includes(".gitignore"))).toBe(true);
     delete process.env.WRECK_IT_HOME;
   });
@@ -36,9 +34,7 @@ describe("preflight", () => {
       ".vscode/mcp.json": JSON.stringify({ servers: { other: { command: "x" } } }),
     });
     await writeTree(home, { ".codex/config.toml": `[mcp_servers.playwright]\ncommand = "npx"\n` });
-    const mcp = await detectPlaywrightMcp(root, home);
-    expect(mcp.found).toBe(true);
-    expect(mcp.sources).toEqual([`${root}/.mcp.json`, `${home}/.codex/config.toml`]);
+    expect(await mcpSources(root, /playwright/i, home)).toEqual([`${root}/.mcp.json`, `${home}/.codex/config.toml`]);
     process.env.WRECK_IT_HOME = home;
     const r = await runPreflight({ root, url: base });
     expect(r.devScript).toBe("pnpm dev");
@@ -48,7 +44,7 @@ describe("preflight", () => {
   it("detects the wreck-it Claude Code plugin", async () => {
     const root = await tmpRoot(), home = await tmpRoot();
     await writeTree(home, { ".claude/plugins/installed_plugins.json": JSON.stringify({ version: 2, plugins: { "wreck-it@wreck-it": [{}], "other@x": [{}] } }) });
-    expect(await detectPlaywrightMcp(root, home)).toEqual({ found: true, sources: ["claude-code plugin wreck-it@wreck-it"] });
+    expect(await mcpSources(root, /playwright/i, home)).toEqual(["claude-code plugin wreck-it@wreck-it"]);
   });
   it("exits 0 with JSON when allowed and reachable", async () => {
     const root = await tmpRoot();

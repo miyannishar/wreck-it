@@ -19,6 +19,14 @@ export async function writeAtomic(file: string, data: string): Promise<void> {
 
 const toPosix = (p: string) => p.split(sep).join("/");
 
+/** A trace stays where the browser wrote it (a live trace is a file plus a resources/ folder); store it relative to the project. */
+function tracePath(root: string, trace: string, warnings: string[]): string {
+  const abs = resolve(root, trace);
+  if (!existsSync(abs)) warnings.push(`trace not found: ${trace}`);
+  const rel = relative(root, abs);
+  return rel && !rel.startsWith("..") && !isAbsolute(rel) ? toPosix(rel) : abs;
+}
+
 async function nextNumber(dir: string): Promise<number> {
   const names = existsSync(dir) ? await readdir(dir) : [];
   let max = 0;
@@ -55,9 +63,10 @@ export async function addFinding(root: string, input: unknown): Promise<{ findin
       await copyFile(abs, join(p.shots, name));
       shots.push(`shots/${name}`);
     }
+    const trace = parsed.data.evidence.trace ? tracePath(root, parsed.data.evidence.trace, warnings) : undefined;
     const finding = FindingSchema.parse({
       ...parsed.data,
-      evidence: { ...parsed.data.evidence, screenshots: shots },
+      evidence: { ...parsed.data.evidence, screenshots: shots, ...(trace ? { trace } : {}) },
       id,
       createdAt: new Date().toISOString(),
     });
@@ -80,7 +89,10 @@ export async function updateFinding(root: string, id: string, patch: unknown): P
   const pt = patch as Record<string, unknown>;
   const isObj = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
   const merged: Record<string, unknown> = { ...current, ...pt };
-  if (isObj(pt.evidence)) merged.evidence = { ...current.evidence, ...pt.evidence };
+  if (isObj(pt.evidence)) {
+    merged.evidence = { ...current.evidence, ...pt.evidence };
+    if (typeof pt.evidence.trace === "string" && pt.evidence.trace) (merged.evidence as Record<string, unknown>).trace = tracePath(root, pt.evidence.trace, []);
+  }
   const r = FindingSchema.safeParse({ ...merged, id: current.id, createdAt: current.createdAt });
   if (!r.success) throw new WreckError(`invalid update for ${id}:\n${formatZodError(r.error)}`, 2);
   await writeAtomic(file, JSON.stringify(r.data, null, 2));

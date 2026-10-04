@@ -1,5 +1,6 @@
 import { readFile, readdir, mkdir } from "node:fs/promises";
 import { join } from "node:path";
+import { effectsFor, blockedEffects, EFFECT_WORDS, readDiscovery } from "../context.js";
 import { loadConfig } from "../config.js";
 import { WreckError } from "../errors.js";
 import { addFinding, writeAtomic } from "../findings.js";
@@ -13,6 +14,8 @@ import { autocannonBench, isAlive, planPhases, runPhases, type IsAlive, type Run
 export interface LoadOptions {
   url: string; profile: LoadProfile; method?: string; headers?: Record<string, string>; pid?: number;
   stepDuration?: number; maxConnections?: number; soakDuration?: number; recoveryTimeout?: number; iOwnThis?: boolean;
+  /** Load-test an endpoint that calls AI models, sends email/SMS or takes payments (thousands of real calls). */
+  includeSideEffects?: boolean;
 }
 export interface LoadDeps {
   runBench: RunBench; isAlive: IsAlive;
@@ -74,22 +77,44 @@ function positive(name: string, v: number | undefined, def: number): number {
   return n;
 }
 
+function checkLoadOptions(o: LoadOptions) {
+  if (!PROFILES.includes(o.profile)) throw new WreckError(`unknown profile "${o.profile}" (ramp|spike|soak)`, 2);
+  if (o.pid !== undefined && !(Number.isInteger(o.pid) && o.pid > 0)) throw new WreckError("--pid must be a positive integer", 2);
+  return {
+    stepDuration: positive("--step-duration", o.stepDuration, 10), soakDuration: positive("--soak-duration", o.soakDuration, 180),
+    maxConnections: Math.floor(positive("--max-connections", o.maxConnections, 500)), recoveryTimeout: positive("--recovery-timeout", o.recoveryTimeout, 30),
+  };
+}
+
+/** A critical finding for a server that stopped answering under load. */
+async function recordCrash(root: string, o: LoadOptions, method: string, url: URL, run: Awaited<ReturnType<typeof runPhases>>, recoveryTimeout: number): Promise<string | null> {
+  if (!run.crashed || !run.crashedAt) return null;
+  const c = run.crashedAt.connections;
+  const { finding } = await addFinding(root, {
+    title: `Server crashed under load at ${c} connections`, category: "performance", severity: "critical", persona: "load",
+    route: url.pathname || "/", steps: [{ action: "http", method, url: url.href }], reproduced: true,
+    expected: `${method} ${url.pathname} keeps responding (or degrades with 503s) under ${c} concurrent connections`,
+    actual: `Server stopped accepting connections during the "${run.crashedAt.label}" phase of the ${o.profile} load test and ` +
+      (run.recovered ? `came back after ${run.recoveredAfterSec} s.` : `did not recover within ${recoveryTimeout} s.`),
+  });
+  return finding.id;
+}
+
 export async function runLoadTest(root: string, o: LoadOptions, partial: Partial<LoadDeps> = {}): Promise<LoadOutcome> {
   const deps: LoadDeps = {
     runBench: autocannonBench, isAlive, findPid: findListeningPid, sampleRss: sampleRssMb,
     warn: (m) => process.stderr.write(`wreck-it: warning: ${m}\n`), sampleEveryMs: 1000, pollMs: 500, ...partial,
   };
-  if (!PROFILES.includes(o.profile)) throw new WreckError(`unknown profile "${o.profile}" (ramp|spike|soak)`, 2);
-  const stepDuration = positive("--step-duration", o.stepDuration, 10), soakDuration = positive("--soak-duration", o.soakDuration, 180);
-  const maxConnections = Math.floor(positive("--max-connections", o.maxConnections, 500));
-  const recoveryTimeout = positive("--recovery-timeout", o.recoveryTimeout, 30);
-  if (o.pid !== undefined && !(Number.isInteger(o.pid) && o.pid > 0)) throw new WreckError("--pid must be a positive integer", 2);
+  const { stepDuration, soakDuration, maxConnections, recoveryTimeout } = checkLoadOptions(o);
   const config = await loadConfig(root);
   const target = isAllowedTarget(o.url, { iOwnThis: o.iOwnThis || config.iOwnThis });
   if (!target.ok || !target.url) throw new WreckError(target.reason, 3);
   const url = target.url, method = (o.method ?? "GET").toUpperCase();
   if (!SAFE_METHODS.has(method) && !config.allowMutatingLoad)
     throw new WreckError(`refusing ${method} load test: only GET/HEAD unless "allowMutatingLoad": true in .wreck-it/config.json`, 2);
+  const blocked = blockedEffects(config, effectsFor(await readDiscovery(root), method, url.pathname), o.includeSideEffects);
+  if (blocked.length)
+    throw new WreckError(`refusing to load-test ${method} ${url.pathname}: its handler triggers ${blocked.map((e) => EFFECT_WORDS[e]).join(" and ")}, and a load test sends thousands of requests. Pick another endpoint, or ask the user and add ${JSON.stringify(blocked)} to "allowSideEffects" in .wreck-it/config.json (or pass --include-side-effects)`, 2);
   for (const w of await remoteDatabaseWarnings(root)) deps.warn(`${w}; load testing may hit a shared/production database`);
   if (!(await deps.isAlive(url.href).catch(() => false))) throw new WreckError(`${url.href} is not reachable; start the app first`, 4);
 
@@ -115,18 +140,7 @@ export async function runLoadTest(root: string, o: LoadOptions, partial: Partial
   const file = join(p.load, `${loadSlug(method, url.pathname)}-${o.profile}.json`);
   await writeAtomic(file, JSON.stringify(result, null, 2) + "\n");
 
-  let findingId: string | null = null;
-  if (run.crashed && run.crashedAt) {
-    const c = run.crashedAt.connections;
-    const { finding } = await addFinding(root, {
-      title: `Server crashed under load at ${c} connections`, category: "performance", severity: "critical", persona: "load",
-      route: url.pathname || "/", steps: [{ action: "http", method, url: url.href }], reproduced: true,
-      expected: `${method} ${url.pathname} keeps responding (or degrades with 503s) under ${c} concurrent connections`,
-      actual: `Server stopped accepting connections during the "${run.crashedAt.label}" phase of the ${o.profile} load test and ` +
-        (run.recovered ? `came back after ${run.recoveredAfterSec} s.` : `did not recover within ${recoveryTimeout} s.`),
-    });
-    findingId = finding.id;
-  }
+  const findingId = await recordCrash(root, o, method, url, run, recoveryTimeout);
   return { result, file, findingId, recoveredAfterSec: run.recoveredAfterSec };
 }
 

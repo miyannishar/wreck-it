@@ -5,9 +5,9 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w wreck-it",
-    "test": "npm test -w wreck-it",
-    "typecheck": "npm run typecheck -w wreck-it",
+    "build": "npm run build -w packages/cli",
+    "test": "npm test -w packages/cli",
+    "typecheck": "npm run typecheck -w packages/cli",
     "eval": "node scripts/eval.mjs --app examples/buggy-app",
     "test:scripts": "node --test scripts/*.test.mjs"
   }

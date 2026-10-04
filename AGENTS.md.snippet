@@ -2,49 +2,22 @@
 
 ## wreck-it: testing this app
 
-When asked to "wreck", test or QA this app, or to give a readiness score, follow this procedure. Use only localhost targets and report bugs without fixing them.
+When asked to "wreck", test or QA this app, or for a readiness score, follow this procedure. `WRECK` means `npx @miyannishar/wreck-it`. Test only the local app, use fake data, and report bugs without fixing them.
 
-Requirements:
-- The app is running locally.
-- Playwright MCP is installed. If browser tools such as `browser_navigate` are missing, stop and tell the user to install it, e.g. `npx @playwright/mcp@latest`.
+1. **Start.** `WRECK run init && WRECK discover && WRECK setup --dry-run && WRECK preflight --wait 5`.
+   - If `setup --dry-run` lists anything missing, ask once and run `WRECK setup`; new MCP servers need an agent restart. Without browser tools, do a CLI-only run (sweep, fuzz, perf, load, report) and say what was skipped.
+   - Preflight exit 4: start the app (`devScript`). Exit 3: stop.
+   - **Ask before writing:** put every `safety.ask` question from preflight (hosted/production database, live Stripe keys, email without a readable inbox, paid AI/SMS) to the user in one message; record each yes in `.wreck-it/config.json` (`allowRemoteDb`, `testEmail`, `allowSideEffects`).
+   - **Login:** for Google/GitHub/SSO/magic links (`discovery.json` `auth.sso`), tell the user a browser will open and run `WRECK login` (it closes by itself once they're in; long timeout). For email + password, put the account in config `accounts`. In the browser, start logged-in work with `browser_set_storage_state` `.wreck-it/auth/<label>.json`, and record those findings with `"auth": "<label>"`.
+   - Sign up with addresses from `WRECK email new` (never example.com), log what you create with `WRECK run created "<what>" --by <persona>`, trigger AI/SMS/email actions only 2–3 times, and never log out or delete the shared saved account (test logout last, with a throwaway account).
+2. **Personas.** Write or reuse `.wreck-it/personas.md`: 2–3 ICP personas (goal, tech-savviness, patience, device, network, missions) plus `normal-user`, `rushed-beginner`, `chaos-monkey`.
+3. **Normal user.** Walk every core flow and check: created items appear in lists; edits persist after reload; deletes disappear everywhere, including header badges; totals add up with quantity ≥ 2 and a coupon on every page that shows them; list and detail show the same dates and prices; lists are newest-first; a fresh account sees useful empty states; error messages are specific and keep input. Write a ✓/✗ table to `.wreck-it/normal-pass.md`.
+4. **Personas.** Do each persona's missions in character (the rushed beginner double-clicks, uses wrong formats, presses back, abandons flows).
+5. **Every page:** `browser_evaluate` the output of `WRECK oddity-script`, check console errors and failed requests, and `WRECK run visit <route> --persona <slug>`.
+6. **Chaos:** `WRECK sweep --record` (re-run once the cart has items); save real requests to `.wreck-it/requests.json` and run `WRECK fuzz --record`, then judge its "accepted values" in the UI; hostile inputs (empty, 5k chars, unicode, negative/huge numbers, `<b>x</b>`, `'; --`); double submits, also as two concurrent curl requests; back/reload mid-flow; two tabs; offline (`browser_network_state_set`), forced 500s (`browser_route`), slow network (Chrome DevTools `emulate`); cleared or tampered session/localStorage; keyboard-only navigation; `WRECK a11y <url> --record` for mid-flow states.
+7. **Page speed and load.** `WRECK perf --record` (dev servers: only CLS counts). `WRECK load <url> --profile ramp` on 3–6 GET endpoints, spike on the key ones, soak (180 s) on one the UI polls. Record a performance finding for p99 > 1 s at ≤ 25 connections, a breaking point below 100, or a memory leak.
+8. **Record each bug** with `WRECK finding add` (`WRECK schema finding` for the shape): structured steps with role/label targets, assertions that describe correct behavior. Replay it **right away** in a fresh browser and `WRECK finding update <id> '{"reproduced":true}'`. Before tracing, re-check every finding still at `?`.
+9. **Trace each finding** to code: `source` with file, line, snippet, why and confidence; with low confidence give `candidates` and no line.
+10. `WRECK report && WRECK gen-tests`, then tell the user the score, the fix-first item and the report paths.
 
-1. `npx wreck-it run init && npx wreck-it discover && npx wreck-it preflight --wait 5`. Exit 4 means start the app (`devScript`); exit 3 means stop.
-2. **Personas.** Write `.wreck-it/personas.md`, or reuse it if present: 2–3 ICP personas (goal, tech-savviness, patience, device, network, missions) plus `normal-user`, `rushed-beginner` and `chaos-monkey`.
-3. **Normal user.** Walk every core flow from `.wreck-it/discovery.json`. Check the invariants:
-   - created items appear in lists
-   - edits persist after reload
-   - deletes disappear everywhere, including header badges
-   - totals add up with quantity ≥ 2 and a coupon, across cart, checkout, confirmation and order pages
-   - dates and prices match between list and detail pages
-   - lists are newest-first
-   - a brand-new account sees useful empty states, not endless spinners
-   - error messages are specific and keep the user's input
-
-   Write the result as a ✓/✗ table in `.wreck-it/normal-pass.md`.
-4. **Personas.** Do each persona's missions in character. The rushed beginner double-clicks, uses wrong formats, presses back mid-flow and abandons flows.
-5. **Every page:**
-   - `browser_evaluate` the output of `npx wreck-it oddity-script`
-   - check console errors and failed requests
-   - `npx wreck-it run visit <route> --persona <slug>`
-6. **Chaos:**
-   - `npx wreck-it sweep --record` first: every page at 1280 px and 390 px wide (oddities + axe). Add a test account to `.wreck-it/config.json` `accounts` first so logged-in pages are covered. Re-run it once the cart has items.
-   - hostile inputs: empty, 5k chars, unicode, negative/huge numbers, `<b>x</b>`, `'; --`
-   - double-submits, also fired as two concurrent requests with curl
-   - back/reload mid-flow
-   - two tabs
-   - offline submit
-   - `npx wreck-it a11y <urls…> --record`
-   - keyboard-only navigation
-7. **Load.** `npx wreck-it load <url> --profile ramp` on 3–6 GET endpoints, spike on the important ones, and soak (180 s) on at least one endpoint the UI polls. Use GET only. Record a performance finding when:
-   - p99 > 1 s at ≤ 25 connections
-   - the breaking point is below 100 connections
-   - memory leaks
-8. **Record each bug** with `npx wreck-it finding add`. Run `npx wreck-it schema finding` for the shape.
-   - steps are structured, with role/label targets
-   - assertions describe correct behavior
-   - **immediately** replay the steps in a fresh browser, then `npx wreck-it finding update <id> '{"reproduced":true}'`
-   - before tracing, re-check every finding still marked `?`
-9. **Trace each finding to code.** Add `source` with file, line, snippet, why and confidence. Low confidence means `candidates` and no line, so never guess a line.
-10. `npx wreck-it report && npx wreck-it gen-tests`. Then tell the user the score, the fix-first item and the report paths.
-
-Mark stages with `npx wreck-it run stage <preflight|discover|personas|normal|explore|chaos|load|trace|report> <running|done|skipped|failed>`. Mark `security` as `skipped`.
+Mark stages with `WRECK run stage <preflight|discover|personas|normal|explore|chaos|load|trace|report> <running|done|skipped|failed>`; mark `security` as `skipped`.

@@ -1,13 +1,13 @@
-import { readFile } from "node:fs/promises";
 import type { BrowserContext, Page } from "playwright";
 import { ODDITY_SCRIPT } from "./oddity.js";
-import { launchBrowser, openSettled, axeOnPage, recordViolations, writeResult, parseViewport, type A11yResult } from "./a11y.js";
+import { axeOnPage, recordViolations, writeResult, parseViewport, type A11yResult } from "./a11y.js";
+import { launchChromium, openSettled } from "./browser.js";
 import { addFinding, listFindings, writeAtomic } from "./findings.js";
 import { recordVisit } from "./run.js";
-import { loadConfig } from "./config.js";
+import { openSession, saveRefreshed } from "./auth.js";
+import type { Config } from "./config.js";
 import { wreckPaths, ensureDirs } from "./paths.js";
-import { isAllowedTarget } from "./target.js";
-import { WreckError } from "./errors.js";
+import { resolveTarget, isExcluded, pagesOf, type SavedDiscovery } from "./context.js";
 import type { FindingInput } from "./schema.js";
 
 interface Signal { kind: string; detail: string; selector?: string }
@@ -20,31 +20,7 @@ export interface SweepResult {
   recorded: string[]; skipped: string[]; warnings: string[];
 }
 
-const NAV_AWAY = /(^|\/)(log-?out|sign-?out)(\/|$)/i;
 const patternRe = (p: string) => new RegExp("^" + p.split("/").map((s) => (/^\[.+\]$/.test(s) ? "[^/]+" : s.replace(/[.*+?^${}()|\\]/g, "\\$&"))).join("/") + "$");
-
-async function readJson(file: string): Promise<any> {
-  try { return JSON.parse(await readFile(file, "utf8")); } catch { return undefined; }
-}
-
-/** Best-effort generic login: email/username + password + Enter on the app's login page. */
-async function login(ctx: BrowserContext, base: string, pages: string[], acct: { email: string; password: string }): Promise<boolean> {
-  const path = pages.find((p) => /(^|\/)(log-?in|sign-?in)$/i.test(p)) ?? "/login";
-  const page = await ctx.newPage();
-  try {
-    await openSettled(page, new URL(path, base).href);
-    const user = page.locator('input[type="email"], input[name*="email" i], input[name*="user" i], input[id*="email" i]').first();
-    const pass = page.locator('input[type="password"]').first();
-    if (!(await user.count()) || !(await pass.count())) return false;
-    await user.fill(acct.email);
-    await pass.fill(acct.password);
-    await pass.press("Enter");
-    await page.waitForURL((u) => u.pathname !== path, { timeout: 8_000 }).catch(() => {});
-    await page.waitForLoadState("networkidle", { timeout: 5_000 }).catch(() => {});
-    return new URL(page.url()).pathname !== path || !(await page.locator('input[type="password"]').count());
-  } catch { return false; }
-  finally { await page.close().catch(() => {}); }
-}
 
 async function visit(page: Page, url: string, origin: string): Promise<Omit<Visit, "route" | "viewport"> & { links: string[] }> {
   const consoleErrors: string[] = [], serverErrors: string[] = [];
@@ -83,11 +59,11 @@ function candidatesOf(v: Omit<Visit, "route" | "viewport">, route: string, url: 
   return out;
 }
 
-function findingFor(c: Candidate, base: string): FindingInput {
+function findingFor(c: Candidate, base: string, auth?: string): FindingInput {
   const others = [...c.routes].filter((r) => r !== c.route);
   const also = others.length ? ` Also on: ${others.slice(0, 8).join(", ")}${others.length > 8 ? ", …" : ""}.` : "";
   const open = [{ action: "setViewport" as const, width: c.width, height: c.height }, { action: "goto" as const, url: c.route }];
-  const common = { persona: "sweep", route: c.route, reproduced: false };
+  const common = { persona: "sweep", route: c.route, reproduced: false, ...(auth ? { auth } : {}) };
   switch (c.kind) {
     case "rendered-placeholder":
       return { ...common, title: `Page renders "${c.extra}" as visible text`, category: "oddity", severity: "medium", steps: open,
@@ -115,94 +91,112 @@ function findingFor(c: Candidate, base: string): FindingInput {
   }
 }
 
-export async function runSweep(root: string, opts: { baseUrl?: string; viewports?: string; record?: boolean; iOwnThis?: boolean; a11y?: boolean }): Promise<SweepResult> {
-  const p = wreckPaths(root);
-  const cfg = await loadConfig(root);
-  const disc = await readJson(p.discovery);
-  const base = opts.baseUrl ?? cfg.baseUrl ?? disc?.baseUrl ?? "http://localhost:3000";
-  const chk = isAllowedTarget(base, { iOwnThis: opts.iOwnThis || cfg.iOwnThis });
-  if (!chk.ok) throw new WreckError(chk.reason, 3);
-  const origin = new URL(base).origin;
+export interface SweepOptions { baseUrl?: string; viewports?: string; record?: boolean; iOwnThis?: boolean; a11y?: boolean; account?: string }
+interface Viewport { label: string; width: number; height: number }
+interface Crawl { visits: Visit[]; a11y: A11yResult[]; cands: Map<string, Candidate> }
+/** What one sweep shares between its crawl, reproduction and reporting steps. */
+interface SweepEnv {
+  root: string; base: string; origin: string; auth?: string; withA11y: boolean; warnings: string[]; out: Crawl;
+  newCtx: (vp: { width: number; height: number }) => Promise<BrowserContext>;
+}
+
+/** Static pages to visit, plus dynamic patterns (/products/[id]) to fill from links found on the way. */
+function planRoutes(cfg: Config, disc: SavedDiscovery | undefined, warnings: string[]): { routes: string[]; dynamics: string[] } {
+  const all = pagesOf(disc);
+  if (!all.length) warnings.push("no pages in .wreck-it/discovery.json; sweeping / only (run `wreck-it discover` first)");
+  const keep = all.filter((x) => !isExcluded(cfg, x.path, { api: true }));
+  const statics = keep.filter((x) => !x.dynamic).map((x) => x.path);
+  return { routes: statics.length ? [...new Set(statics)] : ["/"], dynamics: keep.filter((x) => x.dynamic).map((x) => x.path) };
+}
+
+/** Queue the first link matching each still-unfilled dynamic route pattern. */
+function claimDynamicRoutes(links: string[], pending: Set<string>, queue: string[]): void {
+  for (const pat of [...pending]) {
+    const hit = links.map((l) => new URL(l).pathname).find((path) => patternRe(pat).test(path) && !queue.includes(path));
+    if (hit) { queue.push(hit); pending.delete(pat); }
+  }
+}
+
+async function crawlViewport(env: SweepEnv, ctx: BrowserContext, vp: Viewport, first: boolean, routes: string[], dynamics: string[]): Promise<void> {
+  const { root, base, origin, warnings, out } = env;
+  const queue = [...routes];
+  const pending = new Set(dynamics);
+  for (let k = 0; k < queue.length; k++) {
+    const route = queue[k]!;
+    const url = new URL(route, base).href;
+    const page = await ctx.newPage();
+    const r = await visit(page, url, origin);
+    claimDynamicRoutes(r.links, pending, queue);
+    if (first && env.withA11y && !r.error) {
+      try { out.a11y.push(await axeOnPage(page, url)); } catch (e) { warnings.push(`axe failed on ${route}: ${(e as Error).message.split("\n")[0]}`); }
+    }
+    await page.close().catch(() => {});
+    const { links: _l, ...v } = r;
+    out.visits.push({ route, viewport: vp.label, ...v });
+    if (r.error) { warnings.push(`could not load ${route} at ${vp.label}: ${r.error}`); continue; }
+    await recordVisit(root, route, "sweep");
+    for (const c of candidatesOf(v, route, url, vp.width, vp.height)) {
+      const prev = out.cands.get(c.key);
+      if (prev) prev.routes.add(route); else out.cands.set(c.key, c);
+    }
+  }
+  if (first) for (const pat of pending) warnings.push(`no link found for dynamic route ${pat}; not swept`);
+}
+
+/** Findings for every candidate, each re-visited in a fresh context first, then the axe violations. */
+async function recordSweep(env: SweepEnv): Promise<{ recorded: string[]; skipped: string[] }> {
+  const { root, base, origin, auth, out } = env;
+  const recorded: string[] = [], skipped: string[] = [];
+  await ensureDirs(wreckPaths(root));
+  const { findings: existing } = await listFindings(root);
+  for (const c of out.cands.values()) {
+    const input = findingFor(c, base, auth);
+    const dup = existing.find((f) => f.persona === "sweep" && f.title === input.title);
+    if (dup) { skipped.push(`${dup.id} already records: ${input.title}`); continue; }
+    const ctx = await env.newCtx({ width: c.width, height: c.height });
+    const page = await ctx.newPage();
+    const again = await visit(page, c.url, origin);
+    await ctx.close();
+    input.reproduced = candidatesOf(again, c.route, c.url, c.width, c.height).some((x) => x.key === c.key);
+    const { finding } = await addFinding(root, input);
+    recorded.push(finding.id);
+  }
+  for (const r of out.a11y) recorded.push(...(await recordViolations(root, r)));
+  for (const r of out.a11y) await writeResult(root, r);
+  return { recorded, skipped };
+}
+
+export async function runSweep(root: string, opts: SweepOptions): Promise<SweepResult> {
+  const { p, cfg, disc, base } = await resolveTarget(root, opts);
   const vps = (opts.viewports ?? "1280x800,390x844").split(",").map((v) => v.trim()).filter(Boolean);
   const sizes = vps.map(parseViewport);
   const warnings: string[] = [];
+  const { routes, dynamics } = planRoutes(cfg, disc, warnings);
 
-  const all: { path: string; dynamic: boolean }[] = Array.isArray(disc?.pages) ? disc.pages : [];
-  if (!all.length) warnings.push("no pages in .wreck-it/discovery.json; sweeping / only (run `wreck-it discover` first)");
-  const excluded = (r: string) => NAV_AWAY.test(r) || r.startsWith("/api/") || cfg.exclude.some((x) => r === x || r.startsWith(x.endsWith("/") ? x : x + "/"));
-  const statics = all.filter((x) => !x.dynamic && !excluded(x.path)).map((x) => x.path);
-  const dynamics = all.filter((x) => x.dynamic && !excluded(x.path)).map((x) => x.path);
-  const routes: string[] = statics.length ? [...new Set(statics)] : ["/"];
-
-  const browser = await launchBrowser();
-  const visits: Visit[] = [];
-  const a11y: A11yResult[] = [];
-  const cands = new Map<string, Candidate>();
-  let loggedIn: boolean | null = null;
+  const browser = await launchChromium();
   try {
-    let storageState: Awaited<ReturnType<BrowserContext["storageState"]>> | undefined;
-    if (cfg.accounts[0]) {
-      const lctx = await browser.newContext();
-      loggedIn = await login(lctx, base, routes, cfg.accounts[0]);
-      if (loggedIn) storageState = await lctx.storageState();
-      else warnings.push(`could not log in as ${cfg.accounts[0].label}; sweeping logged out`);
-      await lctx.close();
-    }
-    const newCtx = (vp: { width: number; height: number }) => browser.newContext({ viewport: vp, ...(storageState ? { storageState } : {}) });
-
+    const session = await openSession(browser, root, base, routes, opts.account);
+    if (cfg.accounts.length) warnings.push(...session.warnings);
+    const storageState = session.state;
+    // Each context starts from the latest session, not the original: apps that rotate refresh tokens revoke reused ones.
+    let current = storageState;
+    const env: SweepEnv = {
+      root, base, origin: new URL(base).origin, withA11y: opts.a11y !== false, warnings,
+      ...(storageState ? { auth: session.label } : {}),
+      out: { visits: [], a11y: [], cands: new Map() },
+      newCtx: (vp) => browser.newContext({ viewport: vp, ...(current ? { storageState: current } : {}) }),
+    };
     for (const [i, vp] of sizes.entries()) {
-      const ctx = await newCtx(vp);
-      const queue = [...routes];
-      const pending = new Set(dynamics);
-      for (let k = 0; k < queue.length; k++) {
-        const route = queue[k]!;
-        const url = new URL(route, base).href;
-        const page = await ctx.newPage();
-        const r = await visit(page, url, origin);
-        // Fill dynamic routes (e.g. /products/[id]) with the first matching link we find.
-        for (const pat of [...pending]) {
-          const hit = r.links.map((l) => new URL(l).pathname).find((path) => patternRe(pat).test(path) && !queue.includes(path));
-          if (hit) { queue.push(hit); pending.delete(pat); }
-        }
-        if (i === 0 && opts.a11y !== false && !r.error) {
-          try { a11y.push(await axeOnPage(page, url)); } catch (e) { warnings.push(`axe failed on ${route}: ${(e as Error).message.split("\n")[0]}`); }
-        }
-        await page.close().catch(() => {});
-        const { links: _l, ...v } = r;
-        visits.push({ route, viewport: vps[i]!, ...v });
-        if (r.error) { warnings.push(`could not load ${route} at ${vps[i]}: ${r.error}`); continue; }
-        await recordVisit(root, route, "sweep");
-        for (const c of candidatesOf(v, route, url, vp.width, vp.height)) {
-          const prev = cands.get(c.key);
-          if (prev) prev.routes.add(route); else cands.set(c.key, c);
-        }
-      }
-      for (const pat of pending) if (i === 0) warnings.push(`no link found for dynamic route ${pat}; not swept`);
+      const ctx = await env.newCtx(vp);
+      await crawlViewport(env, ctx, { label: vps[i]!, ...vp }, i === 0, routes, dynamics);
+      if (current) current = await ctx.storageState().catch(() => current);
       await ctx.close();
     }
-
-    const recorded: string[] = [], skipped: string[] = [];
-    if (opts.record) {
-      await ensureDirs(p);
-      const { findings: existing } = await listFindings(root);
-      for (const c of cands.values()) {
-        const input = findingFor(c, base);
-        const dup = existing.find((f) => f.persona === "sweep" && f.title === input.title);
-        if (dup) { skipped.push(`${dup.id} already records: ${input.title}`); continue; }
-        // Reproduce in a fresh context before trusting it.
-        const ctx = await newCtx({ width: c.width, height: c.height });
-        const page = await ctx.newPage();
-        const again = await visit(page, c.url, origin);
-        await ctx.close();
-        input.reproduced = candidatesOf(again, c.route, c.url, c.width, c.height).some((x) => x.key === c.key);
-        const { finding } = await addFinding(root, input);
-        recorded.push(finding.id);
-      }
-      for (const r of a11y) recorded.push(...(await recordViolations(root, r)));
-      for (const r of a11y) await writeResult(root, r);
-    }
+    const { recorded, skipped } = opts.record ? await recordSweep(env) : { recorded: [], skipped: [] };
+    if (current && current !== storageState) await saveRefreshed(root, base, session.label, current);
+    const { visits, a11y, cands } = env.out;
     const result: SweepResult = {
-      baseUrl: base, loggedIn, viewports: vps, pages: [...new Set(visits.map((v) => v.route))], visits, a11y,
+      baseUrl: base, loggedIn: session.loggedIn, viewports: vps, pages: [...new Set(visits.map((v) => v.route))], visits, a11y,
       candidates: [...cands.values()].map((c) => ({ kind: c.kind, example: c.example, routes: [...c.routes] })),
       recorded: [...new Set(recorded)], skipped, warnings,
     };

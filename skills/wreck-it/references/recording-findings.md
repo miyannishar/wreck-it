@@ -1,15 +1,17 @@
 # Recording findings
 
+`WRECK` means `npx @miyannishar/wreck-it`.
+
 Every wreck-it stage records bugs the same way. The CLI validates and stores them, so the report, score and generated tests stay deterministic.
 
 ## The command
 
 ```bash
-npx wreck-it finding add --file /tmp/wr-finding.json     # or: echo '<json>' | npx wreck-it finding add
+WRECK finding add --file /tmp/wr-finding.json     # or: echo '<json>' | WRECK finding add
 # → {"id":"WR-007","warnings":[]}
-npx wreck-it finding update WR-007 '{"reproduced":true}'
-npx wreck-it finding list
-npx wreck-it schema finding                               # full JSON Schema when in doubt
+WRECK finding update WR-007 '{"reproduced":true}'
+WRECK finding list
+WRECK schema finding                               # full JSON Schema when in doubt
 ```
 
 If the CLI rejects the JSON, it prints `field.path: message` lines. Fix exactly those fields and retry. Never hand-write files into `.wreck-it/findings/`.
@@ -51,6 +53,7 @@ If the CLI rejects the JSON, it prints `field.path: message` lines. Fix exactly 
   - asserting something the bug doesn't affect (checking a date when the bug is sort order)
   - pinning a value that changes per run (a random total, a stock count)
   - getting the direction backwards: for an invalid input the server wrongly accepts, use `{"kind":"httpStatus","atLeast":400}`, not `below`
+- **auth**: when the steps start from a logged-in state, set `"auth": "<label>"` (an account in `.wreck-it/config.json`) and leave login steps out. The generated test loads that account's saved session (`.wreck-it/auth/<label>.json`, or `WRECK_IT_AUTH_<LABEL>` in CI). Never put passwords in steps.
 - **Re-runnable data**: put `{{unique}}` in values that must be fresh each run (sign-up emails, usernames), e.g. `wreck.tester+{{unique}}@example.com`. Generated tests replace it with a per-run value.
 - **screenshots**: pass the path the screenshot tool reported. The CLI copies it into `.wreck-it/shots/`. A missing file only produces a warning.
 
@@ -71,7 +74,7 @@ A finding counts toward the score only with `reproduced: true`. Unreproduced fin
 
 1. Open a **fresh** context (`browser_close`, then navigate again, or a new isolated browser).
 2. Replay `steps` exactly as written.
-3. If the bug shows again: `npx wreck-it finding update WR-007 '{"reproduced":true}'`.
+3. If the bug shows again: `WRECK finding update WR-007 '{"reproduced":true}'`.
 4. If it does not: leave it `false`. The report lists it under *Flaky / unconfirmed*. Do not delete it.
 
 For `http` steps, replay the request with `curl` instead of the browser.
@@ -79,5 +82,5 @@ For `http` steps, replay the request with `curl` instead of the browser.
 ## Don'ts
 
 - Don't invent source locations. Tracing is the `wreck-trace` stage. A low-confidence `source` lists `candidates` and no `line`.
-- Don't file the same root cause twice. Check `npx wreck-it finding list` first and update the existing finding instead. One broken site-wide component (header, footer) is one finding, not one per page.
+- Don't file the same root cause twice. Check `WRECK finding list` first and update the existing finding instead. One broken site-wide component (header, footer) is one finding, not one per page.
 - Don't record expected behavior as a bug because it looks unusual. Say why a user would be hurt.

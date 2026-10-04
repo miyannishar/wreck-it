@@ -1,5 +1,5 @@
 {
-  "name": "wreck-it",
+  "name": "@miyannishar/wreck-it",
   "version": "0.1.0",
   "description": "Wreck your app before your users do. Agent-driven testing for vibe-coded apps.",
   "type": "module",
@@ -10,9 +10,12 @@
     "dist"
   ],
   "engines": {
-    "node": ">=20"
+    "node": ">=22.19"
   },
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
@@ -22,6 +25,7 @@
     "autocannon": "^8.0.0",
     "axe-core": "^4.13.0",
     "commander": "^14.0.0",
+    "lighthouse": "^13.5.0",
     "playwright": "^1.63.0",
     "zod": "^4.6.0"
   },

@@ -1,18 +1,32 @@
 ---
 name: wreck-load
-description: Load and stress test a local web app's pages and API endpoints with the wreck-it CLI. It runs ramp, spike and soak profiles, measures p50/p90/p99 latency, error rate, breaking point and memory trend, then traces slow endpoints to causes such as N+1 queries, missing indexes or blocking work. Use as stage 7 of a wreck-it run, or when the user asks to "stress test my API", "load test", "how many users can my app handle", or "find slow endpoints".
+description: Page speed and load testing for a local web app with the wreck-it CLI. It measures each page with Lighthouse on a simulated phone (LCP, CLS, TBT), diagnoses slow pages with Chrome DevTools performance traces when available, runs ramp, spike and soak load profiles (p50/p90/p99 latency, error rate, breaking point, memory trend), then traces slow endpoints to causes such as N+1 queries, missing indexes or blocking work. Use as stage 7 of a wreck-it run, or when the user asks to "stress test my API", "load test", "how many users can my app handle", "find slow endpoints", "check page speed", or "run Lighthouse".
 ---
 
 # wreck-load
 
-`npx wreck-it run stage load running`
+`WRECK` means `npx @miyannishar/wreck-it`.
 
-## Safety (non-negotiable)
+`WRECK run stage load running`
 
-- Targets must be localhost or private addresses. The CLI enforces this and exits with code 3 otherwise.
-- Use GET/HEAD only. Mutating load needs `"allowMutatingLoad": true` in `.wreck-it/config.json`, and the user has to set that themselves. Never set it yourself.
-- If the CLI warns that the database looks **remote**, stop and ask the user before any load test. Load against a shared or production database harms real systems.
-- Prefer a production build (`npm run build && npm start`) over a dev server when the user agrees. Dev servers compile on first hit and give misleading numbers. Either way, say which one you tested.
+## Safety
+
+- GET/HEAD only. Mutating load needs `"allowMutatingLoad": true`, which only the user sets.
+- A hosted (remote) database: ask before any load test; load on a production database hurts real users.
+- The CLI refuses endpoints that call AI, email, SMS or payments (thousands of real calls) unless the user allowed them.
+- Prefer a production build (`npm run build && npm start`) when the user agrees; dev servers give misleading numbers. Say which you tested.
+
+## 0. Page speed (Lighthouse)
+
+```bash
+WRECK perf --record                 # discovered pages on a simulated mid-range phone, slow 4G
+WRECK perf / /products --device desktop --record   # optional: key pages on desktop
+```
+
+- Each page gets a Lighthouse score plus **LCP** (largest paint), **CLS** (layout shift) and **TBT** (main-thread blocking); reports go to `.wreck-it/perf/*.html`. With `--record`, metrics in Google's "poor" range become `performance` findings when a second run agrees.
+- On a **dev server** only CLS is recorded (LCP/TBT there reflect unminified code): tell the user and offer a production-build re-run.
+- Its "to judge yourself" list (best practices, SEO): mention notable ones; record only what affects users (e.g. a page without a `<title>`).
+- **Diagnose slow pages** with Chrome DevTools MCP (`wreck-devtools` in the plugin), if available: `new_page` (keep its `pageId`), `emulate` `{"networkConditions": "Slow 4G", "cpuThrottlingRate": 4}`, `performance_start_trace` `{"reload": true, "autoStop": true}`, then `performance_analyze_insight`. Use what it names (LCP element, blocking script, long task) for the finding's `source`.
 
 ## 1. Choose 3–6 targets
 
@@ -31,9 +45,9 @@ The CLI tries `lsof` on the URL's port automatically. If that finds nothing, pas
 ## 3. Run profiles
 
 ```bash
-npx wreck-it load http://localhost:3000/api/products --profile ramp     # 10→500 connections until thresholds break
-npx wreck-it load http://localhost:3000/api/products --profile spike    # 10 → 100 → 10
-npx wreck-it load http://localhost:3000/api/stats --profile soak --soak-duration 180   # memory trend / leaks
+WRECK load http://localhost:3000/api/products --profile ramp     # 10→500 connections until thresholds break
+WRECK load http://localhost:3000/api/products --profile spike    # 10 → 100 → 10
+WRECK load http://localhost:3000/api/stats --profile soak --soak-duration 180   # memory trend / leaks
 ```
 
 - Run **ramp** on every target.
@@ -74,6 +88,8 @@ Set `reproduced: true` once a second run shows the same signal.
 
 ## Finish
 
-`npx wreck-it run stage load done`
+`WRECK run stage load done`
 
-Summarize the results as a short table: endpoint, p50/p99 at 10 and 100 connections, breaking point, memory.
+Summarize the results as two short tables:
+- pages: route, Lighthouse score, LCP / CLS / TBT, and whether it was a dev server
+- endpoints: p50/p99 at 10 and 100 connections, breaking point, memory

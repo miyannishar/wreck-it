@@ -8,6 +8,7 @@ describe("loadConfig", () => {
   it("returns defaults when no file exists", async () => {
     expect(await loadConfig(await tmpRoot())).toEqual({
       accounts: [], allowMutatingLoad: false, iOwnThis: false, exclude: [],
+      allowRemoteDb: false, allowSideEffects: [],
       thresholds: { p99Ms: 2000, errorRate: 0.01 },
     });
   });

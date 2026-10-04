@@ -4,7 +4,8 @@ import { isAllowedTarget } from "../target.js";
 import type { Discovery } from "./types.js";
 
 const ENV_FILES = [".env", ".env.development", ".env.local"]; // later files override earlier ones
-const KEYS = ["DATABASE_URL", "POSTGRES_URL", "POSTGRES_PRISMA_URL", "MONGODB_URI", "MONGO_URL", "MYSQL_URL", "SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_URL"];
+const KEYS = ["DATABASE_URL", "POSTGRES_URL", "POSTGRES_PRISMA_URL", "MONGODB_URI", "MONGO_URL", "MYSQL_URL", "SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_URL", "VITE_SUPABASE_URL", "PUBLIC_SUPABASE_URL", "EXPO_PUBLIC_SUPABASE_URL"];
+const FIREBASE = ["NEXT_PUBLIC_FIREBASE_PROJECT_ID", "VITE_FIREBASE_PROJECT_ID", "FIREBASE_PROJECT_ID", "PUBLIC_FIREBASE_PROJECT_ID"];
 
 export function parseEnv(src: string): Record<string, string> {
   const out: Record<string, string> = {};
@@ -46,7 +47,11 @@ export async function detectDatabase(root: string): Promise<Discovery["database"
     try { Object.assign(env, parseEnv(await readFile(join(root, f), "utf8"))); } catch { /* missing */ }
   }
   const key = KEYS.find((k) => env[k]);
-  if (!key) return undefined;
+  if (!key) {
+    // Firebase has no connection URL: a project id means the hosted project, unless the emulators are configured.
+    const fb = FIREBASE.find((k) => env[k]);
+    return fb ? { kind: "firebase", url: `firebase project ${env[fb]}`, remote: !env.FIRESTORE_EMULATOR_HOST && !env.FIREBASE_AUTH_EMULATOR_HOST } : undefined;
+  }
   const raw = env[key]!;
   const pm = /^([a-z][\w+.-]*):/i.exec(raw);
   const proto = pm ? pm[1]!.toLowerCase() : "";

@@ -76,6 +76,8 @@ export const EvidenceSchema = z.strictObject({
   screenshots: z.array(z.string()).default([]),
   console: z.array(z.string()).default([]),
   network: z.array(z.strictObject({ method: z.string(), url: z.string(), status: z.number().int() })).default([]),
+  /** A Playwright trace of the reproduction (`browser_start_tracing` / `browser_stop_tracing`), relative to the project; open with `npx playwright show-trace`. */
+  trace: z.string().min(1).optional(),
 });
 
 const findingFields = {
@@ -91,6 +93,8 @@ const findingFields = {
   evidence: EvidenceSchema.default({ screenshots: [], console: [], network: [] }),
   source: SourceSchema.optional(),
   reproduced: z.boolean().default(false),
+  /** Label of the account (in config) whose saved session the steps start with; generated tests load that session. */
+  auth: z.string().min(1).optional(),
 };
 
 type Refinable = { steps: { action: string }[]; assertions: { kind: string }[] };

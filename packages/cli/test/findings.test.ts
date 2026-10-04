@@ -32,6 +32,19 @@ describe("findings store", () => {
     expect(finding.evidence.screenshots[1]).toBe("../missing.png");
     expect(warnings).toEqual(["screenshot not found: missing.png"]);
   });
+  it("stores a trace path relative to the project (in place), on add and on update", async () => {
+    const root = await tmpRoot();
+    await mkdir(join(root, ".wreck-it", "shots", "browser-1", "traces"), { recursive: true });
+    await writeFile(join(root, ".wreck-it", "shots", "browser-1", "traces", "t.trace"), "trace");
+    const abs = join(root, ".wreck-it", "shots", "browser-1", "traces", "t.trace");
+    const { finding, warnings } = await addFinding(root, sample({ evidence: { trace: abs } }));
+    expect(finding.evidence.trace).toBe(".wreck-it/shots/browser-1/traces/t.trace");
+    expect(warnings).toEqual([]);
+    const second = await addFinding(root, sample({ evidence: { screenshots: [".wreck-it/shots/browser-1/traces/t.trace"] } }));
+    const updated = await updateFinding(root, second.finding.id, { evidence: { trace: abs } });
+    expect(updated.evidence.trace).toBe(".wreck-it/shots/browser-1/traces/t.trace");
+    expect(updated.evidence.screenshots).toEqual(second.finding.evidence.screenshots);
+  });
   it("keeps screenshots already inside .wreck-it as relative paths", async () => {
     const root = await tmpRoot();
     await mkdir(join(root, ".wreck-it", "shots"), { recursive: true });

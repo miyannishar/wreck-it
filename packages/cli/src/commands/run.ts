@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { initRun, setStage, recordVisit, readRun, type Stage, type StageStatus } from "../run.js";
+import { initRun, setStage, recordVisit, readRun, recordCreated, type Stage, type StageStatus } from "../run.js";
 import { rootOf } from "../options.js";
 
 export function registerRunCommands(program: Command): void {
@@ -17,6 +17,11 @@ export function registerRunCommands(program: Command): void {
   run.command("visit").description("Record a visited route").argument("<route>").requiredOption("--persona <name>").option("--root <dir>")
     .action(async (route: string, opts: { persona: string; root?: string }) => {
       await recordVisit(rootOf(opts), route, opts.persona);
+    });
+  run.command("created").description("Log test data this run created (an account, an order…), so the report lists it for cleanup")
+    .argument("<what>", 'e.g. "account wreck.tester+3@example.test" or "order #1042"').requiredOption("--by <persona>").option("--root <dir>")
+    .action(async (what: string, opts: { by: string; root?: string }) => {
+      await recordCreated(rootOf(opts), { by: opts.by, what });
     });
   run.command("show").description("Print run state and visits as JSON").option("--root <dir>")
     .action(async (opts: { root?: string }) => {

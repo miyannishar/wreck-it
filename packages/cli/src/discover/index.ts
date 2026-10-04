@@ -9,7 +9,8 @@ import { reactRouter } from "./react-router.js";
 import { sveltekit } from "./sveltekit.js";
 import { remix } from "./remix.js";
 import { forms } from "./forms.js";
-import { detectAuth } from "./auth.js";
+import { detectAuth, detectSso } from "./auth.js";
+import { detectServices, hardcodedBackend, markApis } from "./services.js";
 import { detectDatabase } from "./database.js";
 
 export type { Discovery } from "./types.js";
@@ -95,15 +96,20 @@ export async function discover(root: string): Promise<Discovery> {
     for (const a of r.api) { const k = `${a.method} ${a.path} ${a.file}`; if (!api.has(k)) api.set(k, a); }
   }
   const fs = await forms(ctx);
+  const marked = await markApis(ctx, [...api.values()].sort((a, b) => a.path.localeCompare(b.path) || a.method.localeCompare(b.method)));
+  const services = await detectServices(ctx);
+  // App-wide uses include what handlers do without an SDK package (e.g. fetch to api.openai.com).
+  for (const e of marked.flatMap((a) => a.effects ?? [])) if (services && !services.uses.includes(e)) services.uses.push(e);
   return {
     generatedAt: new Date().toISOString(),
     frameworks,
     ...(await guessBase(root, pkg, deps, frameworks, files)),
     pages: [...pages.values()].sort((a, b) => a.path.localeCompare(b.path)),
-    api: [...api.values()].sort((a, b) => a.path.localeCompare(b.path) || a.method.localeCompare(b.method)),
+    api: marked,
     forms: fs,
-    auth: detectAuth(deps, files, fs),
-    ...await detectDatabase(root).then((database) => database ? { database } : {}),
+    auth: await detectSso(ctx).then((sso) => ({ ...detectAuth(deps, files, fs), ...(sso.length ? { sso } : {}) })),
+    ...await detectDatabase(root).then(async (database) => { const d = database ?? (await hardcodedBackend(ctx)); return d ? { database: d } : {}; }),
+    services,
     warnings,
   };
 }

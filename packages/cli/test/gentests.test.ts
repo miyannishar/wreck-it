@@ -35,7 +35,7 @@ describe("gen-tests", () => {
     expect(code).toContain(`await page.getByLabel("Qty").first().fill("-1");`);
     expect(code).toContain(`await page.getByRole("button", { name: "Pay" }).first().click({ clickCount: 2 });`);
     expect(code).toContain(`await context.setOffline(true);`);
-    expect(code).toContain(`res = await request.fetch("/api/x", { method: "GET" });`);
+    expect(code).toContain(`res = await page.request.fetch("/api/x", { method: "GET" });`);
     expect(code).toContain(`await expect(page.getByTestId("total").first()).toContainText("$20");`);
     expect(code).toContain(`expect(res?.status()).toBe(200);`);
     expect(code).toContain(`await expect(page).toHaveURL(new RegExp("\\\\/orders\\\\?id=1"));`);

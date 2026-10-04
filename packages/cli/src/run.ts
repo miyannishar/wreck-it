@@ -57,3 +57,18 @@ export async function readRun(root: string): Promise<{ run: RunState | null; vis
   }
   return { run, visits };
 }
+
+/** Test data a run created (accounts, orders, posts…), so the report can list it for cleanup. */
+export interface Created { at: string; by: string; what: string; count?: number }
+const createdFile = (root: string) => `${wreckPaths(root).dir}/created.jsonl`;
+
+export async function recordCreated(root: string, c: Omit<Created, "at">): Promise<void> {
+  await ensureDirs(wreckPaths(root));
+  await appendFile(createdFile(root), JSON.stringify({ at: new Date().toISOString(), ...c }) + "\n");
+}
+
+export async function listCreated(root: string): Promise<Created[]> {
+  let raw = "";
+  try { raw = await readFile(createdFile(root), "utf8"); } catch { return []; }
+  return raw.split("\n").filter(Boolean).flatMap((l) => { try { return [JSON.parse(l) as Created]; } catch { return []; } });
+}

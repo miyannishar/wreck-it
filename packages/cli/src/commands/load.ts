@@ -16,16 +16,17 @@ export function registerLoadCommands(program: Command): void {
     .option("--soak-duration <s>", "total soak seconds", Number, 180)
     .option("--recovery-timeout <s>", "seconds to wait for a crashed server", Number, 30)
     .option("--header <k:v>", "request header (repeatable)", collect, [] as string[])
+    .option("--include-side-effects", "allow endpoints that call AI models, send email/SMS or take payments")
     .option("--i-own-this", "allow non-local targets you own")
     .option("--root <dir>").option("--json")
     .action(async (url: string, opts: {
       profile: LoadProfile; method: string; pid?: number; stepDuration: number; maxConnections: number; soakDuration: number;
-      recoveryTimeout: number; header: string[]; iOwnThis?: boolean; root?: string; json?: boolean;
+      recoveryTimeout: number; header: string[]; includeSideEffects?: boolean; iOwnThis?: boolean; root?: string; json?: boolean;
     }) => {
       const out = await runLoadTest(rootOf(opts), {
         url, profile: opts.profile, method: opts.method, headers: parseHeaders(opts.header), pid: opts.pid,
         stepDuration: opts.stepDuration, maxConnections: opts.maxConnections, soakDuration: opts.soakDuration,
-        recoveryTimeout: opts.recoveryTimeout, iOwnThis: opts.iOwnThis,
+        recoveryTimeout: opts.recoveryTimeout, includeSideEffects: opts.includeSideEffects, iOwnThis: opts.iOwnThis,
       });
       process.stdout.write(opts.json ? JSON.stringify(out.result, null, 2) + "\n" : formatLoadSummary(out));
     });

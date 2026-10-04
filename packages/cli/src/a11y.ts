@@ -1,7 +1,8 @@
 import { createRequire } from "node:module";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { chromium, type Browser, type Page, type Response } from "playwright";
+import type { Page } from "playwright";
+import { launchChromium, openSettled } from "./browser.js";
 import { wreckPaths } from "./paths.js";
 import { WreckError } from "./errors.js";
 import { addFinding, listFindings, updateFinding } from "./findings.js";
@@ -24,22 +25,6 @@ export function parseViewport(v: string): { width: number; height: number } {
 
 export const severityOf = (impact: string): Severity => (impact === "critical" ? "high" : impact === "serious" ? "medium" : "low");
 
-export async function launchBrowser(): Promise<Browser> {
-  try { return await chromium.launch(); }
-  catch (e) {
-    const msg = (e as Error).message;
-    if (msg.includes("Executable doesn't exist")) throw new WreckError("Playwright Chromium is not installed; run: npx playwright install chromium", 1);
-    throw e;
-  }
-}
-
-/** Open a URL and wait for client-rendered content; pages that poll never reach idle, so the wait is capped. */
-export async function openSettled(page: Page, url: string): Promise<Response | null> {
-  const res = await page.goto(url, { waitUntil: "load", timeout: 30_000 });
-  await page.waitForLoadState("networkidle", { timeout: 5_000 }).catch(() => {});
-  return res;
-}
-
 /** Run axe-core on the page that is already loaded. */
 export async function axeOnPage(page: Page, url: string): Promise<A11yResult> {
   await page.addScriptTag({ path: createRequire(import.meta.url).resolve("axe-core/axe.min.js") });
@@ -56,7 +41,7 @@ export async function axeOnPage(page: Page, url: string): Promise<A11yResult> {
 }
 
 export async function scanUrls(urls: string[], opts: { storageState?: string; viewport?: { width: number; height: number } }): Promise<A11yResult[]> {
-  const browser = await launchBrowser();
+  const browser = await launchChromium();
   try {
     const ctx = await browser.newContext({ ...(opts.storageState ? { storageState: opts.storageState } : {}), ...(opts.viewport ? { viewport: opts.viewport } : {}) });
     const out: A11yResult[] = [];

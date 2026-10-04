@@ -5,96 +5,71 @@ description: Full wreck-it run against a locally running web app. It tests like 
 
 # wreck-it: Wreck your app before your users do
 
-You are running the full wreck-it pipeline. The `wreck-it` CLI (`npx wreck-it …`) is deterministic: it handles discovery, finding storage, scoring, reports, load testing, accessibility scans and test generation. You supply the judgment: you drive the browser through Playwright MCP, act as personas, decide what counts as a bug, and trace bugs to code.
+`WRECK` below means `npx @miyannishar/wreck-it`. The CLI does the deterministic work (setup, discovery, sweeps, fuzzing, page speed, load, findings, score, report, tests). You drive the browser through Playwright MCP, play the personas, judge what's a bug and trace it to code.
 
-Report only. **Do not fix bugs** during a run, even obvious ones, unless the user asks after the report.
+Report only. **Don't fix bugs** during a run unless the user asks after the report.
 
-## Safety rules (always)
+## Rules (always)
 
-- Test only the user's **local** app (localhost or a private IP). The CLI refuses other targets. Pass `--i-own-this` only when the user explicitly says they own a remote target.
-- Load tests are GET/HEAD only unless `.wreck-it/config.json` has `"allowMutatingLoad": true`.
-- Use test accounts and fake data. Never enter real personal or payment data.
-- If the app's database looks remote (preflight or discover warns), tell the user before any stage that writes data, and ask whether to continue.
+- **Local only.** The CLI refuses non-local targets. Pass `--i-own-this` only when the user says they own a remote one.
+- **Fake data only.** Test accounts, fake names, never real personal or payment data. Name what you create `wreck-it …`, and log it: `WRECK run created "<what>" --by <persona>` (the report lists it for cleanup).
+- **Ask before writing.** Preflight's `safety.ask` lists the questions: a hosted (often production) database, live Stripe keys, email without a readable inbox, paid AI/SMS calls. Ask them all in **one** message before the normal-user pass, and record each "yes" in `.wreck-it/config.json` (`allowRemoteDb`, `testEmail`, `allowSideEffects`). If the database is production, offer to stop so they can point the app at a dev project.
+- **Money and messages.** Pay only with Stripe test keys (card `4242 4242 4242 4242`); with live keys stop at the payment step. Trigger AI/SMS/email actions at most 2–3 times per flow unless allowed. `fuzz` and `load` skip those endpoints themselves.
+- **Email.** Sign up with addresses from `WRECK email new`, never `example.com`. With a local inbox read the link yourself (`WRECK email read --to <address>`); otherwise ask the user for it, or mark the check "skipped: no readable inbox".
+- **Keep the shared login alive.** Never log out, delete or change the password of the account whose saved session other stages use: on Supabase and many apps, logging out ends every session of that user. Test logout and deletion last, with a throwaway account.
 
 ## Pipeline
 
-Mark each stage with `npx wreck-it run stage <stage> running|done|skipped|failed`. Findings are saved as you go, so a failure mid-run still leaves a usable partial report.
+Mark stages with `WRECK run stage <stage> running|done|skipped|failed`. Findings are saved as you go.
 
-### 1. Preflight
+### 1. Setup and preflight
 ```bash
-npx wreck-it run init           # add --fresh to discard a previous run's findings
-npx wreck-it discover           # also needed for preflight's dev-script hint
-npx wreck-it preflight --wait 5
+WRECK run init               # --fresh discards a previous run's findings
+WRECK discover
+WRECK setup --dry-run        # what's installed, what's missing
+WRECK preflight --wait 5
 ```
-- **Exit 4, app not reachable:** offer to start it with the reported `devScript` (run it in the background), then `npx wreck-it preflight --wait 60`.
-- **Exit 3, target refused:** stop and explain. Never work around it.
-- **`playwrightMcp.found` is false:** check whether browser tools are actually available to you (e.g. `browser_navigate`). If they are not, print the matching `installHints` entry for this agent, ask the user to install it, and stop. Do not silently skip browser stages.
-- If `.wreck-it/config.json` is missing, create it with the base URL: `{"baseUrl": "http://localhost:3000"}`.
-- Once you have a working test account (the user's, or one you sign up in stage 4), add it to config as `"accounts": [{"label": "main", "email": "…", "password": "…"}]`. `wreck-it sweep` uses it to cover logged-in pages.
+- If `setup --dry-run` lists anything to install, show it and ask once; on yes run `WRECK setup`. If it added MCP servers, browser tools appear only after the user restarts the agent: say so, and offer a CLI-only run meanwhile.
+- A browser tool saying "Browser … is not installed": `WRECK setup --skip playwright-mcp devtools-mcp`, then retry.
+- Preflight exit 4 (app not reachable): offer to start `devScript` in the background, then `WRECK preflight --wait 60`. Exit 3 (target refused): stop and explain.
+- No `.wreck-it/config.json`: create `{"baseUrl": "http://localhost:3000"}` (use the real port).
+- **CLI-only run** (no browser tools): `sweep --record`, `fuzz --record`, `perf --record`, stage 7 and the report; mark `personas`, `normal`, `explore`, `chaos` skipped and say why. Never pretend you clicked through the app.
 
-### 2. Discover
-`npx wreck-it discover` writes `.wreck-it/discovery.json` with pages, API routes, forms, auth and database. If `frameworks` is empty, crawl from the home page instead: follow nav links two levels deep and note the routes.
+### 2. Logging in
+- **Google, GitHub, SSO, hosted sign-in, magic links, 2FA** (`discovery.json` `auth.sso` is set, or there's no password field): tell the user "A browser window will open. Log in as your test user; it closes by itself once you're in." Run `WRECK login` (it waits up to 10 minutes; use a long timeout). Its output should say `check: valid`. For two-user checks ask for `WRECK login --label second`; for fresh-account checks `--label fresh`, or mark them skipped.
+- **Email and password:** sign up a test account (or use the user's) and add `"accounts": [{"label": "main", "email": "…", "password": "…"}]` to config.
+- From then on: `sweep`, `fuzz` and `perf` log in by themselves. In the browser, call `browser_set_storage_state` with `{"filename": ".wreck-it/auth/<label>.json"}` before visiting logged-in pages. Findings recorded logged in get `"auth": "<label>"` and steps that start after login.
+- If preflight or `WRECK login --check` says `expired`, ask the user to run `login` again.
 
 ### 3. Personas
-Use the **wreck-personas** skill. It reuses `.wreck-it/personas.md` if that file already exists.
+Use the **wreck-personas** skill.
 
-### 4. Normal-user pass, then 5. persona exploration
-Use the **wreck-explore** skill: first the `normal-user` pass, then each remaining persona's missions.
-- **Claude Code with the wreck-it plugin:** run up to 3 personas in parallel, each as a `wreck-persona` subagent with its own browser (`wreck-browser-1..3`). Each browser is used by exactly one subagent.
-  - **Wait for every subagent to finish** before you start stage 6.
-  - Don't use any browser yourself while subagents are running.
-- **Other agents:** run them one after another.
+### 4–5. Normal user, then personas
+Use the **wreck-explore** skill. In Claude Code with the plugin, run up to 3 personas in parallel as `wreck-persona` subagents, one browser each (`wreck-browser-1..3`); don't use a browser yourself meanwhile, and wait for all of them before stage 6. Other agents: one persona after another.
 
 ### 6. Chaos
-Use the **wreck-chaos** skill. It starts with `npx wreck-it sweep --record` (every page × 2 viewports: oddities and axe), then covers hostile inputs, double submits, navigation abuse, network faults and keyboard accessibility.
+Use the **wreck-chaos** skill (sweep, API fuzz, hostile inputs, double submits, navigation, network faults, session tampering, keyboard).
 
-### 7. Load
+### 7. Page speed and load
 Use the **wreck-load** skill.
 
 ### 8. Security
-Not part of v1. Run `npx wreck-it run stage security skipped`.
+Not in v1: `WRECK run stage security skipped`.
 
-### 8½. Reproduction sweep
-Run `npx wreck-it finding list`. For every finding marked `?` (not reproduced), replay its steps now in a fresh context and set `reproduced: true` if it shows again. Unreproduced findings score nothing, so a real bug left at `?` is a missed bug.
-
-### 9. Trace
-Use the **wreck-trace** skill for every reproduced finding that has no `source`.
+### 9. Reproduce, then trace
+`WRECK finding list`: replay every `?` finding in a fresh context and set `reproduced: true` if it shows again (unreproduced findings score nothing). Then use the **wreck-trace** skill on every reproduced finding without a `source`.
 
 ### 10. Report
 ```bash
-npx wreck-it report
-npx wreck-it gen-tests
-npx wreck-it run stage report done
+WRECK report && WRECK gen-tests && WRECK run stage report done
 ```
 
-## Recording findings
+## While exploring (stages 4–6)
 
-Follow `references/recording-findings.md` (in this skill's directory) exactly. Core rules:
-- Record with `npx wreck-it finding add`.
-- Steps are structured, targets are role/label locators, and assertions describe the correct behavior.
-- A finding counts only after you replay it in a fresh context and set `reproduced: true`.
+- Record bugs exactly as in `references/recording-findings.md`: `WRECK finding add`, structured steps, role/label targets, assertions that describe correct behavior, then replay in a fresh context and set `reproduced: true`.
+- After each navigation, run the oddity script (`WRECK oddity-script`, once) via `browser_evaluate`, and check `browser_console_messages` and `browser_network_requests` (4xx/5xx). Also look for what scripts can't judge: broken layout, empty states without guidance, endless spinners, dead buttons, inconsistent dates or prices. Record real ones as `oddity`.
+- Log coverage: `WRECK run visit <route> --persona <name>`.
 
-## Oddity detector (passive, on every page in stages 4–6)
+## Final message
 
-Get the script once with `npx wreck-it oddity-script`. After each navigation, pass it as the `function` argument of `browser_evaluate`. It returns `{url, signals[]}`.
-
-Also check:
-- `browser_console_messages` for errors
-- `browser_network_requests` for 4xx/5xx responses
-- the page itself for problems a script can't judge: weird layout, title/content mismatch, empty states with no guidance, spinners that never resolve, buttons that do nothing, mismatched date or currency formats
-
-Record each real oddity as category `oddity`, usually low or medium.
-
-Track coverage with `npx wreck-it run visit <route> --persona <name>` for every route you exercise.
-
-## Final message to the user
-
-Keep it short:
-- the readiness score and band
-- the "fix this first" finding with its `file:line`
-- counts by severity
-- incomplete stages, if any
-- paths to `.wreck-it/report.html`, `.wreck-it/report.md` and `tests/wreck-it/`
-- how to run the generated tests: `npx playwright test tests/wreck-it`
-
-Offer to fix the top findings. Don't start fixing until they say yes.
+Short: the score and band, the "fix this first" finding with its `file:line`, counts by severity, incomplete stages, the paths `.wreck-it/report.html`, `.wreck-it/report.md`, `tests/wreck-it/`, and `npx playwright test tests/wreck-it`. Offer to fix the top findings; wait for a yes.

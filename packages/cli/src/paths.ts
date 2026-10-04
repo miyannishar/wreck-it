@@ -4,7 +4,7 @@ import { mkdir } from "node:fs/promises";
 export interface WreckPaths {
   root: string; dir: string; findings: string; shots: string; load: string;
   config: string; run: string; visits: string; discovery: string; personas: string;
-  reportHtml: string; reportMd: string; testsDir: string; a11y: string;
+  reportHtml: string; reportMd: string; testsDir: string; a11y: string; perf: string; fuzz: string;
 }
 
 export function wreckPaths(root: string): WreckPaths {
@@ -23,6 +23,8 @@ export function wreckPaths(root: string): WreckPaths {
     reportMd: join(dir, "report.md"),
     testsDir: join(root, "tests", "wreck-it"),
     a11y: join(dir, "a11y"),
+    perf: join(dir, "perf"),
+    fuzz: join(dir, "fuzz"),
   };
 }
 

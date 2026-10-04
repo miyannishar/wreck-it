@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { runSweep } from "../src/sweep.js";
@@ -62,10 +64,15 @@ describe("sweep", () => {
     expect(again.recorded).toEqual([]);
     expect((await listFindings(root)).findings).toHaveLength(4);
   }, 120_000);
-  it("logs in with the first configured account", async () => {
+  it("logs in with the first configured account, saves its session, and labels findings with it", async () => {
     const root = await project({ accounts: [{ label: "a", email: "a@b.co", password: "pw" }] });
-    const r = await runSweep(root, { a11y: false, viewports: "1280x800" });
+    const r = await runSweep(root, { a11y: false, viewports: "1280x800", record: true });
     expect(r.loggedIn).toBe(true);
+    expect(existsSync(join(root, ".wreck-it/auth/a.json"))).toBe(true);
+    const { findings } = await listFindings(root);
+    expect(findings.length).toBeGreaterThan(0);
+    expect(findings.every((f) => f.auth === "a")).toBe(true);
+    expect(JSON.stringify(findings)).not.toContain('"pw"');
   }, 60_000);
   it("refuses public targets with exit 3", async () => {
     const r = await runCli(["sweep", "--base-url", "https://example.com", "--root", await tmpRoot()]);

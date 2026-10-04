@@ -14,6 +14,11 @@ import { registerOddityCommands } from "./commands/oddity.js";
 import { registerA11yCommands } from "./commands/a11y.js";
 import { registerLoadCommands } from "./commands/load.js";
 import { registerSweepCommands } from "./commands/sweep.js";
+import { registerPerfCommands } from "./commands/perf.js";
+import { registerFuzzCommands } from "./commands/fuzz.js";
+import { registerSetupCommands } from "./commands/setup.js";
+import { registerLoginCommands } from "./commands/login.js";
+import { registerEmailCommands } from "./commands/email.js";
 
 export function buildProgram(): Command {
   const program = new Command();
@@ -33,6 +38,11 @@ export function buildProgram(): Command {
   registerA11yCommands(program);
   registerLoadCommands(program);
   registerSweepCommands(program);
+  registerPerfCommands(program);
+  registerFuzzCommands(program);
+  registerSetupCommands(program);
+  registerLoginCommands(program);
+  registerEmailCommands(program);
   return program;
 }
 
