@@ -1,5 +1,8 @@
 # wreck-it
 
+[![npm](https://img.shields.io/npm/v/@miyannishar/wreck-it?label=npm%20%40miyannishar%2Fwreck-it)](https://www.npmjs.com/package/@miyannishar/wreck-it)
+[![license](https://img.shields.io/npm/l/@miyannishar/wreck-it)](LICENSE)
+
 **Wreck your app before your users do.**
 
 wreck-it turns your coding agent (Claude Code, Codex, Cursor, Gemini CLI, Copilot, …) into a QA team for your **locally running web app**. It tests the app the way real people break it:
@@ -158,6 +161,15 @@ npx chrome-devtools-mcp@1.10.1 --headless=true --isolated=true --performanceCrux
 ```
 
 Then run `npx @playwright/mcp@0.0.83 install-browser chromium` once.
+
+### The CLI on npm
+
+The CLI is published as [`@miyannishar/wreck-it`](https://www.npmjs.com/package/@miyannishar/wreck-it). You don't need to install it: the skills and the plugin call it with `npx`, which fetches the latest version on first use. To pin a version or run it in CI, add it to a project:
+
+```bash
+npm i -D @miyannishar/wreck-it
+npx wreck-it --version
+```
 
 ### What gets installed
 
