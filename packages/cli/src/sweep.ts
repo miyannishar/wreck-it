@@ -105,14 +105,24 @@ interface SweepEnv {
 }
 
 /** Static pages to visit, plus dynamic patterns (/products/[id]) to fill from links found on the way. */
-function planRoutes(cfg: Config, disc: SavedDiscovery | undefined, warnings: string[], only?: string[]): { routes: string[]; dynamics: string[] } {
+function planRoutes(cfg: Config, disc: SavedDiscovery | undefined, base: string, warnings: string[], only?: string[]): { routes: string[]; dynamics: string[] } {
   const all = pagesOf(disc);
   if (!all.length && !only?.length) warnings.push("no pages in .wreck-it/discovery.json; sweeping / only (run `wreck-it discover` first)");
   const keep = all.filter((x) => !isExcluded(cfg, x.path, { api: true }) && inScope(x.path, only));
   const statics = keep.filter((x) => !x.dynamic).map((x) => x.path);
   // A focused route discovery didn't list (e.g. a page behind a client-side router) is still swept as given.
   const fallback = only?.length ? only.filter((o) => !o.includes("[")) : ["/"];
-  return { routes: statics.length ? [...new Set(statics)] : fallback, dynamics: keep.filter((x) => x.dynamic).map((x) => x.path) };
+  // --only values and discovery.json (which may be hand-edited) are just text: a route that resolves to another host
+  // (`//x`, `http://x`, `/\x`) would take the browser off the app, so only same-origin paths are swept.
+  const origin = new URL(base).origin;
+  const local = (r: string) => {
+    let ok = false;
+    try { ok = r.startsWith("/") && new URL(r, base).origin === origin; } catch { /* not a path */ }
+    if (!ok) warnings.push(`skipped route ${r}: not a path on ${origin}`);
+    return ok;
+  };
+  const routes = (statics.length ? [...new Set(statics)] : fallback).filter(local);
+  return { routes: routes.length || only?.length ? routes : ["/"], dynamics: keep.filter((x) => x.dynamic).map((x) => x.path).filter(local) };
 }
 
 /** Queue the first link matching each still-unfilled dynamic route pattern. */
@@ -177,7 +187,7 @@ export async function runSweep(root: string, opts: SweepOptions): Promise<SweepR
   const vps = (opts.viewports ?? "1280x800,390x844").split(",").map((v) => v.trim()).filter(Boolean);
   const sizes = vps.map(parseViewport);
   const warnings: string[] = [];
-  const { routes, dynamics } = planRoutes(cfg, disc, warnings, opts.only);
+  const { routes, dynamics } = planRoutes(cfg, disc, base, warnings, opts.only);
 
   const browser = await launchChromium();
   try {

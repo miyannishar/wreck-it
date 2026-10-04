@@ -64,6 +64,12 @@ describe("sweep", () => {
     expect(again.recorded).toEqual([]);
     expect((await listFindings(root)).findings).toHaveLength(4);
   }, 120_000);
+  it("never leaves the app's origin, whatever --only says", async () => {
+    const root = await project();
+    const r = await runSweep(root, { a11y: false, viewports: "1280x800", only: ["//example.com/x", "http://example.com/", "/\\example.com/x"] });
+    expect(r.pages).toEqual([]);
+    expect(r.warnings.filter((w) => w.startsWith("skipped route"))).toHaveLength(3);
+  }, 60_000);
   it("--only sweeps just the focused routes", async () => {
     const root = await project();
     const r = await runSweep(root, { a11y: false, viewports: "1280x800", only: ["/a"] });
