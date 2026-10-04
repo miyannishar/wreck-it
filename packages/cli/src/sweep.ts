@@ -7,7 +7,7 @@ import { recordVisit } from "./run.js";
 import { openSession, saveRefreshed } from "./auth.js";
 import type { Config } from "./config.js";
 import { wreckPaths, ensureDirs } from "./paths.js";
-import { resolveTarget, isExcluded, pagesOf, type SavedDiscovery } from "./context.js";
+import { resolveTarget, isExcluded, pagesOf, type SavedDiscovery, inScope } from "./context.js";
 import type { FindingInput } from "./schema.js";
 
 interface Signal { kind: string; detail: string; selector?: string }
@@ -91,7 +91,11 @@ function findingFor(c: Candidate, base: string, auth?: string): FindingInput {
   }
 }
 
-export interface SweepOptions { baseUrl?: string; viewports?: string; record?: boolean; iOwnThis?: boolean; a11y?: boolean; account?: string }
+export interface SweepOptions {
+  baseUrl?: string; viewports?: string; record?: boolean; iOwnThis?: boolean; a11y?: boolean; account?: string;
+  /** Focused run: only these routes and the ones below them. */
+  only?: string[];
+}
 interface Viewport { label: string; width: number; height: number }
 interface Crawl { visits: Visit[]; a11y: A11yResult[]; cands: Map<string, Candidate> }
 /** What one sweep shares between its crawl, reproduction and reporting steps. */
@@ -101,12 +105,14 @@ interface SweepEnv {
 }
 
 /** Static pages to visit, plus dynamic patterns (/products/[id]) to fill from links found on the way. */
-function planRoutes(cfg: Config, disc: SavedDiscovery | undefined, warnings: string[]): { routes: string[]; dynamics: string[] } {
+function planRoutes(cfg: Config, disc: SavedDiscovery | undefined, warnings: string[], only?: string[]): { routes: string[]; dynamics: string[] } {
   const all = pagesOf(disc);
-  if (!all.length) warnings.push("no pages in .wreck-it/discovery.json; sweeping / only (run `wreck-it discover` first)");
-  const keep = all.filter((x) => !isExcluded(cfg, x.path, { api: true }));
+  if (!all.length && !only?.length) warnings.push("no pages in .wreck-it/discovery.json; sweeping / only (run `wreck-it discover` first)");
+  const keep = all.filter((x) => !isExcluded(cfg, x.path, { api: true }) && inScope(x.path, only));
   const statics = keep.filter((x) => !x.dynamic).map((x) => x.path);
-  return { routes: statics.length ? [...new Set(statics)] : ["/"], dynamics: keep.filter((x) => x.dynamic).map((x) => x.path) };
+  // A focused route discovery didn't list (e.g. a page behind a client-side router) is still swept as given.
+  const fallback = only?.length ? only.filter((o) => !o.includes("[")) : ["/"];
+  return { routes: statics.length ? [...new Set(statics)] : fallback, dynamics: keep.filter((x) => x.dynamic).map((x) => x.path) };
 }
 
 /** Queue the first link matching each still-unfilled dynamic route pattern. */
@@ -171,7 +177,7 @@ export async function runSweep(root: string, opts: SweepOptions): Promise<SweepR
   const vps = (opts.viewports ?? "1280x800,390x844").split(",").map((v) => v.trim()).filter(Boolean);
   const sizes = vps.map(parseViewport);
   const warnings: string[] = [];
-  const { routes, dynamics } = planRoutes(cfg, disc, warnings);
+  const { routes, dynamics } = planRoutes(cfg, disc, warnings, opts.only);
 
   const browser = await launchChromium();
   try {

@@ -20,4 +20,6 @@ When asked to "wreck", test or QA this app, or for a readiness score, follow thi
 9. **Trace each finding** to code: `source` with file, line, snippet, why and confidence; with low confidence give `candidates` and no line.
 10. `WRECK report && WRECK gen-tests`, then tell the user the score, the fix-first item and the report paths.
 
+**One feature only** ("test the checkout"): `WRECK run init --focus "<feature>"`, then steps 1, 3 and 6–10 for that feature's pages and API routes only (`sweep --only <pages…>`, `fuzz --only <routes…>`, `perf <pages…>`); skip personas. The report scores just that feature.
+
 Mark stages with `WRECK run stage <preflight|discover|personas|normal|explore|chaos|load|trace|report> <running|done|skipped|failed>`; mark `security` as `skipped`.

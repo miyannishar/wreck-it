@@ -20,9 +20,10 @@ const bandClass = (b: Band): string => BAND_CLASS[b] ?? "band-bad";
 
 export function header(d: ReportData): string {
   const o = [`<header class="card hero ${bandClass(d.score.band)}">`,
-    `<div class="name">wreck-it report · ${esc(d.projectName)}${d.baseUrl ? ` · ${esc(d.baseUrl)}` : ""}</div>`,
+    `<div class="name">wreck-it report · ${esc(d.projectName)}${d.baseUrl ? ` · ${esc(d.baseUrl)}` : ""}${d.focus ? ` · focused run: ${esc(d.focus)}` : ""}</div>`,
     `<div class="score">${esc(String(d.score.score))}<small>/100</small></div>`,
     `<span class="chip">${esc(d.score.band)}</span></header>`];
+  if (d.focus) o.push(`<div class="banner" role="status">Focused run: only ${esc(d.focus)} was tested. The score covers that feature, not the whole app.</div>`);
   if (d.fixFirst) o.push(`<div class="card fixfirst"><b>Fix this first</b><span class="id">${esc(d.fixFirst.id)}</span> ${esc(d.fixFirst.title)}</div>`);
   if (d.incomplete.length) o.push(`<div class="banner" role="status">Run incomplete: ${esc(d.incomplete.join(", "))} did not finish. The score may be understated or overstated.</div>`);
   return o.join("");

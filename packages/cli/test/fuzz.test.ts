@@ -104,6 +104,38 @@ describe("runFuzz", () => {
     expect(again.skipped).toHaveLength(1);
   });
 
+  it("--only fuzzes just the focused endpoints, still using real ids from list endpoints outside the scope", async () => {
+    const root = await tmpRoot();
+    await writeTree(root, {
+      ".wreck-it/config.json": JSON.stringify({ baseUrl: base }),
+      ".wreck-it/discovery.json": JSON.stringify({ api: [
+        { method: "GET", path: "/api/items", file: "items.ts", line: 1 },
+        { method: "POST", path: "/api/cart", file: "cart.ts", line: 1 },
+        { method: "POST", path: "/api/notes", file: "notes.ts", line: 1 },
+      ] }),
+      "items.ts": "export async function GET() { return list(); }",
+      "cart.ts": "export async function POST(req) {\n  const body = await req.json();\n  const n = Number(body.qty);\n  return add(body.itemId, n);\n}",
+      "notes.ts": "export async function POST(req) { const body = await req.json(); return save(body.note); }",
+    });
+    const r = await runFuzz(root, { schemathesis: "never", only: ["/api/cart"] });
+    expect(r.seeds.map((s) => `${s.method} ${s.path} ${s.baseline}`)).toEqual(["POST /api/cart 201"]);
+  });
+
+  it("never sends a seed that resolves to another host", async () => {
+    const root = await tmpRoot();
+    await writeTree(root, {
+      ".wreck-it/config.json": JSON.stringify({ baseUrl: base }),
+      ".wreck-it/requests.json": JSON.stringify([
+        { method: "POST", path: "http://169.254.169.254/latest", body: { a: 1 } },
+        { method: "POST", path: "//example.com/x", body: { a: 1 } },
+        { method: "POST", path: "/\\example.com/x", body: { a: 1 } },
+      ]),
+    });
+    const r = await runFuzz(root, { schemathesis: "never", seeds: [{ method: "GET", path: "https://example.com/?q=1", query: { q: "1" }, source: "--seed" }] });
+    expect(r.requests).toBe(0);
+    expect(r.warnings.filter((w) => w.startsWith("skipped seed"))).toHaveLength(4);
+  });
+
   it("uses seeds from --seed and .wreck-it/requests.json, including query fields", async () => {
     const root = await tmpRoot();
     await writeTree(root, {

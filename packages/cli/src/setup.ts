@@ -15,7 +15,7 @@ export const PLAYWRIGHT_MCP_VERSION = "0.0.83";
 export const PLAYWRIGHT_MCP_PKG = `@playwright/mcp@${PLAYWRIGHT_MCP_VERSION}`;
 export const PLAYWRIGHT_MCP_ARGS = [PLAYWRIGHT_MCP_PKG, "--browser", "chromium", "--isolated", "--caps", "network,storage,testing,devtools"];
 /** Chrome DevTools MCP for performance traces, throttling and Lighthouse; nothing is sent to Google's CrUX or usage statistics. */
-export const DEVTOOLS_MCP_ARGS = ["chrome-devtools-mcp@latest", "--headless=true", "--isolated=true", "--performanceCrux=false", "--usageStatistics=false"];
+export const DEVTOOLS_MCP_ARGS = ["chrome-devtools-mcp@1.10.1", "--headless=true", "--isolated=true", "--performanceCrux=false", "--usageStatistics=false"];
 
 export const AGENTS = ["claude-code", "codex", "cursor", "gemini", "vscode"] as const;
 export type Agent = (typeof AGENTS)[number];
@@ -174,23 +174,23 @@ function mcpPlan(root: string, a: Agent, s: McpServer, home: string): Plan {
   };
 }
 
+/**
+ * Schemathesis runs through uv's `uvx`. uv is installed only through a package manager (Homebrew, or winget on
+ * Windows); setup never pipes a downloaded script into a shell. Without one, it prints the official instructions.
+ */
 async function schemathesisPlan(): Promise<Plan> {
+  const manager = platform() === "win32" ? ((await onPath("winget")) ? "winget" : undefined) : (await onPath("brew")) ? "brew" : undefined;
+  const manual = "install uv (https://docs.astral.sh/uv/getting-started/installation/), then run setup again";
   return {
     id: "schemathesis", label: "Schemathesis (via uv)",
-    preview: platform() === "win32" ? 'powershell -c "irm https://astral.sh/uv/install.ps1 | iex", then uvx schemathesis --version'
-      : (await onPath("brew")) ? "brew install uv, then uvx schemathesis --version" : "curl -LsSf https://astral.sh/uv/install.sh | sh, then uvx schemathesis --version",
+    preview: manager === "winget" ? "winget install --id astral-sh.uv -e" : manager === "brew" ? "brew install uv" : manual,
     check: async () => (await onPath("schemathesis")) || (await onPath("uvx")),
     install: async () => {
-      if (!(await onPath("uvx"))) {
-        const r = platform() === "win32" ? await run("powershell", ["-ExecutionPolicy", "ByPass", "-c", "irm https://astral.sh/uv/install.ps1 | iex"])
-          : (await onPath("brew")) ? await run("brew", ["install", "uv"])
-          : await run("sh", ["-c", "curl -LsSf https://astral.sh/uv/install.sh | sh"]);
-        if (r.code !== 0) return { ok: false, detail: `could not install uv: ${r.out.split("\n").slice(-2).join(" ").slice(0, 300)}` };
-        // The installer puts uv in ~/.local/bin, which may not be on this process's PATH yet.
-        process.env.PATH = `${join(homedir(), ".local", "bin")}${platform() === "win32" ? ";" : ":"}${process.env.PATH}`;
-      }
-      const r = await run("uvx", ["schemathesis", "--version"], 10 * 60_000);
-      return { ok: r.code === 0, detail: r.code === 0 ? r.out.split("\n").pop() ?? "ready" : r.out.slice(-300) };
+      if (!manager) return { ok: false, detail: manual };
+      const r = manager === "winget" ? await run("winget", ["install", "--id", "astral-sh.uv", "-e", "--silent"]) : await run("brew", ["install", "uv"]);
+      if (r.code !== 0) return { ok: false, detail: `could not install uv: ${tail(r.out)}; ${manual}` };
+      const warm = await run("uvx", ["schemathesis", "--version"], 10 * 60_000);
+      return { ok: warm.code === 0, detail: warm.code === 0 ? "installed" : tail(warm.out) };
     },
   };
 }

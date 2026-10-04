@@ -3,6 +3,6 @@
     "wreck-browser-1": { "command": "npx", "args": ["@playwright/mcp@0.0.83", "--browser", "chromium", "--isolated", "--caps", "network,storage,testing,devtools", "--output-dir", ".wreck-it/shots/browser-1"] },
     "wreck-browser-2": { "command": "npx", "args": ["@playwright/mcp@0.0.83", "--browser", "chromium", "--isolated", "--caps", "network,storage,testing,devtools", "--output-dir", ".wreck-it/shots/browser-2"] },
     "wreck-browser-3": { "command": "npx", "args": ["@playwright/mcp@0.0.83", "--browser", "chromium", "--isolated", "--device", "Pixel 7", "--caps", "network,storage,testing,devtools", "--output-dir", ".wreck-it/shots/browser-3"] },
-    "wreck-devtools": { "command": "npx", "args": ["chrome-devtools-mcp@latest", "--headless=true", "--isolated=true", "--performanceCrux=false", "--usageStatistics=false"] }
+    "wreck-devtools": { "command": "npx", "args": ["chrome-devtools-mcp@1.10.1", "--headless=true", "--isolated=true", "--performanceCrux=false", "--usageStatistics=false"] }
   }
 }

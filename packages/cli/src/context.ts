@@ -23,6 +23,17 @@ export function isExcluded(cfg: Config, route: string, opts: { api?: boolean } =
   return NAV_AWAY.test(route) || (!!opts.api && route.startsWith("/api/")) || cfg.exclude.some((x) => route === x || route.startsWith(x.endsWith("/") ? x : x + "/"));
 }
 
+/**
+ * For focused runs (`--only /cart /api/cart`): a route is in scope when it is one of the given routes or below one
+ * (`/cart` covers `/cart/checkout`). Dynamic routes count by their pattern (`/products/[id]` is below `/products`).
+ * No `only` means everything is in scope.
+ */
+export function inScope(route: string, only?: string[]): boolean {
+  if (!only?.length) return true;
+  const path = route.split("?")[0]!;
+  return only.some((o) => { const p = o.replace(/\/+$/, "") || "/"; return p === "/" ? path === "/" : path === p || path.startsWith(p + "/"); });
+}
+
 /** Throws exit-code-3 unless `url` is a machine the user owns (or `--i-own-this` / `iOwnThis` says so). */
 export function assertAllowedTarget(url: string, cfg: Config, iOwnThis?: boolean): void {
   const chk = isAllowedTarget(url, { iOwnThis: iOwnThis || cfg.iOwnThis });

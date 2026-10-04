@@ -26,7 +26,7 @@ ${S.tail(d)}
 `;
 }
 
-export async function writeReport(root: string): Promise<{ html: string; md: string; score: number; band: Band; warnings: string[] }> {
+export async function writeReport(root: string): Promise<{ html: string; md: string; score: number; band: Band; focus?: string; warnings: string[] }> {
   const p = wreckPaths(root);
   const d = await buildReportData(root);
   const readShot = (rel: string): Buffer | null => {
@@ -35,5 +35,5 @@ export async function writeReport(root: string): Promise<{ html: string; md: str
   await writeAtomic(p.reportHtml, renderHtml(d, readShot));
   await writeAtomic(p.reportMd, renderMarkdown(d));
   try { await setStage(root, "report", "done"); } catch { /* never fail the report over run state */ }
-  return { html: p.reportHtml, md: p.reportMd, score: d.score.score, band: d.score.band, warnings: d.warnings };
+  return { html: p.reportHtml, md: p.reportMd, score: d.score.score, band: d.score.band, focus: d.focus, warnings: d.warnings };
 }

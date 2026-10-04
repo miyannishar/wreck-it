@@ -35,6 +35,16 @@ describe("discover: services, side effects, hosted backends", () => {
     expect(d.database).toMatchObject({ kind: "supabase", remote: true });
   });
 
+  it("doesn't mistake ordinary words in product data for payments", async () => {
+    const root = await tmpRoot();
+    await writeTree(root, {
+      "package.json": JSON.stringify({ dependencies: { next: "16" } }),
+      "app/api/cart/route.ts": 'import { products } from "@/lib/store";\nexport async function POST(req: Request) { const body = await req.json(); return add(products, body.id); }',
+      "lib/store.ts": 'export const products = [{ name: "Paddle board" }, { name: "Phone", note: "No extra charges" }];',
+    });
+    expect((await discover(root)).api[0]!.effects).toBeUndefined();
+  });
+
   it("finds a Supabase project hardcoded in source (Lovable-style) and Firebase projects in env", async () => {
     const lovable = await tmpRoot();
     await writeTree(lovable, {

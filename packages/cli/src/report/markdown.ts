@@ -48,7 +48,8 @@ function renderLoad(r: LoadResult): string[] {
 export function renderMarkdown(d: ReportData): string {
   const L: string[] = [];
   L.push(`# wreck-it report — ${d.projectName}`, "");
-  L.push(`**Readiness: ${d.score.score}/100 — ${d.score.band}**`);
+  if (d.focus) L.push(`**Focused run — ${one(d.focus)}: ${d.score.score}/100 — ${d.score.band}**`, "", `> Only ${one(d.focus)} was tested, so this score covers that feature, not the whole app.`);
+  else L.push(`**Readiness: ${d.score.score}/100 — ${d.score.band}**`);
   if (d.fixFirst) L.push(`> Fix this first: ${d.fixFirst.id} ${one(d.fixFirst.title)}`);
   L.push("");
   if (d.incomplete.length) L.push(`> ⚠ Run incomplete: ${d.incomplete.join(", ")} did not finish`, "");

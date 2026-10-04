@@ -18,7 +18,8 @@ const CODE: Record<SideEffect, RegExp> = {
   ai: /from\s+["'](?:openai|@anthropic-ai\/sdk|ai|@ai-sdk\/[\w-]+|@google\/generative-ai|@google\/genai|groq-sdk|replicate|@mistralai\/mistralai|cohere-ai|@langchain\/[\w-]+|langchain[\w/-]*|@fal-ai\/[\w-]+)["']|api\.openai\.com|api\.anthropic\.com|generativelanguage\.googleapis\.com|api\.groq\.com|openrouter\.ai/,
   sms: /from\s+["'](?:twilio|@vonage\/[\w-]+|plivo)["']|require\(["']twilio["']\)|api\.twilio\.com/,
   email: /from\s+["'](?:resend|@sendgrid\/mail|nodemailer|postmark|mailgun\.js|@aws-sdk\/client-sesv?2?|loops)["']|api\.resend\.com|api\.sendgrid\.com|auth\.(?:signUp|resetPasswordForEmail|signInWithOtp|admin\.inviteUserByEmail)\(|sendSignInLinkToEmail|sendPasswordResetEmail|sendEmailVerification/,
-  payments: /from\s+["']stripe["']|require\(["']stripe["']\)|stripe\.(?:checkout|paymentIntents|charges|subscriptions|invoices)\.|api\.stripe\.com|lemonsqueezy|paddle/i,
+  // SDK imports, API hosts and Stripe calls only: plain words like "paddle" or "charges" appear in ordinary product data.
+  payments: /from\s+["'](?:stripe|@lemonsqueezy\/[\w-]+|@paddle\/[\w-]+|@polar-sh\/[\w-]+)["']|require\(["']stripe["']\)|\bstripe\.(?:checkout|paymentIntents|charges|subscriptions|invoices)\.|api\.(?:stripe|lemonsqueezy|paddle)\.com/,
 };
 const CAPTCHA = /challenges\.cloudflare\.com\/turnstile|react-turnstile|hcaptcha|react-google-recaptcha|google\.com\/recaptcha|recaptcha\/api/i;
 

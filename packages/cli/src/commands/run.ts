@@ -4,9 +4,10 @@ import { rootOf } from "../options.js";
 
 export function registerRunCommands(program: Command): void {
   const run = program.command("run").description("Track run state (stages and visited routes)");
-  run.command("init").description("Start a new run").option("--fresh", "delete previous findings, shots, load data, visits and reports").option("--root <dir>")
-    .action(async (opts: { fresh?: boolean; root?: string }) => {
-      const state = await initRun(rootOf(opts), { fresh: !!opts.fresh });
+  run.command("init").description("Start a new run").option("--fresh", "delete previous findings, shots, load data, visits and reports")
+    .option("--focus <feature>", 'a focused run that tests one feature, e.g. "checkout"; the report scores that feature only').option("--root <dir>")
+    .action(async (opts: { fresh?: boolean; focus?: string; root?: string }) => {
+      const state = await initRun(rootOf(opts), { fresh: !!opts.fresh, focus: opts.focus });
       process.stdout.write(JSON.stringify(state) + "\n");
     });
   run.command("stage").description("Set a stage status").argument("<stage>").argument("<status>").option("--root <dir>")

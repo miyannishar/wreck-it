@@ -64,6 +64,11 @@ describe("sweep", () => {
     expect(again.recorded).toEqual([]);
     expect((await listFindings(root)).findings).toHaveLength(4);
   }, 120_000);
+  it("--only sweeps just the focused routes", async () => {
+    const root = await project();
+    const r = await runSweep(root, { a11y: false, viewports: "1280x800", only: ["/a"] });
+    expect(r.pages).toEqual(["/a"]);
+  }, 60_000);
   it("logs in with the first configured account, saves its session, and labels findings with it", async () => {
     const root = await project({ accounts: [{ label: "a", email: "a@b.co", password: "pw" }] });
     const r = await runSweep(root, { a11y: false, viewports: "1280x800", record: true });

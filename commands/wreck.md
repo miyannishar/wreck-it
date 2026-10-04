@@ -1,6 +1,6 @@
 ---
 description: Wreck your app before your users do. Run wreck-it (or one stage) against your local app.
-argument-hint: "[stage: setup | login | explore | chaos | fuzz | perf | load | a11y | trace | report] [notes]"
+argument-hint: "[focus <feature> | stage: setup | login | explore | chaos | fuzz | perf | load | a11y | trace | report] [notes]"
 ---
 
 `WRECK` means `npx @miyannishar/wreck-it`.
@@ -10,6 +10,7 @@ Use the **wreck-it** skill to test this project's locally running web app.
 Arguments: `$ARGUMENTS`
 
 - No arguments: run the full pipeline from the wreck-it skill.
+- `focus <feature>`, or text that names one feature or flow ("checkout", "the signup flow"): a **focused run** from the wreck-it skill, testing only that feature.
 - A first argument that names a stage: run only that stage's skill.
   - `login` → tell the user a browser window will open for them to sign in, then run `WRECK login` (add `--label <name>` if they named an account)
   - `setup` → `WRECK setup --dry-run`, show it, and run `WRECK setup` if the user agrees
@@ -22,7 +23,7 @@ Arguments: `$ARGUMENTS`
   - `trace` → wreck-trace
   - `report` → `WRECK report && WRECK gen-tests`
   - Run preflight and discover first if `.wreck-it/discovery.json` is missing.
-- Treat any other text as notes from the user (e.g. focus areas, a test account) and follow them.
+- Treat any other text (e.g. "my test account is …") as notes from the user (e.g. focus areas, a test account) and follow them.
 
 Browsers: this plugin provides three isolated Playwright browsers and one Chrome DevTools browser:
 - `wreck-browser-1` and `wreck-browser-2`: desktop

@@ -24,6 +24,8 @@ export interface ReportData {
   coverage: Coverage;
   incomplete: Stage[];
   fixFirst: Finding | null;
+  /** Set for a focused run: the one feature that was tested. */
+  focus?: string;
   /** Test data the run created in the app (log of `wreck-it run created` and fuzz writes), for cleanup. */
   created: Created[];
   warnings: string[];
@@ -95,6 +97,6 @@ export async function buildReportData(root: string): Promise<ReportData> {
     generatedAt: new Date().toISOString(), projectName, baseUrl,
     score: computeScore(findings), confirmed, unconfirmed, load,
     coverage: { stages, personas, visitedRoutes, discoveredRoutes, unvisitedRoutes },
-    incomplete, fixFirst, created: await listCreated(root), warnings,
+    incomplete, fixFirst, ...(run?.focus ? { focus: run.focus } : {}), created: await listCreated(root), warnings,
   };
 }

@@ -6,7 +6,7 @@ import { runCommand } from "./io.js";
 import { openSession, saveRefreshed, type Session } from "./auth.js";
 import { addFinding, listFindings } from "./findings.js";
 import { wreckPaths, ensureDirs } from "./paths.js";
-import { resolveTarget, isExcluded, readJson, pagesOf, apisOf, effectsFor, blockedEffects, EFFECT_WORDS, type Target } from "./context.js";
+import { resolveTarget, isExcluded, inScope, readJson, pagesOf, apisOf, effectsFor, blockedEffects, EFFECT_WORDS, type Target } from "./context.js";
 import { recordCreated } from "./run.js";
 import type { Api } from "./discover/types.js";
 import { WreckError } from "./errors.js";
@@ -205,6 +205,8 @@ export interface FuzzOptions {
   allowRemoteDb?: boolean; schemathesis?: "auto" | "always" | "never"; account?: string;
   /** Fuzz endpoints that trigger AI calls, SMS, email or payments even though config doesn't allow them. */
   includeSideEffects?: boolean;
+  /** Focused run: only endpoints at or below these paths. */
+  only?: string[];
 }
 type Variant = { field: string; label: string; url: string; body?: string };
 type Suspect = { endpoint: string; field: string; mutations: string[] };
@@ -252,11 +254,21 @@ async function buildSeeds(root: string, t: Target, api: APIRequestContext, opts:
     return b.length > 0;
   };
   const apis = apisOf(t.disc);
-  const ids = await realIds(api, apis.filter((a) => a.method === "GET" && !excluded(a.path)).map((a) => a.path));
+  // Real ids come from any list endpoint (read-only GETs), even outside a focused run's scope.
+  const ids = await realIds(api, apis.filter((a) => a.method === "GET" && !isExcluded(t.cfg, a.path)).map((a) => a.path));
   const seeds: Seed[] = [...(opts.seeds ?? [])];
   const saved = await readJson(join(t.p.dir, "requests.json"));
   if (Array.isArray(saved)) for (const s of saved) if (s?.method && s?.path) seeds.push({ method: String(s.method).toUpperCase(), path: s.path, body: s.body, query: s.query, source: "requests.json" });
-  for (let i = seeds.length - 1; i >= 0; i--) if (blocked(seeds[i]!.method, seeds[i]!.path)) seeds.splice(i, 1);
+  // Saved or --seed requests may hold any text; one that resolves to another host (`https://x`, `//x`, `/\x`) would
+  // skip the local-only check, so only paths on the app's own origin are kept.
+  const appOrigin = new URL(t.base).origin;
+  for (let i = seeds.length - 1; i >= 0; i--) {
+    const s = seeds[i]!;
+    let sameOrigin = false;
+    try { sameOrigin = s.path.startsWith("/") && new URL(s.path, t.base).origin === appOrigin; } catch { /* not a path */ }
+    if (!sameOrigin) { warnings.push(`skipped seed ${s.method} ${s.path}: not a path on ${appOrigin}`); seeds.splice(i, 1); }
+    else if (!inScope(s.path, opts.only) || blocked(s.method, s.path)) seeds.splice(i, 1);
+  }
   const methods = new Set(["GET", ...MUTATING, ...(opts.includeDelete ? ["DELETE"] : [])]);
   for (const a of [...apis].sort(byPathThenMethod)) {
     const m = a.method === "ANY" ? "POST" : a.method;
@@ -425,7 +437,7 @@ export async function runFuzz(root: string, opts: FuzzOptions): Promise<FuzzResu
   const newApi = () => pwRequest.newContext({ baseURL: t.base, ...(session.state ? { storageState: session.state } : {}) });
   const api = await newApi();
   try {
-    const { seeds, ids } = await buildSeeds(root, t, api, opts, (r) => isExcluded(t.cfg, r), warnings, sideEffectSkips);
+    const { seeds, ids } = await buildSeeds(root, t, api, opts, (r) => isExcluded(t.cfg, r) || !inScope(r, opts.only), warnings, sideEffectSkips);
     const run = await fuzzSeeds(api, seeds, ids, opts.maxRequests ?? 400, warnings);
     const schem: FuzzResult["schemathesis"] = { ran: false, failures: 0 };
     const skipPaths = [...new Set(apisOf(t.disc).filter((a) => blockedEffects(t.cfg, a.effects ?? [], opts.includeSideEffects).length).map((a) => a.path))];

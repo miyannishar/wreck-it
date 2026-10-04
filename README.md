@@ -119,7 +119,7 @@ If you skip step 3, the agent offers to run it on the first run.
 /plugin install wreck-it@wreck-it
 ```
 
-Then run `/wreck`, or one stage: `/wreck setup`, `/wreck login`, `/wreck explore`, `/wreck chaos`, `/wreck fuzz`, `/wreck perf`, `/wreck load`, `/wreck a11y`, `/wreck trace`, `/wreck report`. Anything after the stage is passed along as notes ("focus on checkout").
+Then run `/wreck`, `/wreck focus <feature>` for one feature, or one stage: `/wreck setup`, `/wreck login`, `/wreck explore`, `/wreck chaos`, `/wreck fuzz`, `/wreck perf`, `/wreck load`, `/wreck a11y`, `/wreck trace`, `/wreck report`. Anything after the stage is passed along as notes ("focus on checkout").
 
 The plugin brings its own MCP servers, so there's nothing else to configure:
 
@@ -154,7 +154,7 @@ Paste [`AGENTS.md.snippet`](AGENTS.md.snippet) into your `AGENTS.md` (or `CLAUDE
 
 ```
 npx @playwright/mcp@0.0.83 --browser chromium --isolated --caps network,storage,testing,devtools
-npx chrome-devtools-mcp@latest --headless=true --isolated=true --performanceCrux=false --usageStatistics=false
+npx chrome-devtools-mcp@1.10.1 --headless=true --isolated=true --performanceCrux=false --usageStatistics=false
 ```
 
 Then run `npx @playwright/mcp@0.0.83 install-browser chromium` once.
@@ -184,8 +184,11 @@ Ask your agent in plain language:
 | "break my forms", "try weird inputs", "test offline" | Chaos |
 | "stress test my API", "check page speed", "run Lighthouse" | Page speed and load |
 | "check accessibility" | Accessibility sweep and keyboard checks |
+| "test the checkout", "just test signup" | A focused run on that one feature |
 
 A full run on a small app takes roughly 15–30 minutes with a Sonnet- or Opus-class model. Small models (Haiku-class) tend to skip stages; `wreck-it sweep` still gives them the mechanical coverage.
+
+**Just one feature?** Say "test the checkout", "just test signup", or `/wreck focus checkout`. The agent finds that feature's pages and API routes, walks it as a normal user and a rushed beginner, runs `sweep`, `fuzz`, chaos and page speed on that scope only, and writes a report labelled as a focused run, in a few minutes instead of a full run.
 
 **No browser tools?** If Playwright MCP isn't available and you don't want to set it up, the agent does a **CLI-only run**: `sweep`, `fuzz`, `perf`, `load` and the report. It marks the browser stages as skipped instead of pretending.
 
@@ -384,8 +387,8 @@ All commands take `--root <dir>` (the project folder, default: the current direc
 
 | Command | What it does |
 |---|---|
-| `sweep [--record] [--viewports 1280x800,390x844] [--no-a11y] [--account <label>]` | Visits every discovered page at each viewport, logged in when an account is configured. Fills dynamic routes from real links and skips logout links. Runs the oddity script and axe-core. `--record` files one reproduced finding per root cause. |
-| `fuzz [--record] [--seed <json>] [--max-requests <n>] [--include-delete] [--include-side-effects] [--schemathesis auto\|always\|never] [--allow-remote-db] [--account <label>]` | Sends bad values to every write endpoint, one field at a time: negative, zero, huge and fractional numbers; text for numbers; empty, padded, 5,000-character, `%`, quote and emoji strings; `null`; missing fields; invalid JSON. Reads each handler's fields from source and fills ids from real list endpoints. Seeds also come from `.wreck-it/requests.json`. Records server errors and lists accepted-but-suspicious values. Runs Schemathesis when there's an OpenAPI spec. |
+| `sweep [--record] [--only <route…>] [--viewports 1280x800,390x844] [--no-a11y] [--account <label>]` | Visits every discovered page at each viewport, logged in when an account is configured. Fills dynamic routes from real links and skips logout links. Runs the oddity script and axe-core. `--record` files one reproduced finding per root cause. `--only` limits it to those routes and the ones below them. |
+| `fuzz [--record] [--only <route…>] [--seed <json>] [--max-requests <n>] [--include-delete] [--include-side-effects] [--schemathesis auto\|always\|never] [--allow-remote-db] [--account <label>]` | Sends bad values to every write endpoint, one field at a time: negative, zero, huge and fractional numbers; text for numbers; empty, padded, 5,000-character, `%`, quote and emoji strings; `null`; missing fields; invalid JSON. Reads each handler's fields from source and fills ids from real list endpoints. Seeds also come from `.wreck-it/requests.json`. Records server errors and lists accepted-but-suspicious values. Runs Schemathesis when there's an OpenAPI spec. `--only` limits it to those API routes. |
 | `perf [url…] [--record] [--device mobile\|desktop] [--max-pages <n>] [--account <label>]` | Lighthouse on each page (default: a mid-range phone on slow 4G). Reports score, LCP, CLS and TBT. `--record` files metrics in Google's "poor" range (LCP > 4 s, CLS > 0.25, TBT > 600 ms) when a second run agrees. On a dev server only CLS is recorded. |
 | `load <url> [--profile ramp\|spike\|soak] [--method GET] [--header k:v] [--pid <n>] [--max-connections <n>] [--step-duration <s>] [--soak-duration <s>] [--include-side-effects]` | autocannon load test. **ramp**: 10 → 500 connections until the thresholds break. **spike**: 10 → 100 → 10. **soak**: steady load with memory sampling (default 180 s). Records server crashes itself. |
 | `a11y <url…> [--record] [--viewport WxH] [--storage-state <file>]` | axe-core scan of specific pages. |
@@ -398,7 +401,7 @@ All commands take `--root <dir>` (the project folder, default: the current direc
 | `finding add [json] [--file <path>]` | Validates and saves a finding (from an argument, a file or stdin). Prints its id. |
 | `finding update <id> [json] [--file <path>]` | Patches a finding, e.g. `'{"reproduced":true}'`. |
 | `finding list [--json]` | Lists findings. `?` marks unreproduced ones. |
-| `run init [--fresh]` | Starts a run. `--fresh` deletes the previous findings, screenshots, load data and reports. |
+| `run init [--fresh] [--focus <feature>]` | Starts a run. `--fresh` deletes the previous findings, screenshots, load data and reports. `--focus` marks a one-feature run, so the report scores only that feature. |
 | `run stage <stage> <running\|done\|skipped\|failed>` | Records progress. Stages: `preflight`, `discover`, `personas`, `normal`, `explore`, `chaos`, `load`, `security`, `trace`, `report`. |
 | `run visit <route> --persona <name>` | Records coverage. |
 | `run created "<what>" --by <persona>` | Logs test data created in the app, for the report's cleanup list. |

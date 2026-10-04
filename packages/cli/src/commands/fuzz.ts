@@ -17,12 +17,12 @@ export function registerFuzzCommands(program: Command): void {
     .option("--include-delete", "also fuzz DELETE endpoints").option("--schemathesis <mode>", "auto | always | never", "auto")
     .option("--record", "record reproduced server errors as findings").option("--allow-remote-db", "fuzz even though the database looks remote (or set allowRemoteDb in config after asking the user)")
     .option("--include-side-effects", "also fuzz endpoints that call AI models, send email/SMS or take payments")
-    .option("--account <label>", "log in as this account from .wreck-it/config.json (default: the first)").option("--i-own-this", "allow a non-local target you own").option("--root <dir>").option("--json")
-    .action(async (opts: { seed: Seed[]; baseUrl?: string; maxRequests: string; includeDelete?: boolean; schemathesis: string; record?: boolean; allowRemoteDb?: boolean; includeSideEffects?: boolean; account?: string; iOwnThis?: boolean; root?: string; json?: boolean }) => {
+    .option("--only <route...>", "focused run: only these routes and the ones below them").option("--account <label>", "log in as this account from .wreck-it/config.json (default: the first)").option("--i-own-this", "allow a non-local target you own").option("--root <dir>").option("--json")
+    .action(async (opts: { seed: Seed[]; baseUrl?: string; maxRequests: string; includeDelete?: boolean; schemathesis: string; record?: boolean; allowRemoteDb?: boolean; includeSideEffects?: boolean; only?: string[]; account?: string; iOwnThis?: boolean; root?: string; json?: boolean }) => {
       if (!["auto", "always", "never"].includes(opts.schemathesis)) throw new WreckError("--schemathesis must be auto, always or never", 2);
       const r = await runFuzz(rootOf(opts), {
         seeds: opts.seed, baseUrl: opts.baseUrl, maxRequests: Math.max(1, Number(opts.maxRequests) || 400), includeDelete: opts.includeDelete,
-        record: opts.record, allowRemoteDb: opts.allowRemoteDb, includeSideEffects: opts.includeSideEffects, account: opts.account, iOwnThis: opts.iOwnThis, schemathesis: opts.schemathesis as "auto" | "always" | "never",
+        record: opts.record, allowRemoteDb: opts.allowRemoteDb, includeSideEffects: opts.includeSideEffects, only: opts.only, account: opts.account, iOwnThis: opts.iOwnThis, schemathesis: opts.schemathesis as "auto" | "always" | "never",
       });
       process.stdout.write(opts.json ? JSON.stringify(r, null, 2) + "\n" : formatFuzz(r));
     });

@@ -1,6 +1,6 @@
 ---
 name: wreck-it
-description: Full wreck-it run against a locally running web app. It tests like normal users, ICP personas, rushed beginners, chaos monkeys and traffic spikes, then writes a scored bug report with source file:line and regression Playwright tests. Use when the user says "wreck my app", "wreck it", "test my app like a user", "find bugs before launch", "is my app ready to ship", or asks for a readiness score. For a single stage ("just stress test my API", "only check accessibility"), use the matching wreck-* skill.
+description: Full wreck-it run against a locally running web app. It tests like normal users, ICP personas, rushed beginners, chaos monkeys and traffic spikes, then writes a scored bug report with source file:line and regression Playwright tests. Use when the user says "wreck my app", "wreck it", "test my app like a user", "find bugs before launch", "is my app ready to ship", or asks for a readiness score. Also for one feature: "test the checkout", "just test signup", "check the coupon flow" (a focused run). For a single stage ("just stress test my API", "only check accessibility"), use the matching wreck-* skill.
 ---
 
 # wreck-it: Wreck your app before your users do
@@ -17,6 +17,19 @@ Report only. **Don't fix bugs** during a run unless the user asks after the repo
 - **Money and messages.** Pay only with Stripe test keys (card `4242 4242 4242 4242`); with live keys stop at the payment step. Trigger AI/SMS/email actions at most 2–3 times per flow unless allowed. `fuzz` and `load` skip those endpoints themselves.
 - **Email.** Sign up with addresses from `WRECK email new`, never `example.com`. With a local inbox read the link yourself (`WRECK email read --to <address>`); otherwise ask the user for it, or mark the check "skipped: no readable inbox".
 - **Keep the shared login alive.** Never log out, delete or change the password of the account whose saved session other stages use: on Supabase and many apps, logging out ends every session of that user. Test logout and deletion last, with a throwaway account.
+
+## Focused run (one feature)
+
+When the user names one feature or flow ("test the checkout", "/wreck focus signup"), test only that, in minutes:
+
+1. `WRECK run init --focus "<feature>"`, `WRECK discover`, `WRECK setup --dry-run` and `WRECK preflight --wait 5`, handled as in stage 1. Log in (stage 2) only if the feature needs it. Ask `safety.ask` questions only if the feature writes data.
+2. **Scope it.** From `discovery.json` and the code, list the feature's pages and API routes (e.g. `/cart`, `/checkout`, `/api/cart`, `/api/orders`). Tell the user the scope in one line.
+3. **Test it** (skip personas and stages that don't apply; mark them `skipped`):
+   - Walk the feature as a normal user, then as a rushed beginner on a phone (double clicks, wrong formats, back mid-flow). Check the explore skill's checklist rows that apply (totals, persistence, deletes, error messages).
+   - `WRECK sweep --record --only <pages…>` and `WRECK fuzz --record --only <api routes…>`.
+   - The chaos skill's hostile inputs, double submits, navigation and network faults, on this feature's forms only.
+   - `WRECK perf --record <pages…>` if the feature has its own pages.
+4. Reproduce and trace every finding (stage 9), then `WRECK report && WRECK gen-tests`. The report is labelled as a focused run: say "feature score", not "readiness".
 
 ## Pipeline
 

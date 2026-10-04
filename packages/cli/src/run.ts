@@ -7,13 +7,14 @@ export const STAGES = ["preflight", "discover", "personas", "normal", "explore",
 export type Stage = (typeof STAGES)[number];
 export const STAGE_STATUSES = ["running", "done", "skipped", "failed"] as const;
 export type StageStatus = (typeof STAGE_STATUSES)[number];
-export interface RunState { startedAt: string; stages: Partial<Record<Stage, StageStatus>> }
+/** `focus`: a focused run tests one feature only, so its score is not a readiness score for the whole app. */
+export interface RunState { startedAt: string; stages: Partial<Record<Stage, StageStatus>>; focus?: string }
 
-export async function initRun(root: string, opts: { fresh: boolean }): Promise<RunState> {
+export async function initRun(root: string, opts: { fresh: boolean; focus?: string }): Promise<RunState> {
   const p = wreckPaths(root);
   if (opts.fresh) for (const t of [p.findings, p.shots, p.load, p.visits, p.reportHtml, p.reportMd]) await rm(t, { recursive: true, force: true });
   await ensureDirs(p);
-  const state: RunState = { startedAt: new Date().toISOString(), stages: {} };
+  const state: RunState = { startedAt: new Date().toISOString(), stages: {}, ...(opts.focus ? { focus: opts.focus } : {}) };
   await writeAtomic(p.run, JSON.stringify(state, null, 2));
   return state;
 }
