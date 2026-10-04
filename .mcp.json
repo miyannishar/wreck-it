@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "wreck-browser-1": { "command": "npx", "args": ["@playwright/mcp@latest", "--isolated", "--output-dir", ".wreck-it/shots/browser-1"] },
+    "wreck-browser-2": { "command": "npx", "args": ["@playwright/mcp@latest", "--isolated", "--output-dir", ".wreck-it/shots/browser-2"] },
+    "wreck-browser-3": { "command": "npx", "args": ["@playwright/mcp@latest", "--isolated", "--output-dir", ".wreck-it/shots/browser-3"] }
+  }
+}

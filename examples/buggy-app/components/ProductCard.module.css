@@ -1,0 +1,49 @@
+.card {
+  background: #fff;
+  border: 1px solid #e6e8ec;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  background: #f3f5f9;
+}
+
+.name {
+  font-size: 1rem;
+  margin: 8px 0 0;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.rating {
+  color: #8a5a00;
+}
+
+.category {
+  color: #555b66;
+  text-transform: capitalize;
+}
+
+.price {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #b4b8bf;
+  margin: 4px 0 0;
+}

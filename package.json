@@ -1,0 +1,14 @@
+{
+  "name": "wreck-it-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w wreck-it",
+    "test": "npm test -w wreck-it",
+    "typecheck": "npm run typecheck -w wreck-it",
+    "eval": "node scripts/eval.mjs --app examples/buggy-app",
+    "test:scripts": "node --test scripts/*.test.mjs"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "name": "wreck-it",
+  "version": "0.1.0",
+  "description": "Wreck your app before your users do. Agent-driven testing for vibe-coded apps.",
+  "type": "module",
+  "bin": {
+    "wreck-it": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && vitest run"
+  },
+  "dependencies": {
+    "autocannon": "^8.0.0",
+    "axe-core": "^4.13.0",
+    "commander": "^14.0.0",
+    "playwright": "^1.63.0",
+    "zod": "^4.6.0"
+  },
+  "devDependencies": {
+    "@types/autocannon": "^7.12.0",
+    "@types/node": "^22.0.0",
+    "tsup": "^8.5.0",
+    "typescript": "~5.9.0",
+    "vitest": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miyannishar/wreck-it.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/miyannishar/wreck-it#readme"
+}

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.wreck-it/
+.next/
+test-results/
+playwright-report/
+*.log
+.DS_Store
+.superpowers/
+.marketing/

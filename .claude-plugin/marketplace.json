@@ -1,0 +1,15 @@
+{
+  "name": "wreck-it",
+  "description": "wreck-it: agent-driven testing for vibe-coded web apps.",
+  "owner": {
+    "name": "wreck-it contributors"
+  },
+  "plugins": [
+    {
+      "name": "wreck-it",
+      "source": "./",
+      "description": "Agent-driven testing for vibe-coded web apps: personas, chaos, accessibility, load, scored report, regression tests.",
+      "version": "0.1.0"
+    }
+  ]
+}

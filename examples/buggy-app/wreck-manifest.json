@@ -1,0 +1,530 @@
+{
+ "version": 1,
+ "note": "Answer key for the wreck-it eval. Agents under evaluation must not read this file. routes: '*' = any route. 'extras' are real but unseeded issues: findings matching them count as neither hits nor false positives.",
+ "bugs": [
+  {
+   "id": "B01",
+   "title": "Cart subtotal ignores item quantity",
+   "category": "functional",
+   "severity": "high",
+   "routes": [
+    "/cart",
+    "/checkout",
+    "/api/cart"
+   ],
+   "file": "lib/cart.ts",
+   "line": 19,
+   "keywords": [
+    "quantity",
+    "subtotal",
+    "total",
+    "qty"
+   ]
+  },
+  {
+   "id": "B02",
+   "title": "Display name change shows success but doesn't persist after reload",
+   "category": "functional",
+   "severity": "high",
+   "routes": [
+    "/account/settings",
+    "/api/account"
+   ],
+   "file": "lib/db.ts",
+   "line": 65,
+   "keywords": [
+    "display name",
+    "persist",
+    "reload",
+    "revert",
+    "not saved",
+    "settings"
+   ]
+  },
+  {
+   "id": "B03",
+   "title": "Header cart badge keeps old count after removing or changing items",
+   "category": "functional",
+   "severity": "medium",
+   "routes": [
+    "/cart",
+    "/api/cart",
+    "*"
+   ],
+   "file": "app/api/cart/route.ts",
+   "line": 52,
+   "keywords": [
+    "badge",
+    "count",
+    "header",
+    "stale",
+    "cart icon"
+   ]
+  },
+  {
+   "id": "B04",
+   "title": "Coupon discount applied twice to the order total",
+   "category": "functional",
+   "severity": "high",
+   "routes": [
+    "/checkout",
+    "/orders/[id]",
+    "/api/orders"
+   ],
+   "file": "app/api/orders/route.ts",
+   "line": 38,
+   "keywords": [
+    "twice",
+    "double discount",
+    "coupon",
+    "order total",
+    "mismatch",
+    "differs",
+    "second discount",
+    "discounted again",
+    "applied again",
+    "disagrees"
+   ]
+  },
+  {
+   "id": "B05",
+   "title": "Orders listed oldest first",
+   "category": "ux",
+   "severity": "low",
+   "routes": [
+    "/orders",
+    "/api/orders"
+   ],
+   "file": "app/api/orders/route.ts",
+   "line": 12,
+   "keywords": [
+    "oldest",
+    "newest",
+    "sort",
+    "order of orders",
+    "chronological"
+   ]
+  },
+  {
+   "id": "B06",
+   "title": "Product cards render 'undefined' rating for products without reviews",
+   "category": "oddity",
+   "severity": "medium",
+   "routes": [
+    "/products",
+    "/"
+   ],
+   "file": "components/ProductCard.tsx",
+   "line": 14,
+   "keywords": [
+    "undefined",
+    "rating"
+   ]
+  },
+  {
+   "id": "B07",
+   "title": "Broken team photo on About page",
+   "category": "oddity",
+   "severity": "low",
+   "routes": [
+    "/about"
+   ],
+   "file": "app/about/page.tsx",
+   "line": 9,
+   "keywords": [
+    "image",
+    "broken",
+    "photo",
+    "team-photo"
+   ]
+  },
+  {
+   "id": "B08",
+   "title": "Footer 'Shipping & pricing' link is dead (/pricng)",
+   "category": "oddity",
+   "severity": "low",
+   "routes": [
+    "*"
+   ],
+   "file": "components/Footer.tsx",
+   "line": 16,
+   "keywords": [
+    "pricng",
+    "dead link",
+    "404",
+    "shipping & pricing",
+    "footer"
+   ]
+  },
+  {
+   "id": "B09",
+   "title": "Order detail shows raw ISO timestamp, unlike the list's formatted date",
+   "category": "oddity",
+   "severity": "low",
+   "routes": [
+    "/orders/[id]"
+   ],
+   "file": "app/orders/[id]/page.tsx",
+   "line": 21,
+   "keywords": [
+    "date",
+    "iso",
+    "timestamp",
+    "format"
+   ]
+  },
+  {
+   "id": "B10",
+   "title": "Orders page spins forever for users with no orders",
+   "category": "ux",
+   "severity": "medium",
+   "routes": [
+    "/orders"
+   ],
+   "file": "app/orders/page.tsx",
+   "line": 22,
+   "keywords": [
+    "spinner",
+    "loading",
+    "never",
+    "forever",
+    "no orders",
+    "empty"
+   ]
+  },
+  {
+   "id": "B11",
+   "title": "Sign-up errors say 'Something went wrong' and wipe the form",
+   "category": "ux",
+   "severity": "medium",
+   "routes": [
+    "/signup",
+    "/api/auth/signup"
+   ],
+   "file": "app/signup/page.tsx",
+   "line": 29,
+   "keywords": [
+    "something went wrong",
+    "generic",
+    "cleared",
+    "wipe",
+    "reset",
+    "lost"
+   ]
+  },
+  {
+   "id": "B12",
+   "title": "Empty cart has no guidance or link back to products",
+   "category": "ux",
+   "severity": "low",
+   "routes": [
+    "/cart"
+   ],
+   "file": "app/cart/page.tsx",
+   "line": 58,
+   "keywords": [
+    "empty cart",
+    "empty state",
+    "guidance",
+    "no link"
+   ]
+  },
+  {
+   "id": "B13",
+   "title": "Coupon code with surrounding spaces causes a 500",
+   "category": "chaos",
+   "severity": "high",
+   "routes": [
+    "/cart",
+    "/api/cart/coupon"
+   ],
+   "file": "app/api/cart/coupon/route.ts",
+   "line": 17,
+   "keywords": [
+    "coupon",
+    "space",
+    "whitespace",
+    "500",
+    "trim"
+   ]
+  },
+  {
+   "id": "B14",
+   "title": "Negative quantities accepted in the cart (negative line totals)",
+   "category": "chaos",
+   "severity": "high",
+   "routes": [
+    "/cart",
+    "/products/[id]",
+    "/api/cart",
+    "/checkout"
+   ],
+   "file": "app/api/cart/route.ts",
+   "line": 42,
+   "keywords": [
+    "negative",
+    "-1",
+    "below zero",
+    "out-of-range quantity",
+    "million",
+    "quantity validation",
+    "invalid quantity"
+   ]
+  },
+  {
+   "id": "B15",
+   "title": "Double-clicking 'Place order' creates duplicate orders",
+   "category": "chaos",
+   "severity": "high",
+   "routes": [
+    "/checkout",
+    "/orders",
+    "/api/orders"
+   ],
+   "file": "app/checkout/page.tsx",
+   "line": 75,
+   "keywords": [
+    "duplicate",
+    "double",
+    "twice",
+    "two orders"
+   ]
+  },
+  {
+   "id": "B16",
+   "title": "Search containing '%' returns a 500 (double URI decode)",
+   "category": "chaos",
+   "severity": "medium",
+   "routes": [
+    "/products",
+    "/api/search"
+   ],
+   "file": "app/api/search/route.ts",
+   "line": 9,
+   "keywords": [
+    "%",
+    "percent",
+    "urierror",
+    "uri malformed",
+    "search"
+   ]
+  },
+  {
+   "id": "B17",
+   "title": "/api/products does N+1 sequential review and stock lookups",
+   "category": "performance",
+   "severity": "high",
+   "routes": [
+    "/api/products",
+    "/products"
+   ],
+   "file": "lib/catalog.ts",
+   "line": 13,
+   "keywords": [
+    "n+1",
+    "sequential",
+    "slow",
+    "latency",
+    "p99",
+    "per product"
+   ]
+  },
+  {
+   "id": "B18",
+   "title": "Search does a synchronous fuzzy scan that blocks the event loop",
+   "category": "performance",
+   "severity": "high",
+   "routes": [
+    "/api/search",
+    "/products"
+   ],
+   "file": "lib/search.ts",
+   "line": 21,
+   "keywords": [
+    "search",
+    "blocking",
+    "event loop",
+    "cpu",
+    "slow",
+    "latency",
+    "edit distance"
+   ]
+  },
+  {
+   "id": "B19",
+   "title": "/api/stats leaks memory by keeping every visit forever",
+   "category": "performance",
+   "severity": "high",
+   "routes": [
+    "/api/stats",
+    "*"
+   ],
+   "file": "app/api/stats/route.ts",
+   "line": 18,
+   "keywords": [
+    "memory",
+    "leak",
+    "rss",
+    "grows",
+    "visits"
+   ]
+  },
+  {
+   "id": "B20",
+   "title": "Icon-only cart button has no accessible name",
+   "category": "accessibility",
+   "severity": "medium",
+   "routes": [
+    "*"
+   ],
+   "file": "components/CartButton.tsx",
+   "line": 34,
+   "keywords": [
+    "button-name",
+    "accessible name",
+    "discernible text",
+    "cart button",
+    "icon"
+   ]
+  },
+  {
+   "id": "B21",
+   "title": "Checkout phone input has no label",
+   "category": "accessibility",
+   "severity": "medium",
+   "routes": [
+    "/checkout"
+   ],
+   "file": "app/checkout/page.tsx",
+   "line": 72,
+   "keywords": [
+    "label",
+    "form elements must have labels",
+    "unlabeled",
+    "no accessible name"
+   ]
+  },
+  {
+   "id": "B22",
+   "title": "Product prices have insufficient color contrast",
+   "category": "accessibility",
+   "severity": "low",
+   "routes": [
+    "/products",
+    "/"
+   ],
+   "file": "components/ProductCard.module.css",
+   "line": 47,
+   "keywords": [
+    "contrast",
+    "color-contrast",
+    "price"
+   ]
+  },
+  {
+   "id": "B23",
+   "title": "Category filter row overflows horizontally on mobile",
+   "category": "ux",
+   "severity": "medium",
+   "routes": [
+    "/products"
+   ],
+   "file": "app/products/products.module.css",
+   "line": 16,
+   "keywords": [
+    "overflow",
+    "horizontal",
+    "mobile",
+    "scroll",
+    "390",
+    "filter"
+   ]
+  }
+ ],
+ "extras": [
+  {
+   "id": "X01",
+   "title": "Cart accepts quantity above available stock",
+   "routes": [
+    "/cart",
+    "/products/[id]",
+    "/api/cart"
+   ],
+   "file": "app/api/cart/route.ts",
+   "keywords": [
+    "stock",
+    "oversell",
+    "above available",
+    "in stock"
+   ]
+  },
+  {
+   "id": "X02",
+   "title": "Checkout accepts invalid phone numbers or junk addresses",
+   "routes": [
+    "/checkout",
+    "/api/orders"
+   ],
+   "file": "app/api/orders/route.ts",
+   "keywords": [
+    "invalid phone",
+    "phone number",
+    "junk address",
+    "accepts invalid"
+   ]
+  },
+  {
+   "id": "X03",
+   "title": "Sign-up allows display names longer than settings allows",
+   "routes": [
+    "/signup",
+    "/api/auth/signup"
+   ],
+   "file": "app/api/auth/signup/route.ts",
+   "keywords": [
+    "60 char",
+    "longer than",
+    "over 60",
+    "length"
+   ]
+  },
+  {
+   "id": "X04",
+   "title": "Endpoints degrade at very high concurrency (\u2265200 connections)",
+   "routes": [
+    "*"
+   ],
+   "file": "",
+   "keywords": [
+    "200 connections",
+    "350 connections",
+    "500 connections"
+   ]
+  },
+  {
+   "id": "X05",
+   "title": "Cart table overflowed the page on mobile (fixed in the app on 2026-10-04; kept so earlier runs score fairly)",
+   "routes": [
+    "/cart"
+   ],
+   "file": "app/globals.css",
+   "keywords": [
+    "cart table",
+    "table"
+   ]
+  },
+  {
+   "id": "X06",
+   "title": "Empty cart/checkout states lacked an h1 (fixed in the app on 2026-10-04; kept so earlier runs score fairly)",
+   "routes": [
+    "/cart",
+    "/checkout"
+   ],
+   "file": "app/cart/page.tsx",
+   "keywords": [
+    "page-has-heading-one",
+    "level-one heading"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,36 @@
+.search {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  max-width: 520px;
+}
+
+.search input {
+  flex: 1;
+  min-width: 0;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  width: 720px;
+  margin-bottom: 20px;
+}
+
+.chip {
+  flex: 1;
+  background: #fff;
+  border: 1px solid #c9ced6;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font: inherit;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+
+.active {
+  background: #3b5bdb;
+  border-color: #3b5bdb;
+  color: #fff;
+}
