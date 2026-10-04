@@ -128,7 +128,7 @@ Any reproduced critical caps the score at 49.
 - **Local targets only.** wreck-it refuses anything that isn't localhost or a private IP unless you pass `--i-own-this` (or set `iOwnThis`) for a target you own.
 - **Load tests are GET/HEAD only** unless you set `allowMutatingLoad: true`. wreck-it warns when your database URL looks remote.
 - **Report-only.** wreck-it never edits your code. Ask your agent to fix findings afterwards.
-- The security module is planned but not in v1 (see [TODO.md](TODO.md)).
+- A security-checks module is planned; v1 does not include it.
 
 ## Try it on the demo app
 
