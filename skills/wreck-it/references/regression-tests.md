@@ -1,0 +1,15 @@
+# Regression checks that survive a fix
+
+Use observable behavior for the assertion, and enough setup to reach it with a fresh browser context. A red test caused by a bad locator or missing account is not evidence that the defect is covered.
+
+Check `WRECK schema finding` for supported step and assertion kinds. If an older installed CLI lacks the kinds below, use a reviewed custom Playwright spec for those checks and disclose that limitation; do not submit unsupported JSON or assume regeneration preserves edits. Check `WRECK gen-tests --help` for `--force` support before relying on the preservation behavior described below.
+
+- For rejected forms, add a `waitFor` step for the observed validation-feedback container after submitting, then assert retained input with `value`. Checking an input's value before feedback appears can pass while the request is still pending. Match the corrected validation message in a separate assertion if that is part of the defect.
+- For broken images, use `imageLoaded` on the rendered image, selected by its stable accessible name, test ID, or DOM location. For dead links, use `linkResolves` on the rendered link. These check the current `src` or `href`; fetching the old missing URL would still fail after the app changes its reference. `linkResolves` fetches the destination, so use it only on navigation links that are safe to fetch, not logout or other state-changing actions.
+- For totals, target the row or element that contains the amount, not the label-only span. Create isolated cart data or clear known test data; shared account state can change the expected amount.
+- For raw timestamps, use `textMatches` with a complete ISO pattern such as `\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}`, with `negate: true`. Assert that the intended date element is present too. A fragment such as `T0` misses timestamps later in the day.
+- Prefer relative URLs for app navigation and requests. The generator converts absolute URLs on the configured app origin into relative paths so `WRECK_IT_BASE_URL` can target another server. Review external URLs and manually edited tests separately; the generator cannot rewrite preserved custom code.
+
+Run `WRECK gen-tests` before editing specs. It records generated-file hashes in `.wreck-it/generated-tests.json`. Subsequent runs replace or remove only unchanged generated specs; edited and pre-existing untracked specs are preserved with warnings, including stale ones. Sidecar fixtures are left alone. Review preserved specs when findings change or disappear. If intentionally replacing all custom `WR-NNN.spec.ts` files, use `WRECK gen-tests --force`; this also removes stale specs and discards their edits.
+
+Run the final specs and inspect why they failed. Unsupported checks can remain `test.fixme`, or be implemented in a reviewed custom spec with the needed fixture. Do not claim pass-after-fix validation until the same test has run against a corrected copy. Capture and inspect screenshots of the observed browser failure; include the relevant image whenever presenting that bug to the user, as described in `recording-findings.md`.

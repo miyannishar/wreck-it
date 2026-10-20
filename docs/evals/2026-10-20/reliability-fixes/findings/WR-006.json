@@ -1,0 +1,35 @@
+{
+  "title": "Cart actions column has a named table header",
+  "category": "functional",
+  "severity": "medium",
+  "persona": "reliability-check",
+  "route": "/cart",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "http://localhost:4318/cart"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "text",
+      "target": {
+        "by": "css",
+        "value": "thead th:last-child"
+      },
+      "contains": "Actions"
+    }
+  ],
+  "expected": "Named actions column",
+  "actual": "Empty header",
+  "evidence": {
+    "screenshots": [
+      "shots/WR-006-buggy.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "reproduced": true,
+  "id": "WR-006",
+  "createdAt": "2026-10-20T13:27:01.899Z"
+}

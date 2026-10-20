@@ -1,4 +1,6 @@
 import type { BrowserContext, Page } from "playwright";
+import { randomUUID } from "node:crypto";
+import { join } from "node:path";
 import { ODDITY_SCRIPT } from "./oddity.js";
 import { axeOnPage, recordViolations, writeResult, parseViewport, type A11yResult } from "./a11y.js";
 import { launchChromium, openSettled } from "./browser.js";
@@ -13,7 +15,7 @@ import type { FindingInput } from "./schema.js";
 interface Signal { kind: string; detail: string; selector?: string }
 interface Visit { route: string; viewport: string; signals: Signal[]; consoleErrors: string[]; serverErrors: string[]; error?: string }
 /** One root cause seen on one or more pages; `key` identifies it across pages and on the reproduction visit. */
-interface Candidate { key: string; kind: string; route: string; url: string; width: number; height: number; example: string; routes: Set<string>; extra?: string }
+interface Candidate { key: string; kind: string; route: string; url: string; width: number; height: number; example: string; routes: Set<string>; extra?: string; selector?: string }
 export interface SweepResult {
   baseUrl: string; loggedIn: boolean | null; viewports: string[]; pages: string[]; visits: Visit[];
   a11y: A11yResult[]; candidates: { kind: string; example: string; routes: string[] }[];
@@ -47,10 +49,10 @@ function candidatesOf(v: Omit<Visit, "route" | "viewport">, route: string, url: 
       c(`placeholder:${token}`, s.kind, s.detail.replace(/^text contains "[^"]+": /, ""), token);
     } else if (s.kind === "broken-image") {
       const src = s.detail.replace(/^image failed to load: /, "");
-      c(`image:${src}`, s.kind, src, src);
+      c(`image:${src}`, s.kind, src, src); out[out.length - 1]!.selector = s.selector;
     } else if (s.kind === "dead-link") {
       const [href, status] = s.detail.split(" -> ");
-      c(`link:${href}`, s.kind, `${href} → ${status}`, href);
+      c(`link:${href}`, s.kind, `${href} → ${status}`, href); out[out.length - 1]!.selector = s.selector;
     } else if (s.kind === "horizontal-overflow" && !s.selector && w <= 480) {
       c(`overflow:${w}:${route}`, s.kind, s.detail);
     }
@@ -73,13 +75,13 @@ function findingFor(c: Candidate, base: string, auth?: string): FindingInput {
     case "broken-image": {
       const src = new URL(c.extra!, base);
       return { ...common, title: `Broken image: ${src.pathname}`, category: "oddity", severity: "low",
-        steps: [...open, { action: "http", method: "GET", url: src.pathname + src.search }], assertions: [{ kind: "httpStatus", below: 400 }],
+        steps: open, assertions: c.selector ? [{ kind: "imageLoaded", target: { by: "css", value: c.selector } }] : [],
         expected: "Every image on the page loads", actual: `${src.href} fails to load on ${c.route}.${also}` };
     }
     case "dead-link": {
       const href = new URL(c.extra!, base);
       return { ...common, title: `Dead link: ${href.pathname} (${c.example.split(" → ")[1]})`, category: "oddity", severity: "low",
-        steps: [...open, { action: "http", method: "GET", url: href.pathname + href.search }], assertions: [{ kind: "httpStatus", below: 400 }],
+        steps: open, assertions: c.selector ? [{ kind: "linkResolves", target: { by: "css", value: c.selector } }] : [],
         expected: "Links on the page lead to existing pages", actual: `A link on ${c.route} points to ${href.pathname}, which returns ${c.example.split(" → ")[1]}.${also}` };
     }
     case "horizontal-overflow":
@@ -172,8 +174,15 @@ async function recordSweep(env: SweepEnv): Promise<{ recorded: string[]; skipped
     const ctx = await env.newCtx({ width: c.width, height: c.height });
     const page = await ctx.newPage();
     const again = await visit(page, c.url, origin);
-    await ctx.close();
     input.reproduced = candidatesOf(again, c.route, c.url, c.width, c.height).some((x) => x.key === c.key);
+    if (input.reproduced) {
+      const shot = join(wreckPaths(root).shots, `sweep-${randomUUID()}.png`);
+      try {
+        await page.screenshot({ path: shot, fullPage: true });
+        input.evidence = { screenshots: [shot], console: [], network: [] };
+      } catch { env.warnings.push(`could not capture screenshot for ${input.title}`); }
+    }
+    await ctx.close();
     const { finding } = await addFinding(root, input);
     recorded.push(finding.id);
   }

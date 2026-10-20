@@ -1,0 +1,40 @@
+{
+  "title": "Broken image: /images/team-photo.jpg",
+  "category": "oddity",
+  "severity": "low",
+  "persona": "sweep",
+  "route": "/about",
+  "steps": [
+    {
+      "action": "setViewport",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "action": "goto",
+      "url": "/about"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "imageLoaded",
+      "target": {
+        "by": "css",
+        "value": "body > main.container > div > img"
+      }
+    }
+  ],
+  "expected": "Every image on the page loads",
+  "actual": "http://127.0.0.1:57696/images/team-photo.jpg fails to load on /about.",
+  "evidence": {
+    "screenshots": [
+      "shots/sweep-db339640-2337-4377-a613-c825c3bdc9b2.png",
+      "shots/WR-001-buggy.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "reproduced": true,
+  "id": "WR-001",
+  "createdAt": "2026-10-20T13:26:54.596Z"
+}

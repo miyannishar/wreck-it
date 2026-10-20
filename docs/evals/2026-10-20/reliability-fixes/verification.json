@@ -1,0 +1,679 @@
+{
+  "date": "2026-10-20T13:28:12.178Z",
+  "method": "Focused verification of known cases; not new blind discovery",
+  "regenerationPreserved": true,
+  "originalFixtureUnchanged": true,
+  "recordingOrigin": "http://localhost:4318",
+  "executedOnDistinctOverrideOrigins": true,
+  "overrideOrigins": [
+    "http://127.0.0.1:57696",
+    "http://127.0.0.1:57868"
+  ],
+  "checks": {
+    "buggy": {
+      "exitCode": 1,
+      "checks": [
+        {
+          "title": "WR-001: Broken image: /images/team-photo.jpg",
+          "status": "failed",
+          "urlAudit": {
+            "baseURL": "http://127.0.0.1:57696",
+            "recordingOriginRequests": [],
+            "origins": [
+              "http://127.0.0.1:57696"
+            ]
+          },
+          "errors": [
+            "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: true\nReceived: false\n\nCall Log:\n- Timeout 2000ms exceeded while waiting on the predicate\n\n  23 |\n  24 |   await expect(page.locator(\"body > main.container > div > img\").first()).toBeVisible();\n> 25 |   await expect.poll(() => page.locator(\"body > main.container > div > img\").first().evaluate((el) => el instanceof HTMLImageElement && el.complete && el.naturalWidth > 0)).toBe(true);\n     |                                                                                                                                                                             ^\n  26 | });\n  27 |\n    at /private<check-root>/tests/wreck-it/WR-001.spec.ts:25:173"
+          ],
+          "images": [
+            "buggy-shots/WR-001.png"
+          ]
+        },
+        {
+          "title": "WR-002: Dead link: /pricng (404)",
+          "status": "failed",
+          "urlAudit": {
+            "baseURL": "http://127.0.0.1:57696",
+            "recordingOriginRequests": [],
+            "origins": [
+              "http://127.0.0.1:57696"
+            ]
+          },
+          "errors": [
+            "Error: rendered link resolves\n\nexpect(received).toBeLessThan(expected)\n\nExpected: < 400\nReceived:   404\n\n  28 |     expect(href, \"link has a destination\").toBeTruthy();\n  29 |     const response = await page.request.get(new URL(href!, page.url()).href);\n> 30 |     expect(response.status(), \"rendered link resolves\").toBeLessThan(400);\n     |                                                         ^\n  31 |   }\n  32 | });\n  33 |\n    at /private<check-root>/tests/wreck-it/WR-002.spec.ts:30:57"
+          ],
+          "images": [
+            "buggy-shots/WR-002.png"
+          ]
+        },
+        {
+          "title": "WR-003: Signup validation preserves input after completed rejection",
+          "status": "failed",
+          "urlAudit": {
+            "baseURL": "http://127.0.0.1:57696",
+            "recordingOriginRequests": [],
+            "origins": [
+              "http://127.0.0.1:57696"
+            ]
+          },
+          "errors": [
+            "Error: expect(locator).toHaveValue(expected) failed\n\nLocator:  getByLabel('Your name').first()\nExpected: \"Reliability Shopper\"\nReceived: \"\"\nTimeout:  2000ms\n\nCall log:\n  - Expect \"toHaveValue\" getByLabel('Your name').first() with timeout 2000ms\n  - waiting for getByLabel('Your name').first()\n    21 × locator resolved to <input value=\"\" required=\"\" id=\"displayName\" autocomplete=\"name\"/>\n       - unexpected value \"\"\n\n\n  27 |   await page.locator(\".error\").first().waitFor({ state: \"visible\" });\n  28 |\n> 29 |   await expect(page.getByLabel(\"Your name\").first()).toHaveValue(\"Reliability Shopper\");\n     |                                                      ^\n  30 |   await expect(page.getByLabel(\"Email\").first()).toHaveValue(\"reliability@example.com\");\n  31 |   await expect(page.locator(\".error\").first()).toContainText(\"Password must be at least 8 characters\");\n  32 | });\n    at /private<check-root>/tests/wreck-it/WR-003.spec.ts:29:54"
+          ],
+          "images": [
+            "buggy-shots/WR-003.png"
+          ]
+        },
+        {
+          "title": "WR-004: Coupon charge equals checkout total",
+          "status": "failed",
+          "urlAudit": {
+            "baseURL": "http://127.0.0.1:57696",
+            "recordingOriginRequests": [],
+            "origins": [
+              "http://127.0.0.1:57696"
+            ]
+          },
+          "errors": [
+            "Error: expect(locator).toContainText(expected) failed\n\nLocator: locator('.summary-total').first()\nExpected substring: \"$44.99\"\nReceived string:    \"Total charged$40.49\"\nTimeout: 2000ms\n\nCall log:\n  - Expect \"toContainText\" locator('.summary-total').first() with timeout 2000ms\n  - waiting for locator('.summary-total').first()\n    21 × locator resolved to <div class=\"summary-row summary-total\">…</div>\n       - unexpected value \"Total charged$40.49\"\n\n\n  26 |   await page.getByRole(\"heading\", { name: \"Order #\", exact: false }).first().waitFor({ state: \"visible\" });\n  27 |\n> 28 |   await expect(page.locator(\".summary-total\").first()).toContainText(\"$44.99\");\n     |                                                        ^\n  29 | });\n  30 |\n    at /private<check-root>/tests/wreck-it/WR-004.spec.ts:28:56"
+          ],
+          "images": [
+            "buggy-shots/WR-004.png"
+          ]
+        },
+        {
+          "title": "WR-005: Order date uses display format at every time of day",
+          "status": "failed",
+          "urlAudit": {
+            "baseURL": "http://127.0.0.1:57696",
+            "recordingOriginRequests": [],
+            "origins": [
+              "http://127.0.0.1:57696"
+            ]
+          },
+          "errors": [
+            "Error: expect(locator).not.toContainText(expected) failed\n\nLocator: locator('main p.muted').first()\nExpected pattern: not /\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/\nReceived string: \"Placed 2026-10-20T13:27:47.703Z · placed\"\nTimeout: 2000ms\n\nCall log:\n  - Expect \"not toContainText\" locator('main p.muted').first() with timeout 2000ms\n  - waiting for locator('main p.muted').first()\n    21 × locator resolved to <p class=\"muted\">…</p>\n       - unexpected value \"Placed 2026-10-20T13:27:47.703Z · placed\"\n\n\n  26 |\n  27 |   await expect(page.locator(\"main p.muted\").first()).toContainText(\"Placed\");\n> 28 |   await expect(page.locator(\"main p.muted\").first()).not.toContainText(new RegExp(\"\\\\d{4}-\\\\d{2}-\\\\d{2}T\\\\d{2}:\\\\d{2}:\\\\d{2}\"));\n     |                                                          ^\n  29 | });\n  30 |\n    at /private<check-root>/tests/wreck-it/WR-005.spec.ts:28:58"
+          ],
+          "images": [
+            "buggy-shots/WR-005.png"
+          ]
+        },
+        {
+          "title": "WR-006: Cart actions column has a named table header",
+          "status": "failed",
+          "urlAudit": {
+            "baseURL": "http://127.0.0.1:57696",
+            "recordingOriginRequests": [],
+            "origins": [
+              "http://127.0.0.1:57696"
+            ]
+          },
+          "errors": [
+            "Error: expect(locator).toContainText(expected) failed\n\nLocator: locator('thead th:last-child').first()\nExpected substring: \"Actions\"\nReceived string:    \"\"\nTimeout: 2000ms\n\nCall log:\n  - Expect \"toContainText\" locator('thead th:last-child').first() with timeout 2000ms\n  - waiting for locator('thead th:last-child').first()\n    21 × locator resolved to <th></th>\n       - unexpected value \"\"\n\n\n  21 |   await page.waitForLoadState(\"networkidle\", { timeout: 5_000 }).catch(() => {});\n  22 |\n> 23 |   await expect(page.locator(\"thead th:last-child\").first()).toContainText(\"Actions\");\n     |                                                             ^\n  24 | });\n  25 |\n    at /private<check-root>/tests/wreck-it/WR-006.spec.ts:23:61"
+          ],
+          "images": [
+            "buggy-shots/WR-006.png"
+          ]
+        }
+      ],
+      "stats": {
+        "startTime": "2026-10-20T13:27:02.877Z",
+        "duration": 58930.8,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 6,
+        "flaky": 0
+      }
+    },
+    "fixed": {
+      "exitCode": 0,
+      "checks": [
+        {
+          "title": "WR-001: Broken image: /images/team-photo.jpg",
+          "status": "passed",
+          "urlAudit": {
+            "baseURL": "http://127.0.0.1:57868",
+            "recordingOriginRequests": [],
+            "origins": [
+              "http://127.0.0.1:57868"
+            ]
+          },
+          "errors": [],
+          "images": [
+            "fixed-shots/WR-001.png"
+          ]
+        },
+        {
+          "title": "WR-002: Dead link: /pricng (404)",
+          "status": "passed",
+          "urlAudit": {
+            "baseURL": "http://127.0.0.1:57868",
+            "recordingOriginRequests": [],
+            "origins": [
+              "http://127.0.0.1:57868"
+            ]
+          },
+          "errors": [],
+          "images": [
+            "fixed-shots/WR-002.png"
+          ]
+        },
+        {
+          "title": "WR-003: Signup validation preserves input after completed rejection",
+          "status": "passed",
+          "urlAudit": {
+            "baseURL": "http://127.0.0.1:57868",
+            "recordingOriginRequests": [],
+            "origins": [
+              "http://127.0.0.1:57868"
+            ]
+          },
+          "errors": [],
+          "images": [
+            "fixed-shots/WR-003.png"
+          ]
+        },
+        {
+          "title": "WR-004: Coupon charge equals checkout total",
+          "status": "passed",
+          "urlAudit": {
+            "baseURL": "http://127.0.0.1:57868",
+            "recordingOriginRequests": [],
+            "origins": [
+              "http://127.0.0.1:57868"
+            ]
+          },
+          "errors": [],
+          "images": [
+            "fixed-shots/WR-004.png"
+          ]
+        },
+        {
+          "title": "WR-005: Order date uses display format at every time of day",
+          "status": "passed",
+          "urlAudit": {
+            "baseURL": "http://127.0.0.1:57868",
+            "recordingOriginRequests": [],
+            "origins": [
+              "http://127.0.0.1:57868"
+            ]
+          },
+          "errors": [],
+          "images": [
+            "fixed-shots/WR-005.png"
+          ]
+        },
+        {
+          "title": "WR-006: Cart actions column has a named table header",
+          "status": "passed",
+          "urlAudit": {
+            "baseURL": "http://127.0.0.1:57868",
+            "recordingOriginRequests": [],
+            "origins": [
+              "http://127.0.0.1:57868"
+            ]
+          },
+          "errors": [],
+          "images": [
+            "fixed-shots/WR-006.png"
+          ]
+        }
+      ],
+      "stats": {
+        "startTime": "2026-10-20T13:28:02.063Z",
+        "duration": 8130.355,
+        "expected": 6,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    }
+  },
+  "rescoredFrozenFindings": {
+    "sonnet": {
+      "total": 23,
+      "found": 19,
+      "recall": 0.8260869565217391,
+      "bugs": [
+        {
+          "id": "B01",
+          "title": "Cart subtotal ignores item quantity",
+          "category": "functional",
+          "found": true,
+          "finding": "WR-007"
+        },
+        {
+          "id": "B02",
+          "title": "Display name change shows success but doesn't persist after reload",
+          "category": "functional",
+          "found": true,
+          "finding": "WR-013"
+        },
+        {
+          "id": "B03",
+          "title": "Header cart badge keeps old count after removing or changing items",
+          "category": "functional",
+          "found": true,
+          "finding": "WR-008"
+        },
+        {
+          "id": "B04",
+          "title": "Coupon discount applied twice to the order total",
+          "category": "functional",
+          "found": true,
+          "finding": "WR-011"
+        },
+        {
+          "id": "B05",
+          "title": "Orders listed oldest first",
+          "category": "ux",
+          "found": true,
+          "finding": "WR-014"
+        },
+        {
+          "id": "B06",
+          "title": "Product cards render 'undefined' rating for products without reviews",
+          "category": "oddity",
+          "found": true,
+          "finding": "WR-003"
+        },
+        {
+          "id": "B07",
+          "title": "Broken team photo on About page",
+          "category": "oddity",
+          "found": true,
+          "finding": "WR-002"
+        },
+        {
+          "id": "B08",
+          "title": "Footer 'Shipping & pricing' link is dead (/pricng)",
+          "category": "oddity",
+          "found": true,
+          "finding": "WR-001"
+        },
+        {
+          "id": "B09",
+          "title": "Order detail shows raw ISO timestamp, unlike the list's formatted date",
+          "category": "oddity",
+          "found": true,
+          "finding": "WR-015"
+        },
+        {
+          "id": "B10",
+          "title": "Orders page spins forever for users with no orders",
+          "category": "ux",
+          "found": false,
+          "finding": null
+        },
+        {
+          "id": "B11",
+          "title": "Sign-up errors say 'Something went wrong' and wipe the form",
+          "category": "ux",
+          "found": false,
+          "finding": null
+        },
+        {
+          "id": "B12",
+          "title": "Empty cart has no guidance or link back to products",
+          "category": "ux",
+          "found": false,
+          "finding": null
+        },
+        {
+          "id": "B13",
+          "title": "Coupon code with surrounding spaces causes a 500",
+          "category": "chaos",
+          "found": true,
+          "finding": "WR-019"
+        },
+        {
+          "id": "B14",
+          "title": "Negative quantities accepted in the cart (negative line totals)",
+          "category": "chaos",
+          "found": true,
+          "finding": "WR-017"
+        },
+        {
+          "id": "B15",
+          "title": "Double-clicking 'Place order' creates duplicate orders",
+          "category": "chaos",
+          "found": true,
+          "finding": "WR-012"
+        },
+        {
+          "id": "B16",
+          "title": "Search containing '%' returns a 500 (double URI decode)",
+          "category": "chaos",
+          "found": true,
+          "finding": "WR-016"
+        },
+        {
+          "id": "B17",
+          "title": "/api/products does N+1 sequential review and stock lookups",
+          "category": "performance",
+          "found": true,
+          "finding": "WR-022"
+        },
+        {
+          "id": "B18",
+          "title": "Search does a synchronous fuzzy scan that blocks the event loop",
+          "category": "performance",
+          "found": true,
+          "finding": "WR-023"
+        },
+        {
+          "id": "B19",
+          "title": "/api/stats leaks memory by keeping every visit forever",
+          "category": "performance",
+          "found": true,
+          "finding": "WR-010"
+        },
+        {
+          "id": "B20",
+          "title": "Icon-only cart button has no accessible name",
+          "category": "accessibility",
+          "found": true,
+          "finding": "WR-005"
+        },
+        {
+          "id": "B21",
+          "title": "Checkout phone input has no label",
+          "category": "accessibility",
+          "found": false,
+          "finding": null
+        },
+        {
+          "id": "B22",
+          "title": "Product prices have insufficient color contrast",
+          "category": "accessibility",
+          "found": true,
+          "finding": "WR-006"
+        },
+        {
+          "id": "B23",
+          "title": "Category filter row overflows horizontally on mobile",
+          "category": "ux",
+          "found": true,
+          "finding": "WR-004"
+        }
+      ],
+      "falsePositives": [],
+      "duplicates": [
+        {
+          "finding": "WR-018",
+          "bug": "B14"
+        }
+      ],
+      "extras": [
+        {
+          "finding": "WR-009",
+          "extra": "X02"
+        },
+        {
+          "finding": "WR-020",
+          "extra": "X03"
+        },
+        {
+          "finding": "WR-021",
+          "extra": "X07"
+        }
+      ],
+      "ambiguous": [],
+      "unconfirmed": [],
+      "pass": true
+    },
+    "codex": {
+      "total": 23,
+      "found": 21,
+      "recall": 0.9130434782608695,
+      "bugs": [
+        {
+          "id": "B01",
+          "title": "Cart subtotal ignores item quantity",
+          "category": "functional",
+          "found": true,
+          "finding": "WR-001"
+        },
+        {
+          "id": "B02",
+          "title": "Display name change shows success but doesn't persist after reload",
+          "category": "functional",
+          "found": true,
+          "finding": "WR-003"
+        },
+        {
+          "id": "B03",
+          "title": "Header cart badge keeps old count after removing or changing items",
+          "category": "functional",
+          "found": true,
+          "finding": "WR-004"
+        },
+        {
+          "id": "B04",
+          "title": "Coupon discount applied twice to the order total",
+          "category": "functional",
+          "found": true,
+          "finding": "WR-002"
+        },
+        {
+          "id": "B05",
+          "title": "Orders listed oldest first",
+          "category": "ux",
+          "found": true,
+          "finding": "WR-025"
+        },
+        {
+          "id": "B06",
+          "title": "Product cards render 'undefined' rating for products without reviews",
+          "category": "oddity",
+          "found": true,
+          "finding": "WR-012"
+        },
+        {
+          "id": "B07",
+          "title": "Broken team photo on About page",
+          "category": "oddity",
+          "found": true,
+          "finding": "WR-011"
+        },
+        {
+          "id": "B08",
+          "title": "Footer 'Shipping & pricing' link is dead (/pricng)",
+          "category": "oddity",
+          "found": true,
+          "finding": "WR-008"
+        },
+        {
+          "id": "B09",
+          "title": "Order detail shows raw ISO timestamp, unlike the list's formatted date",
+          "category": "oddity",
+          "found": true,
+          "finding": "WR-026"
+        },
+        {
+          "id": "B10",
+          "title": "Orders page spins forever for users with no orders",
+          "category": "ux",
+          "found": true,
+          "finding": "WR-017"
+        },
+        {
+          "id": "B11",
+          "title": "Sign-up errors say 'Something went wrong' and wipe the form",
+          "category": "ux",
+          "found": true,
+          "finding": "WR-005"
+        },
+        {
+          "id": "B12",
+          "title": "Empty cart has no guidance or link back to products",
+          "category": "ux",
+          "found": false,
+          "finding": null
+        },
+        {
+          "id": "B13",
+          "title": "Coupon code with surrounding spaces causes a 500",
+          "category": "chaos",
+          "found": true,
+          "finding": "WR-007"
+        },
+        {
+          "id": "B14",
+          "title": "Negative quantities accepted in the cart (negative line totals)",
+          "category": "chaos",
+          "found": true,
+          "finding": "WR-006"
+        },
+        {
+          "id": "B15",
+          "title": "Double-clicking 'Place order' creates duplicate orders",
+          "category": "chaos",
+          "found": true,
+          "finding": "WR-024"
+        },
+        {
+          "id": "B16",
+          "title": "Search containing '%' returns a 500 (double URI decode)",
+          "category": "chaos",
+          "found": true,
+          "finding": "WR-020"
+        },
+        {
+          "id": "B17",
+          "title": "/api/products does N+1 sequential review and stock lookups",
+          "category": "performance",
+          "found": true,
+          "finding": "WR-029"
+        },
+        {
+          "id": "B18",
+          "title": "Search does a synchronous fuzzy scan that blocks the event loop",
+          "category": "performance",
+          "found": true,
+          "finding": "WR-023"
+        },
+        {
+          "id": "B19",
+          "title": "/api/stats leaks memory by keeping every visit forever",
+          "category": "performance",
+          "found": false,
+          "finding": null
+        },
+        {
+          "id": "B20",
+          "title": "Icon-only cart button has no accessible name",
+          "category": "accessibility",
+          "found": true,
+          "finding": "WR-015"
+        },
+        {
+          "id": "B21",
+          "title": "Checkout phone input has no label",
+          "category": "accessibility",
+          "found": true,
+          "finding": "WR-027"
+        },
+        {
+          "id": "B22",
+          "title": "Product prices have insufficient color contrast",
+          "category": "accessibility",
+          "found": true,
+          "finding": "WR-016"
+        },
+        {
+          "id": "B23",
+          "title": "Category filter row overflows horizontally on mobile",
+          "category": "ux",
+          "found": true,
+          "finding": "WR-010"
+        }
+      ],
+      "falsePositives": [],
+      "duplicates": [],
+      "extras": [
+        {
+          "finding": "WR-018",
+          "extra": "X07"
+        },
+        {
+          "finding": "WR-033",
+          "extra": "X08"
+        },
+        {
+          "finding": "WR-035",
+          "extra": "X09"
+        },
+        {
+          "finding": "WR-036",
+          "extra": "X10"
+        }
+      ],
+      "ambiguous": [],
+      "unconfirmed": [
+        "WR-009",
+        "WR-013",
+        "WR-014",
+        "WR-019",
+        "WR-021",
+        "WR-022",
+        "WR-028",
+        "WR-030",
+        "WR-031",
+        "WR-032",
+        "WR-034"
+      ],
+      "pass": true
+    }
+  },
+  "manifestSha256": "5eb9931394cb7cee5db36087ea64bc7ae37d5b4d3450e66521bef781c848fb96",
+  "testedSourceSha256": {
+    "packages/cli/src/gentests.ts": "953cca7fd22ce6a2c7daca35b40518d9dccae6fb26fce0db24abc7c95134ae2a",
+    "packages/cli/src/schema.ts": "55d9bae44350e2d7ec3e23d31d2cf7ee15796798d01791d6fb606571d253b5c5",
+    "packages/cli/src/sweep.ts": "8dbb858fd62de3a395ded6a806813b53d93625c734e4df9020aba171015c8f02",
+    "scripts/eval.mjs": "9e13daefb2cc46aeeb83aa8330666f94c5dabc2ac414c0c731df6750c4bdd05d"
+  },
+  "screenshotReplay": {
+    "reason": "Wait for the rendered navigation result before capture",
+    "checks": {
+      "buggy": {
+        "exitCode": 1,
+        "status": "failed",
+        "urlAudit": {
+          "baseURL": "http://127.0.0.1:61572",
+          "recordingOriginRequests": [],
+          "origins": [
+            "http://127.0.0.1:61572"
+          ]
+        },
+        "stats": {
+          "startTime": "2026-10-20T13:31:15.930Z",
+          "duration": 6228.937,
+          "expected": 0,
+          "skipped": 0,
+          "unexpected": 1,
+          "flaky": 0
+        }
+      },
+      "fixed": {
+        "exitCode": 0,
+        "status": "passed",
+        "urlAudit": {
+          "baseURL": "http://127.0.0.1:61673",
+          "recordingOriginRequests": [],
+          "origins": [
+            "http://127.0.0.1:61673"
+          ]
+        },
+        "stats": {
+          "startTime": "2026-10-20T13:31:22.744Z",
+          "duration": 1446.507,
+          "expected": 1,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        }
+      }
+    }
+  }
+}

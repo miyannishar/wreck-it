@@ -29,6 +29,7 @@ const fileHit = (finding, bugFile) => {
   if (!s) return false;
   const files = [s.file, ...(s.candidates ?? []).map((c) => String(c).replace(/:\d+\??$/, "").replace(/\?$/, ""))].filter(Boolean).map(posix);
   const b = posix(bugFile);
+  if (!b) return false;
   return files.some((f) => f === b || f.endsWith("/" + b));
 };
 
@@ -37,9 +38,13 @@ export function matchScore(finding, bug) {
   const routes = bug.routes ?? [bug.route];
   const route = routes.some((p) => routeMatches(p, finding.route ?? ""));
   const file = fileHit(finding, bug.file);
-  const text = norm(`${finding.title} ${finding.actual} ${finding.expected}`);
+  // Full-page snapshots contain unrelated symptoms; only diagnostic prose can identify a root cause.
+  const text = norm(`${finding.title ?? ""} ${finding.source?.why ?? ""}`);
   const kw = (bug.keywords ?? []).filter((k) => text.includes(norm(k))).length;
-  if (!(route || file) || !(file || kw > 0)) return 0;
+  const behavior = bug.signals?.length
+    ? bug.signals.every((group) => group.length && group.some((phrase) => text.includes(norm(phrase))))
+    : kw > 0;
+  if (!(route || file) || !behavior) return 0;
   const lineClose = file && finding.source?.line && bug.line && Math.abs(finding.source.line - bug.line) <= 5 ? 3 : 0;
   return (file ? 4 : 0) + lineClose + (route ? 1 : 0) + Math.min(kw, 3) + (finding.category === bug.category ? 1 : 0);
 }
@@ -47,29 +52,38 @@ export function matchScore(finding, bug) {
 export function evaluate(manifest, findings) {
   const confirmed = findings.filter((f) => f.reproduced);
   const unconfirmed = findings.filter((f) => !f.reproduced);
-  const pairs = [];
-  for (const f of confirmed) for (const b of manifest.bugs) { const s = matchScore(f, b); if (s > 0) pairs.push({ f, b, s }); }
+  const pairs = [], extras = [], ambiguous = [], falsePositives = [];
+  for (const f of confirmed) {
+    // Pick the root cause before deduplicating. A duplicate must not fall through to another bug,
+    // and a stronger unseeded match must not be claimed as a seeded detection.
+    const candidates = [
+      ...manifest.bugs.map((b) => ({ b, s: matchScore(f, b), extra: false })),
+      ...(manifest.extras ?? []).map((b) => ({ b, s: matchScore(f, b), extra: true })),
+    ].filter((p) => p.s > 0).sort((a, b) => b.s - a.s);
+    const best = candidates[0];
+    if (!best) { falsePositives.push({ finding: f.id, title: f.title, route: f.route }); continue; }
+    const tied = candidates.filter((p) => p.s === best.s);
+    if (tied.length > 1) { ambiguous.push({ finding: f.id, candidates: tied.map((p) => p.b.id).sort() }); continue; }
+    if (best.extra) extras.push({ finding: f.id, extra: best.b.id });
+    else pairs.push({ f, b: best.b, s: best.s });
+  }
   pairs.sort((x, y) => y.s - x.s || String(x.f.id).localeCompare(String(y.f.id)));
   const bugTo = new Map(), findingTo = new Map();
   for (const { f, b, s } of pairs) {
     if (bugTo.has(b.id) || findingTo.has(f.id)) continue;
     bugTo.set(b.id, { finding: f.id, score: s }); findingTo.set(f.id, b.id);
   }
-  const duplicates = [], falsePositives = [], extras = [];
+  const duplicates = [];
   for (const f of confirmed) {
     if (findingTo.has(f.id)) continue;
-    const dup = pairs.find((p) => p.f === f && bugTo.has(p.b.id)); // pairs are sorted best-first
-    // Real but unseeded issues listed in the manifest: neither a hit nor a false positive.
-    const extra = (manifest.extras ?? []).map((x) => ({ x, s: matchScore(f, x) })).filter((e) => e.s > 0).sort((a, b) => b.s - a.s)[0];
-    if (extra && (!dup || extra.s > dup.s)) extras.push({ finding: f.id, extra: extra.x.id });
-    else if (dup) duplicates.push({ finding: f.id, bug: dup.b.id });
-    else falsePositives.push({ finding: f.id, title: f.title, route: f.route });
+    const dup = pairs.find((p) => p.f === f && bugTo.has(p.b.id));
+    if (dup) duplicates.push({ finding: f.id, bug: dup.b.id });
   }
   const bugs = manifest.bugs.map((b) => ({ id: b.id, title: b.title, category: b.category, found: bugTo.has(b.id), finding: bugTo.get(b.id)?.finding ?? null }));
   const found = bugs.filter((b) => b.found).length;
   const recall = manifest.bugs.length ? found / manifest.bugs.length : 0;
-  const pass = recall >= GATE.recall && falsePositives.length <= GATE.maxFalsePositives;
-  return { total: manifest.bugs.length, found, recall, bugs, falsePositives, duplicates, extras, unconfirmed: unconfirmed.map((f) => f.id), pass };
+  const pass = recall >= GATE.recall && falsePositives.length <= GATE.maxFalsePositives && ambiguous.length === 0;
+  return { total: manifest.bugs.length, found, recall, bugs, falsePositives, duplicates, extras, ambiguous, unconfirmed: unconfirmed.map((f) => f.id), pass };
 }
 
 export function loadFindings(root) {
@@ -102,8 +116,9 @@ function main(argv) {
   for (const d of r.duplicates) out.push(`duplicate: ${d.finding} → ${d.bug}`);
   for (const e of r.extras) out.push(`extra (real, unseeded): ${e.finding} → ${e.extra}`);
   for (const fp of r.falsePositives) out.push(`false positive: ${fp.finding} ${fp.route} ${fp.title}`);
+  for (const a of r.ambiguous) out.push(`ambiguous (review required): ${a.finding} → ${a.candidates.join(", ")}`);
   if (r.unconfirmed.length) out.push(`unconfirmed (ignored): ${r.unconfirmed.join(", ")}`);
-  out.push(`recall ${r.found}/${r.total} = ${(r.recall * 100).toFixed(0)}%  ·  false positives ${r.falsePositives.length}  ·  gate (≥${GATE.recall * 100}% recall, ≤${GATE.maxFalsePositives} FP): ${r.pass ? "PASS" : "FAIL"}`);
+  out.push(`recall ${r.found}/${r.total} = ${(r.recall * 100).toFixed(0)}%  ·  false positives ${r.falsePositives.length}  ·  ambiguous ${r.ambiguous.length}  ·  gate (≥${GATE.recall * 100}% recall, ≤${GATE.maxFalsePositives} FP, no ambiguous matches): ${r.pass ? "PASS" : "FAIL"}`);
   process.stdout.write(out.join("\n") + "\n");
   return r.pass ? 0 : 1;
 }

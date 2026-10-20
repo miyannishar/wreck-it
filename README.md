@@ -329,6 +329,12 @@ npx playwright test tests/wreck-it
 
 Each test replays the finding's steps and asserts the intended **correct** behavior. Verify that it fails for the actual defect and passes after a fix; a failure alone can also come from an incorrect locator or fixture. Findings without a checkable assertion are generated as `test.fixme`. Performance findings don't get tests. See the [latest test-quality evaluation](docs/evals/2026-10-20-benchmark.md#generated-regression-tests) for measured limitations.
 
+Regeneration preserves edited specs and sidecar fixtures. It records generated-file hashes in `.wreck-it/generated-tests.json` and warns about preserved files that need review. To intentionally replace edited or pre-existing `WR-NNN.spec.ts` files and remove stale ones, use `gen-tests --force`. App-origin absolute URLs in newly generated specs become relative, so `WRECK_IT_BASE_URL` can target a corrected copy. Custom specs still need their own URL review.
+
+Structured findings support completion waits (`waitFor`), input values (`value`), text patterns (`textMatches`), and checks of rendered images and links (`imageLoaded`, `linkResolves`). See the [regression guidance](skills/wreck-it/references/regression-tests.md) for choosing checks that survive the fix.
+
+The [reliability follow-up](docs/evals/2026-10-20-reliability-fixes.md) verifies six affected checks against buggy and corrected copies. These CLI changes are in source and await a new npm release.
+
 | Variable | Overrides |
 |---|---|
 | `WRECK_IT_BASE_URL` | The app's address (default: the `baseUrl` from the config) |

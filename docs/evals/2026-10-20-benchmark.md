@@ -2,6 +2,8 @@
 
 Evaluation date: October 20, 2026. The first discovery run began on October 19 local time. Timestamps in the artifacts use UTC.
 
+Follow-up: the [reliability fixes and focused verification](2026-10-20-reliability-fixes.md) address the identified scoring and regression-test defects. The original findings and results below remain the historical discovery snapshot.
+
 This evaluation checks bug detection, generated regression tests, screenshot evidence, and adherence to the testing procedure. A detection threshold pass alone does not validate every generated test or establish that the full procedure was followed.
 
 ## Fixture and method

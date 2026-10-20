@@ -1,6 +1,6 @@
 {
  "version": 1,
- "note": "Answer key for the wreck-it eval. Agents under evaluation must not read this file. routes: '*' = any route. 'extras' are real but unseeded issues: findings matching them count as neither hits nor false positives.",
+ "note": "Answer key for the wreck-it eval. Agents under evaluation must not read this file. routes: '*' = any route. 'extras' are real but unseeded issues: findings matching them count as neither hits nor false positives. signals: every group needs a diagnostic phrase from title or source.why; file/line and full-page evidence alone never establish the reported behavior.",
  "bugs": [
   {
    "id": "B01",
@@ -19,6 +19,18 @@
     "subtotal",
     "total",
     "qty"
+   ],
+   "signals": [
+    [
+     "subtotal",
+     "total"
+    ],
+    [
+     "quantity",
+     "qty",
+     "line total",
+     "lineTotal"
+    ]
    ]
   },
   {
@@ -39,6 +51,18 @@
     "revert",
     "not saved",
     "settings"
+   ],
+   "signals": [
+    [
+     "name",
+     "profile"
+    ],
+    [
+     "persist",
+     "store",
+     "reload",
+     "save"
+    ]
    ]
   },
   {
@@ -59,6 +83,19 @@
     "header",
     "stale",
     "cart icon"
+   ],
+   "signals": [
+    [
+     "badge",
+     "header count",
+     "cart count"
+    ],
+    [
+     "stale",
+     "count",
+     "remov",
+     "chang"
+    ]
    ]
   },
   {
@@ -84,6 +121,18 @@
     "discounted again",
     "applied again",
     "disagrees"
+   ],
+   "signals": [
+    [
+     "coupon",
+     "discount"
+    ],
+    [
+     "twice",
+     "double",
+     "again",
+     "second discount"
+    ]
    ]
   },
   {
@@ -103,6 +152,17 @@
     "sort",
     "order of orders",
     "chronological"
+   ],
+   "signals": [
+    [
+     "order"
+    ],
+    [
+     "oldest",
+     "newest",
+     "sort",
+     "chronological"
+    ]
    ]
   },
   {
@@ -119,6 +179,19 @@
    "keywords": [
     "undefined",
     "rating"
+   ],
+   "signals": [
+    [
+     "rating",
+     "product",
+     "card"
+    ],
+    [
+     "undefined",
+     "without reviews",
+     "missing reviews",
+     "unreviewed"
+    ]
    ]
   },
   {
@@ -136,6 +209,18 @@
     "broken",
     "photo",
     "team-photo"
+   ],
+   "signals": [
+    [
+     "image",
+     "photo"
+    ],
+    [
+     "broken",
+     "missing",
+     "load",
+     "404"
+    ]
    ]
   },
   {
@@ -154,6 +239,18 @@
     "404",
     "shipping & pricing",
     "footer"
+   ],
+   "signals": [
+    [
+     "footer",
+     "shipping",
+     "pricng"
+    ],
+    [
+     "link",
+     "href",
+     "route"
+    ]
    ]
   },
   {
@@ -171,6 +268,18 @@
     "iso",
     "timestamp",
     "format"
+   ],
+   "signals": [
+    [
+     "date",
+     "timestamp",
+     "iso"
+    ],
+    [
+     "raw",
+     "iso",
+     "format"
+    ]
    ]
   },
   {
@@ -190,6 +299,20 @@
     "forever",
     "no orders",
     "empty"
+   ],
+   "signals": [
+    [
+     "order"
+    ],
+    [
+     "empty",
+     "no orders"
+    ],
+    [
+     "spin",
+     "loading",
+     "load"
+    ]
    ]
   },
   {
@@ -210,6 +333,20 @@
     "wipe",
     "reset",
     "lost"
+   ],
+   "signals": [
+    [
+     "signup",
+     "sign-up",
+     "sign up"
+    ],
+    [
+     "error",
+     "generic",
+     "wipe",
+     "clear",
+     "reset"
+    ]
    ]
   },
   {
@@ -227,6 +364,19 @@
     "empty state",
     "guidance",
     "no link"
+   ],
+   "signals": [
+    [
+     "empty cart",
+     "empty state"
+    ],
+    [
+     "guidance",
+     "no link",
+     "link back",
+     "next step",
+     "next action"
+    ]
    ]
   },
   {
@@ -246,6 +396,16 @@
     "whitespace",
     "500",
     "trim"
+   ],
+   "signals": [
+    [
+     "coupon"
+    ],
+    [
+     "space",
+     "padded",
+     "trim"
+    ]
    ]
   },
   {
@@ -269,6 +429,18 @@
     "million",
     "quantity validation",
     "invalid quantity"
+   ],
+   "signals": [
+    [
+     "quantity",
+     "quantities"
+    ],
+    [
+     "negative",
+     "fraction",
+     "invalid",
+     "out-of-range"
+    ]
    ]
   },
   {
@@ -288,6 +460,18 @@
     "double",
     "twice",
     "two orders"
+   ],
+   "signals": [
+    [
+     "order"
+    ],
+    [
+     "duplicate",
+     "double-click",
+     "double click",
+     "two orders",
+     "concurrent"
+    ]
    ]
   },
   {
@@ -307,6 +491,18 @@
     "urierror",
     "uri malformed",
     "search"
+   ],
+   "signals": [
+    [
+     "search"
+    ],
+    [
+     "percent",
+     "%",
+     "urierror",
+     "decode",
+     "uri malformed"
+    ]
    ]
   },
   {
@@ -327,6 +523,14 @@
     "latency",
     "p99",
     "per product"
+   ],
+   "signals": [
+    [
+     "sequential",
+     "n+1",
+     "per-product",
+     "one product at a time"
+    ]
    ]
   },
   {
@@ -348,6 +552,18 @@
     "slow",
     "latency",
     "edit distance"
+   ],
+   "signals": [
+    [
+     "search"
+    ],
+    [
+     "blocking",
+     "blocks",
+     "event loop",
+     "synchronous",
+     "cpu"
+    ]
    ]
   },
   {
@@ -367,6 +583,20 @@
     "rss",
     "grows",
     "visits"
+   ],
+   "signals": [
+    [
+     "memory",
+     "leak",
+     "rss",
+     "retain",
+     "unbounded"
+    ],
+    [
+     "stats",
+     "visit",
+     "request"
+    ]
    ]
   },
   {
@@ -385,6 +615,17 @@
     "discernible text",
     "cart button",
     "icon"
+   ],
+   "signals": [
+    [
+     "button"
+    ],
+    [
+     "button-name",
+     "accessible name",
+     "discernible",
+     "aria-label"
+    ]
    ]
   },
   {
@@ -402,6 +643,15 @@
     "form elements must have labels",
     "unlabeled",
     "no accessible name"
+   ],
+   "signals": [
+    [
+     "phone"
+    ],
+    [
+     "label",
+     "accessible name"
+    ]
    ]
   },
   {
@@ -419,6 +669,11 @@
     "contrast",
     "color-contrast",
     "price"
+   ],
+   "signals": [
+    [
+     "contrast"
+    ]
    ]
   },
   {
@@ -438,6 +693,18 @@
     "scroll",
     "390",
     "filter"
+   ],
+   "signals": [
+    [
+     "mobile",
+     "viewport",
+     "390px"
+    ],
+    [
+     "overflow",
+     "scrolls horizontally",
+     "horizontal"
+    ]
    ]
   }
  ],
@@ -456,6 +723,18 @@
     "oversell",
     "above available",
     "in stock"
+   ],
+   "signals": [
+    [
+     "quantity",
+     "quantities",
+     "cart"
+    ],
+    [
+     "stock",
+     "oversell",
+     "above available"
+    ]
    ]
   },
   {
@@ -471,6 +750,18 @@
     "phone number",
     "junk address",
     "accepts invalid"
+   ],
+   "signals": [
+    [
+     "phone",
+     "address"
+    ],
+    [
+     "invalid",
+     "nonsense",
+     "junk",
+     "validat"
+    ]
    ]
   },
   {
@@ -486,6 +777,19 @@
     "longer than",
     "over 60",
     "length"
+   ],
+   "signals": [
+    [
+     "signup",
+     "sign-up",
+     "sign up"
+    ],
+    [
+     "length",
+     "long",
+     "60",
+     "5,000"
+    ]
    ]
   },
   {
@@ -499,6 +803,13 @@
     "200 connections",
     "350 connections",
     "500 connections"
+   ],
+   "signals": [
+    [
+     "200 connections",
+     "350 connections",
+     "500 connections"
+    ]
    ]
   },
   {
@@ -511,6 +822,15 @@
    "keywords": [
     "cart table",
     "table"
+   ],
+   "signals": [
+    [
+     "cart table"
+    ],
+    [
+     "overflow",
+     "mobile"
+    ]
    ]
   },
   {
@@ -524,6 +844,99 @@
    "keywords": [
     "page-has-heading-one",
     "level-one heading"
+   ],
+   "signals": [
+    [
+     "heading",
+     "h1"
+    ],
+    [
+     "empty cart",
+     "empty state",
+     "checkout"
+    ]
+   ]
+  },
+  {
+   "id": "X07",
+   "title": "Product grid shifts during loading (CLS)",
+   "routes": [
+    "/products"
+   ],
+   "file": "components/ProductCard.tsx",
+   "keywords": [
+    "cls",
+    "layout shift"
+   ],
+   "signals": [
+    [
+     "cls",
+     "layout shift"
+    ]
+   ]
+  },
+  {
+   "id": "X08",
+   "title": "Cart actions column has an empty table header",
+   "routes": [
+    "/cart"
+   ],
+   "file": "app/cart/page.tsx",
+   "keywords": [
+    "header"
+   ],
+   "signals": [
+    [
+     "header"
+    ],
+    [
+     "empty-table-header",
+     "empty",
+     "unnamed"
+    ]
+   ]
+  },
+  {
+   "id": "X09",
+   "title": "Offline checkout has no error feedback",
+   "routes": [
+    "/checkout"
+   ],
+   "file": "app/checkout/page.tsx",
+   "keywords": [
+    "offline",
+    "network failure"
+   ],
+   "signals": [
+    [
+     "offline",
+     "network failure"
+    ],
+    [
+     "checkout",
+     "fetch"
+    ]
+   ]
+  },
+  {
+   "id": "X10",
+   "title": "Cart API failure crashes the page",
+   "routes": [
+    "/cart"
+   ],
+   "file": "app/cart/page.tsx",
+   "keywords": [
+    "cart"
+   ],
+   "signals": [
+    [
+     "cart"
+    ],
+    [
+     "api failure",
+     "error object",
+     "non-401"
+    ]
    ]
   }
  ]

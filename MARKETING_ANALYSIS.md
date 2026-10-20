@@ -8,7 +8,9 @@ wreck-it is published and has useful launch foundations. The immediate prioritie
 
 The [fresh benchmark and evidence review](docs/evals/2026-10-20-benchmark.md) is saved. Reviewed seeded-bug recall was **19/23 (82.6%) for Sonnet** and **21/23 (91.3%) for Codex**. Both exceeded the recall threshold; the existing scorer returned zero unmatched findings. Manual review corrected a raw Codex overcount, so use the reviewed result in marketing.
 
-The two agents' runs exposed differences in screenshot coverage and procedural completeness. The skill instructions now require relevant inspected screenshots and image attachments when presenting browser bugs. The main skill’s YAML frontmatter was also corrected. Generated-test quality and scorer matching still require follow-up before making stronger promises. Priority one has been evaluated; those quality gaps remain open before moving to broader promotion.
+The two agents' runs exposed differences in screenshot coverage and procedural completeness. The skill instructions now require relevant inspected screenshots and image attachments when presenting browser bugs. The main skill’s YAML frontmatter was also corrected. The benchmark records the generated-test and matching defects that prompted the follow-up below.
+
+The [reliability follow-up](docs/evals/2026-10-20-reliability-fixes.md) now addresses the identified false pass, brittle assertions, absolute navigation URLs, overwritten custom specs, and loose scoring. Six focused checks fail for the defects and pass after targeted corrections, with screenshot evidence. This verifies known cases, rather than another full blind run. The updated CLI still needs an npm release and installation smoke test before those capabilities are promoted through the published installation; then proceed to priority two's demo.
 
 ## What is already done
 

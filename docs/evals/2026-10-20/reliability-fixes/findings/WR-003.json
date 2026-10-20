@@ -1,0 +1,92 @@
+{
+  "title": "Signup validation preserves input after completed rejection",
+  "category": "functional",
+  "severity": "medium",
+  "persona": "reliability-check",
+  "route": "/signup",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "http://localhost:4318/signup"
+    },
+    {
+      "action": "fill",
+      "target": {
+        "by": "label",
+        "value": "Your name"
+      },
+      "value": "Reliability Shopper"
+    },
+    {
+      "action": "fill",
+      "target": {
+        "by": "label",
+        "value": "Email"
+      },
+      "value": "reliability@example.com"
+    },
+    {
+      "action": "fill",
+      "target": {
+        "by": "label",
+        "value": "Password"
+      },
+      "value": "short"
+    },
+    {
+      "action": "click",
+      "target": {
+        "by": "role",
+        "role": "button",
+        "name": "Sign up",
+        "exact": true
+      }
+    },
+    {
+      "action": "waitFor",
+      "target": {
+        "by": "css",
+        "value": ".error"
+      },
+      "state": "visible"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "value",
+      "target": {
+        "by": "label",
+        "value": "Your name"
+      },
+      "equals": "Reliability Shopper"
+    },
+    {
+      "kind": "value",
+      "target": {
+        "by": "label",
+        "value": "Email"
+      },
+      "equals": "reliability@example.com"
+    },
+    {
+      "kind": "text",
+      "target": {
+        "by": "css",
+        "value": ".error"
+      },
+      "contains": "Password must be at least 8 characters"
+    }
+  ],
+  "expected": "Rejected signup keeps input and explains validation",
+  "actual": "Generic error and cleared fields",
+  "evidence": {
+    "screenshots": [
+      "shots/WR-003-buggy.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "reproduced": true,
+  "id": "WR-003",
+  "createdAt": "2026-10-20T13:27:01.187Z"
+}

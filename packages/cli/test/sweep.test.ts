@@ -59,7 +59,9 @@ describe("sweep", () => {
     expect(findings.every((f) => f.reproduced && f.persona === "sweep")).toBe(true);
     const dead = findings.find((f) => f.title.startsWith("Dead link"))!;
     expect(dead.actual).toContain("Also on");
-    expect(dead.assertions).toEqual([{ kind: "httpStatus", below: 400 }]);
+    expect(dead.assertions[0]?.kind).toBe("linkResolves");
+    expect(findings.find((f) => f.title.startsWith("Broken image"))!.assertions[0]?.kind).toBe("imageLoaded");
+    expect(findings.every((f) => f.evidence.screenshots.length > 0 && existsSync(join(root, ".wreck-it", f.evidence.screenshots[0]!)))).toBe(true);
     const again = await runSweep(root, { record: true, a11y: false });
     expect(again.recorded).toEqual([]);
     expect((await listFindings(root)).findings).toHaveLength(4);

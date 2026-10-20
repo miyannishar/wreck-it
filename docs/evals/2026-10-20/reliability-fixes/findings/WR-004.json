@@ -1,0 +1,71 @@
+{
+  "title": "Coupon charge equals checkout total",
+  "category": "functional",
+  "severity": "medium",
+  "persona": "reliability-check",
+  "route": "/checkout",
+  "steps": [
+    {
+      "action": "http",
+      "method": "POST",
+      "url": "http://localhost:4318/api/cart/coupon",
+      "headers": {
+        "content-type": "application/json"
+      },
+      "body": "{\"code\":\"SAVE10\"}"
+    },
+    {
+      "action": "goto",
+      "url": "http://localhost:4318/checkout"
+    },
+    {
+      "action": "fill",
+      "target": {
+        "by": "label",
+        "value": "Delivery address"
+      },
+      "value": "123 Test Lane"
+    },
+    {
+      "action": "click",
+      "target": {
+        "by": "role",
+        "role": "button",
+        "name": "Place order",
+        "exact": true
+      }
+    },
+    {
+      "action": "waitFor",
+      "target": {
+        "by": "role",
+        "role": "heading",
+        "name": "Order #",
+        "exact": false
+      },
+      "state": "visible"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "text",
+      "target": {
+        "by": "css",
+        "value": ".summary-total"
+      },
+      "contains": "$44.99"
+    }
+  ],
+  "expected": "One discount: $44.99",
+  "actual": "Two discounts: $40.49",
+  "evidence": {
+    "screenshots": [
+      "shots/WR-004-buggy.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "reproduced": true,
+  "id": "WR-004",
+  "createdAt": "2026-10-20T13:27:01.431Z"
+}

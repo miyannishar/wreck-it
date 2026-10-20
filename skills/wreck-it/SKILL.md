@@ -76,7 +76,7 @@ Not in v1: `WRECK run stage security skipped`.
 ### 10. Report
 Before generating the report, check each reproduced browser finding for a screenshot that shows the actual failure. Revisit findings from CLI sweeps too; follow the screenshot guidance in `references/recording-findings.md`. Verify the saved image files exist and resolve any missing-screenshot warnings. API-only or load findings may use request/metric evidence instead; say when a screenshot is not applicable or could not be captured.
 
-Generate the report and tests after the last finding update. If you change a finding afterward, regenerate both before presenting results so counts, severities, evidence, and tests agree with the stored findings.
+Generate the report and tests after the last finding update. If you change a finding afterward, regenerate both before presenting results. Read `references/regression-tests.md`: inspect preserved-spec warnings and reconcile those tests with the updated findings; regeneration deliberately keeps agent edits and fixtures. Run supported specs against the buggy app and check that failures reach the intended assertions. Disclose skips, setup failures, timeouts, or unverified tests in the report; where a corrected copy exists, check the same specs against it too.
 
 ```bash
 WRECK report && WRECK gen-tests && WRECK run stage report done

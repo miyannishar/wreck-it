@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -51,10 +51,32 @@ test("findings matching manifest extras are neither hits nor false positives", (
   assert.deepEqual(r.falsePositives.map((x) => x.finding), ["WR-002"]);
 });
 
-test("source file match works even when route differs; candidates count", () => {
-  assert.ok(matchScore(f("WR-1", { route: "/checkout", source: { file: "lib/cart.ts", line: 19, confidence: "high" } }), manifest.bugs[0]) > 0);
-  assert.ok(matchScore(f("WR-2", { route: "/x", source: { confidence: "low", candidates: ["components/Footer.tsx:16?"] } }), manifest.bugs[2]) > 0);
+test("source supports behavioral evidence, never replaces it; candidates count", () => {
+  assert.ok(matchScore(f("WR-1", { title: "subtotal ignores quantity", route: "/checkout", source: { file: "lib/cart.ts", line: 19, confidence: "high" } }), manifest.bugs[0]) > 0);
+  assert.ok(matchScore(f("WR-2", { title: "Dead pricng link", route: "/x", source: { confidence: "low", candidates: ["components/Footer.tsx:16?"] } }), manifest.bugs[2]) > 0);
+  assert.equal(matchScore(f("WR-3", { title: "Unrelated defect", source: { file: "lib/cart.ts", line: 19 } }), manifest.bugs[0]), 0);
   assert.equal(matchScore(f("WR-3", { route: "/x", title: "unrelated" }), manifest.bugs[0]), 0);
+});
+
+const actualManifest = JSON.parse(readFileSync(join(here, "..", "examples/buggy-app/wreck-manifest.json"), "utf8"));
+const archive = (agent) => readdirSync(join(here, "../docs/evals/2026-10-20", agent, "findings")).map((name) => JSON.parse(readFileSync(join(here, "../docs/evals/2026-10-20", agent, "findings", name), "utf8")));
+
+test("same source and page snapshot cannot invent empty-cart, duplicate-order or rating matches", () => {
+  const codex = archive("codex"), sonnet = archive("sonnet");
+  for (const [id, bug] of [["WR-033", "B12"], ["WR-035", "B15"], ["WR-010", "B06"]]) {
+    assert.equal(matchScore(codex.find((f) => f.id === id), actualManifest.bugs.find((b) => b.id === bug)), 0, `${id} != ${bug}`);
+  }
+  assert.equal(matchScore(sonnet.find((f) => f.id === "WR-021"), actualManifest.bugs.find((b) => b.id === "B06")), 0);
+});
+
+test("rescoring frozen discoveries preserves reviewed recall and correct root causes", () => {
+  const codex = evaluate(actualManifest, archive("codex"));
+  const sonnet = evaluate(actualManifest, archive("sonnet"));
+  assert.equal(codex.found, 21);
+  assert.equal(sonnet.found, 19);
+  assert.equal(codex.bugs.find((b) => b.id === "B12").found, false);
+  assert.equal(codex.bugs.find((b) => b.id === "B15").finding, "WR-024");
+  assert.ok(sonnet.extras.some((e) => e.finding === "WR-021" && e.extra === "X07"));
 });
 
 test("each bug matched once; best-scoring finding wins", () => {
@@ -64,6 +86,18 @@ test("each bug matched once; best-scoring finding wins", () => {
   ]);
   assert.equal(r.bugs[0].finding, "WR-002");
   assert.deepEqual(r.duplicates, [{ finding: "WR-001", bug: "B01" }]);
+});
+
+test("ties need review and stronger extras cannot inflate seeded recall", () => {
+  const bug = manifest.bugs[0];
+  const finding = f("WR-001", { route: "/cart", title: "Subtotal ignores quantity" });
+  const tied = evaluate({ bugs: [bug, { ...bug, id: "B99" }] }, [finding]);
+  assert.equal(tied.found, 0);
+  assert.deepEqual(tied.ambiguous, [{ finding: "WR-001", candidates: ["B01", "B99"] }]);
+  assert.equal(tied.pass, false);
+  const extra = evaluate({ bugs: [bug], extras: [{ ...bug, id: "X01", keywords: ["quantity", "subtotal", "ignores"] }] }, [finding]);
+  assert.equal(extra.found, 0);
+  assert.deepEqual(extra.extras, [{ finding: "WR-001", extra: "X01" }]);
 });
 
 test("CLI: skips corrupt files, passes gate, exit 0", () => {

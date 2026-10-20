@@ -1,0 +1,40 @@
+{
+  "title": "Dead link: /pricng (404)",
+  "category": "oddity",
+  "severity": "low",
+  "persona": "sweep",
+  "route": "/about",
+  "steps": [
+    {
+      "action": "setViewport",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "action": "goto",
+      "url": "/about"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "linkResolves",
+      "target": {
+        "by": "css",
+        "value": "footer.site-footer > div.container > nav.footer-links > a:nth-of-type(3)"
+      }
+    }
+  ],
+  "expected": "Links on the page lead to existing pages",
+  "actual": "A link on /about points to /pricng, which returns 404.",
+  "evidence": {
+    "screenshots": [
+      "shots/sweep-07648030-f901-4559-8167-5af88c68f719.png",
+      "shots/WR-002-buggy.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "reproduced": true,
+  "id": "WR-002",
+  "createdAt": "2026-10-20T13:27:00.841Z"
+}

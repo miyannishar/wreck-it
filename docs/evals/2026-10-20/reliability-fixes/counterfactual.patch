@@ -1,0 +1,68 @@
+--- a/components/Footer.tsx
++++ b/components/Footer.tsx
+@@ -13,7 +13,7 @@
+         <nav aria-label="Footer" className="footer-links">
+           <Link href="/products">All products</Link>
+           <Link href="/about">About us</Link>
+-          <Link href="/pricng">Shipping &amp; pricing</Link>
++          <Link href="/pricing">Shipping &amp; pricing</Link>
+           <Link href="/orders">Track an order</Link>
+           <Link href="/account/settings">Account</Link>
+         </nav>
+--- a/app/about/page.tsx
++++ b/app/about/page.tsx
+@@ -6,7 +6,7 @@
+   return (
+     <div style={{ maxWidth: 720 }}>
+       <h1>About Gadgetly</h1>
+-      <img src="/images/team-photo.jpg" alt="The Gadgetly team at our first pop-up shop" width={720} height={360} style={{ width: "100%", height: "auto", borderRadius: 12 }} />
++      <img src="/logo.svg" alt="The Gadgetly team at our first pop-up shop" width={720} height={360} style={{ width: "100%", height: "auto", borderRadius: 12 }} />
+       <p>
+         Gadgetly started in 2019 as a weekend market stall selling refurbished headphones. Today we&apos;re a small team of
+         gadget nerds who test everything we sell, so you don&apos;t have to.
+--- a/app/signup/page.tsx
++++ b/app/signup/page.tsx
+@@ -26,8 +26,8 @@
+     });
+     setSubmitting(false);
+     if (!res.ok) {
+-      setError("Something went wrong");
+-      setForm(EMPTY);
++      const data = await res.json();
++      setError(data.error ?? "Please check your details");
+       return;
+     }
+     router.push("/products");
+--- a/app/api/orders/route.ts
++++ b/app/api/orders/route.ts
+@@ -35,7 +35,7 @@
+     items: cart.items.map((i) => ({ ...i })),
+     subtotal: summary.subtotal,
+     discount: summary.discount,
+-    total: applyCoupon(summary.total, cart.coupon),
++    total: summary.total,
+     couponCode: cart.coupon?.code ?? null,
+     address,
+     phone,
+--- a/app/orders/[id]/page.tsx
++++ b/app/orders/[id]/page.tsx
+@@ -18,7 +18,7 @@
+       </p>
+       <h1>Order #{order.id}</h1>
+       <p className="muted">
+-        Placed {order.createdAt} · <span style={{ textTransform: "capitalize" }}>{order.status}</span>
++        Placed {new Date(order.createdAt).toLocaleDateString()} · <span style={{ textTransform: "capitalize" }}>{order.status}</span>
+       </p>
+       <table className="table">
+         <thead>
+--- a/app/cart/page.tsx
++++ b/app/cart/page.tsx
+@@ -67,7 +67,7 @@
+             <th>Price</th>
+             <th>Qty</th>
+             <th>Total</th>
+-            <th />
++            <th>Actions</th>
+           </tr>
+         </thead>
+         <tbody>

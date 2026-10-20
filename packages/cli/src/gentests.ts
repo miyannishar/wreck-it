@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { mkdir, readdir, readFile, unlink } from "node:fs/promises";
 import { join } from "node:path";
+import { createHash } from "node:crypto";
 import type { Assertion, Finding, Step, Target } from "./schema.js";
 import { listFindings, writeAtomic } from "./findings.js";
 import { loadConfig } from "./config.js";
@@ -39,14 +40,23 @@ const valueCode = (v: string): string =>
 const SETTLE = `await page.waitForLoadState("networkidle", { timeout: 5_000 }).catch(() => {});`;
 const SETTLES = new Set<Step["action"]>(["goto", "click", "press", "reload", "back", "forward"]);
 
-function stepCode(s: Step): string {
-  const code = stepAction(s);
+/** Keep app URLs portable while preserving deliberate external destinations. */
+function appUrl(url: string, baseUrl: string): string {
+  try {
+    const parsed = new URL(url);
+    if (parsed.origin === new URL(baseUrl).origin) return parsed.pathname + parsed.search + parsed.hash;
+  } catch { /* already relative */ }
+  return url;
+}
+
+function stepCode(s: Step, baseUrl: string): string {
+  const code = stepAction(s, baseUrl);
   return SETTLES.has(s.action) ? `${code}\n  ${SETTLE}` : code;
 }
 
-function stepAction(s: Step): string {
+function stepAction(s: Step, baseUrl: string): string {
   switch (s.action) {
-    case "goto": return `await page.goto(${S(s.url)});`;
+    case "goto": return `await page.goto(${S(appUrl(s.url, baseUrl))});`;
     case "click": {
       const L = locatorCode(s.target);
       return s.count && s.count > 1 ? `await ${L}.click({ clickCount: ${s.count} });` : `await ${L}.click();`;
@@ -59,6 +69,7 @@ function stepAction(s: Step): string {
     case "press":
       return s.target ? `await ${locatorCode(s.target)}.press(${S(s.key)});` : `await page.keyboard.press(${S(s.key)});`;
     case "wait": return `await page.waitForTimeout(${s.ms});`;
+    case "waitFor": return `await ${locatorCode(s.target)}.waitFor({ state: ${S(s.state)} });`;
     case "reload": return `await page.reload();`;
     case "back": return `await page.goBack();`;
     case "forward": return `await page.goForward();`;
@@ -69,7 +80,7 @@ function stepAction(s: Step): string {
       if (s.headers !== undefined) o.push(`headers: ${JSON.stringify(s.headers)}`);
       if (s.body !== undefined) o.push(`data: ${valueCode(s.body)}`);
       // page.request shares the page's cookies, so requests after login steps are authenticated.
-      return `res = await page.request.fetch(${S(s.url)}, { ${o.join(", ")} });`;
+      return `res = await page.request.fetch(${S(appUrl(s.url, baseUrl))}, { ${o.join(", ")} });`;
     }
   }
 }
@@ -79,6 +90,10 @@ function assertionCode(a: Assertion): string {
     case "visible": return `await expect(${locatorCode(a.target)}).toBeVisible();`;
     case "hidden": return `await expect(${locatorCode(a.target)}).toBeHidden();`;
     case "text": return `await expect(${locatorCode(a.target)})${a.negate ? ".not" : ""}.toContainText(${S(a.contains)});`;
+    case "value": return `await expect(${locatorCode(a.target)}).toHaveValue(${S(a.equals)});`;
+    case "textMatches": return `await expect(${locatorCode(a.target)})${a.negate ? ".not" : ""}.toContainText(new RegExp(${S(a.pattern)}));`;
+    case "imageLoaded": return `await expect(${locatorCode(a.target)}).toBeVisible();\n  await expect.poll(() => ${locatorCode(a.target)}.evaluate((el) => el instanceof HTMLImageElement && el.complete && el.naturalWidth > 0)).toBe(true);`;
+    case "linkResolves": return `{\n    const link = ${locatorCode(a.target)};\n    await expect(link).toBeVisible();\n    const href = await link.getAttribute("href");\n    expect(href, "link has a destination").toBeTruthy();\n    const response = await page.request.get(new URL(href!, page.url()).href);\n    expect(response.status(), "rendered link resolves").toBeLessThan(400);\n  }`;
     case "url": return `await expect(page).toHaveURL(new RegExp(${S(regexEscape(a.contains))}));`;
     case "count": return `await expect(${locatorCode(a.target, { first: false })}).toHaveCount(${a.equals});`;
     case "noConsoleErrors": return `expect(consoleErrors).toEqual([]);`;
@@ -127,7 +142,7 @@ export function renderSpec(f: Finding, baseUrl: string, authFile?: string): stri
     "  page.on(\"response\", (r) => { if (r.status() >= 500) serverErrors.push(`${r.status()} ${r.url()}`); });",
     `  let res: Awaited<ReturnType<typeof page.request.fetch>> | undefined;`,
     ``,
-    ...f.steps.map((s) => `  ${stepCode(s)}`),
+    ...f.steps.map((s) => `  ${stepCode(s, baseUrl)}`),
     ``,
     ...f.assertions.map((a) => `  ${assertionCode(a)}`),
     `});`,
@@ -146,27 +161,64 @@ async function resolveBaseUrl(root: string): Promise<string> {
   return "http://localhost:3000";
 }
 
-export async function genTests(root: string): Promise<{ written: string[]; skipped: { id: string; reason: string }[]; scaffoldedConfig: boolean; warnings: string[] }> {
+export async function genTests(root: string, opts: { force?: boolean } = {}): Promise<{ written: string[]; preserved: string[]; skipped: { id: string; reason: string }[]; scaffoldedConfig: boolean; warnings: string[] }> {
   const baseUrl = await resolveBaseUrl(root);
   const { accounts } = await loadConfig(root);
   const authWarnings = new Set<string>();
   const { findings, errors } = await listFindings(root);
   const dir = wreckPaths(root).testsDir;
-  if (existsSync(dir)) {
-    for (const n of await readdir(dir)) if (/^WR-.*\.spec\.ts$/.test(n)) await unlink(join(dir, n));
+  const manifestFile = join(wreckPaths(root).dir, "generated-tests.json");
+  const hash = (text: string) => createHash("sha256").update(text).digest("hex");
+  let previous: Record<string, string> = {};
+  const warnings = errors.map((e) => `skipped ${e.file}: ${e.message}`);
+  if (existsSync(manifestFile)) {
+    try {
+      const saved = JSON.parse(await readFile(manifestFile, "utf8"));
+      if (saved.version !== 1 || !saved.files || typeof saved.files !== "object" || Array.isArray(saved.files)
+        || Object.entries(saved.files).some(([name, digest]) => !/^WR-\d{3,}\.spec\.ts$/.test(name) || typeof digest !== "string" || !/^[a-f0-9]{64}$/.test(digest))) throw new Error("invalid manifest");
+      previous = saved.files;
+    } catch { warnings.push("generated-tests.json is unreadable; existing specs will be preserved unless --force is supplied"); }
   }
+  const next: Record<string, string> = {};
   const written: string[] = [];
+  const preserved: string[] = [];
   const skipped: { id: string; reason: string }[] = [];
+  const eligible = new Set(findings.filter((f) => f.reproduced && f.category !== "performance").map((f) => `${f.id}.spec.ts`));
+  const preserve = (file: string) => {
+    preserved.push(file);
+    warnings.push(`preserved ${file}: edited or untracked spec; reconcile it with the finding, or use gen-tests --force to replace it`);
+  };
+  if (existsSync(dir)) {
+    for (const name of await readdir(dir)) {
+      if (!/^WR-\d{3,}\.spec\.ts$/.test(name) || eligible.has(name)) continue;
+      const file = join(dir, name);
+      if (opts.force || previous[name] === hash(await readFile(file, "utf8"))) await unlink(file);
+      else { preserve(file); if (previous[name]) next[name] = previous[name]; }
+    }
+  }
   for (const f of findings) {
     if (!f.reproduced) { skipped.push({ id: f.id, reason: "not reproduced" }); continue; }
     if (f.category === "performance") { skipped.push({ id: f.id, reason: "load findings have no browser repro" }); continue; }
     await mkdir(dir, { recursive: true });
     const file = join(dir, `${f.id}.spec.ts`);
+    const name = `${f.id}.spec.ts`;
     const authFile = f.auth ? accounts.find((a) => a.label === f.auth)?.storageState ?? authRel(f.auth) : undefined;
     if (authFile && !existsSync(join(root, authFile))) authWarnings.add(`${f.id} starts logged in as "${f.auth}", but ${authFile} doesn't exist yet; run \`wreck-it login --label ${f.auth}\` (or set ${authEnv(f.auth!)} in CI)`);
-    await writeAtomic(file, renderSpec(f, baseUrl, authFile));
+    const rendered = renderSpec(f, baseUrl, authFile);
+    if (existsSync(file) && !opts.force) {
+      const current = await readFile(file, "utf8");
+      if (hash(current) !== previous[name] && current !== rendered) {
+        preserve(file);
+        if (previous[name]) next[name] = previous[name];
+        continue;
+      }
+    }
+    await writeAtomic(file, rendered);
+    next[name] = hash(rendered);
     written.push(file);
   }
+  await mkdir(wreckPaths(root).dir, { recursive: true });
+  await writeAtomic(manifestFile, JSON.stringify({ version: 1, files: next }, null, 2) + "\n");
   let scaffoldedConfig = false;
   const hasConfig = ["ts", "js", "mjs", "cjs"].some((e) => existsSync(join(root, `playwright.config.${e}`)));
   if (!hasConfig) {
@@ -176,5 +228,5 @@ export async function genTests(root: string): Promise<{ written: string[]; skipp
     );
     scaffoldedConfig = true;
   }
-  return { written, skipped, scaffoldedConfig, warnings: [...errors.map((e) => `skipped ${e.file}: ${e.message}`), ...authWarnings] };
+  return { written, preserved, skipped, scaffoldedConfig, warnings: [...warnings, ...authWarnings] };
 }

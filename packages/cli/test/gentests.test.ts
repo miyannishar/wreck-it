@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { existsSync } from "node:fs";
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { locatorCode, renderSpec, genTests } from "../src/gentests.js";
-import { addFinding } from "../src/findings.js";
+import { addFinding, updateFinding } from "../src/findings.js";
 import { tmpRoot, runCli } from "./helpers.js";
 import { sample } from "./fixtures.js";
 
@@ -62,7 +62,7 @@ describe("gen-tests", () => {
     expect(renderSpec(lo, "http://x")).toContain(" * Likely in: a.ts, b.ts — maybe");
     expect(renderSpec(none, "http://x")).toContain(" * Source: not traced");
   });
-  it("genTests writes eligible files, skips others, scaffolds config once, removes stale specs", async () => {
+  it("writes eligible files and preserves pre-existing specs without ownership metadata", async () => {
     const root = await tmpRoot();
     await mkdir(join(root, "tests", "wreck-it"), { recursive: true });
     await writeFile(join(root, "tests", "wreck-it", "WR-099.spec.ts"), "stale");
@@ -74,10 +74,81 @@ describe("gen-tests", () => {
     expect(r.written.map((p) => p.split("/").pop())).toEqual(["WR-001.spec.ts"]);
     expect(r.skipped.map((s) => s.id)).toEqual(["WR-002", "WR-003"]);
     expect(r.scaffoldedConfig).toBe(true);
-    expect(existsSync(join(root, "tests", "wreck-it", "WR-099.spec.ts"))).toBe(false);
+    expect(existsSync(join(root, "tests", "wreck-it", "WR-099.spec.ts"))).toBe(true);
+    expect(r.preserved).toEqual([join(root, "tests", "wreck-it", "WR-099.spec.ts")]);
     expect(existsSync(join(root, "tests", "wreck-it", "helper.ts"))).toBe(true);
     expect(await readFile(join(root, "playwright.config.ts"), "utf8")).toContain("WRECK_IT_BASE_URL");
     expect((await genTests(root)).scaffoldedConfig).toBe(false);
+  });
+  it("keeps edited specs and their fixture across repeated regeneration; --force replaces them", async () => {
+    const root = await tmpRoot();
+    await addFinding(root, sample({ reproduced: true }));
+    const first = await genTests(root);
+    const file = first.written[0]!;
+    const custom = (await readFile(file, "utf8")).replace('from "@playwright/test"', 'from "./fixtures"') + "// agent assertion\n";
+    await writeFile(file, custom);
+    const fixture = join(root, "tests/wreck-it/fixtures.ts");
+    await writeFile(fixture, "// custom fixture\n");
+    for (let i = 0; i < 2; i++) {
+      const r = await genTests(root);
+      expect(r.written).toEqual([]);
+      expect(r.preserved).toEqual([file]);
+      expect(await readFile(file, "utf8")).toBe(custom);
+    }
+    await genTests(root, { force: true });
+    expect(await readFile(file, "utf8")).not.toContain("// agent assertion");
+    expect(await readFile(fixture, "utf8")).toBe("// custom fixture\n");
+  });
+  it("removes only unedited owned stale specs and keeps edited stale specs", async () => {
+    const root = await tmpRoot();
+    await addFinding(root, sample({ reproduced: true }));
+    await addFinding(root, sample({ reproduced: true }));
+    const r = await genTests(root);
+    await writeFile(r.written[1]!, "custom regression\n");
+    await unlink(join(root, ".wreck-it/findings/WR-001.json"));
+    await unlink(join(root, ".wreck-it/findings/WR-002.json"));
+    const next = await genTests(root);
+    expect(existsSync(r.written[0]!)).toBe(false);
+    expect(await readFile(r.written[1]!, "utf8")).toBe("custom regression\n");
+    expect(next.preserved).toEqual([r.written[1]]);
+  });
+  it("preserves specs when ownership metadata is corrupt", async () => {
+    const root = await tmpRoot();
+    await addFinding(root, sample({ reproduced: true }));
+    const r = await genTests(root);
+    await writeFile(r.written[0]!, "custom regression\n");
+    await writeFile(join(root, ".wreck-it/generated-tests.json"), "{broken");
+    const next = await genTests(root);
+    expect(await readFile(r.written[0]!, "utf8")).toBe("custom regression\n");
+    expect(next.warnings).toContain("generated-tests.json is unreadable; existing specs will be preserved unless --force is supplied");
+  });
+  it("refreshes unedited specs after a finding changes and works on an empty project", async () => {
+    const root = await tmpRoot();
+    expect((await genTests(root)).written).toEqual([]);
+    const { finding } = await addFinding(root, sample({ reproduced: true }));
+    const file = (await genTests(root)).written[0]!;
+    const before = await readFile(file, "utf8");
+    await updateFinding(root, finding.id, { title: "Corrected finding title" });
+    expect((await genTests(root)).written).toEqual([file]);
+    const after = await readFile(file, "utf8");
+    expect(after).not.toBe(before);
+    expect(after).toContain("Corrected finding title");
+    await writeFile(file, "custom code\n");
+    expect((await runCli(["gen-tests", "--force", "--root", root])).code).toBe(0);
+    expect(await readFile(file, "utf8")).toBe(after);
+  });
+  it("rebases app navigation and HTTP URLs without rewriting external destinations", async () => {
+    const root = await tmpRoot();
+    const { finding } = await addFinding(root, sample({ reproduced: true, steps: [
+      { action: "goto", url: "http://localhost:4318/cart?x=1#total" },
+      { action: "http", method: "POST", url: "http://localhost:4318/api/cart" },
+      { action: "goto", url: "https://example.com/external" },
+    ] }));
+    const code = renderSpec(finding, "http://localhost:4318");
+    expect(code).toContain('page.goto("/cart?x=1#total")');
+    expect(code).toContain('page.request.fetch("/api/cart",');
+    expect(code).toContain('page.goto("https://example.com/external")');
+    expect(code).not.toContain('page.goto("http://localhost:4318');
   });
   it("returns warnings for corrupt findings", async () => {
     const root = await tmpRoot();

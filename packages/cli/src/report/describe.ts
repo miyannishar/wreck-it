@@ -22,6 +22,7 @@ export function describeStep(s: Step): string {
     case "hover": return `Hover ${describeTarget(s.target)}`;
     case "press": return `Press ${s.key}${s.target ? ` in ${describeTarget(s.target)}` : ""}`;
     case "wait": return `Wait ${s.ms} ms`;
+    case "waitFor": return `Wait for ${describeTarget(s.target)} to be ${s.state}`;
     case "reload": return "Reload the page";
     case "back": return "Go back";
     case "forward": return "Go forward";

@@ -62,4 +62,16 @@ describe("FindingInputSchema", () => {
     expect(FindingInputSchema.safeParse({ ...valid, reproducd: true }).success).toBe(false);
     expect(FindingInputSchema.safeParse({ ...valid, steps: [{ action: "goto", url: "/", extra: 1 }] }).success).toBe(false);
   });
+  it("accepts completion waits, values, rendered resources and valid text patterns", () => {
+    const target = { by: "css", value: ".error" };
+    expect(FindingInputSchema.safeParse({ ...valid,
+      steps: [...valid.steps, { action: "waitFor", target }],
+      assertions: [
+        { kind: "value", target: { by: "label", value: "Your name" }, equals: "Shopper" },
+        { kind: "imageLoaded", target }, { kind: "linkResolves", target },
+        { kind: "textMatches", target, pattern: "[0-9]{4}-[0-9]{2}-[0-9]{2}T", negate: true },
+      ],
+    }).success).toBe(true);
+    expect(FindingInputSchema.safeParse({ ...valid, assertions: [{ kind: "textMatches", target, pattern: "[" }] }).success).toBe(false);
+  });
 });

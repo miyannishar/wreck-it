@@ -1,0 +1,71 @@
+{
+  "title": "Order date uses display format at every time of day",
+  "category": "functional",
+  "severity": "medium",
+  "persona": "reliability-check",
+  "route": "/checkout",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "http://localhost:4318/checkout"
+    },
+    {
+      "action": "fill",
+      "target": {
+        "by": "label",
+        "value": "Delivery address"
+      },
+      "value": "123 Test Lane"
+    },
+    {
+      "action": "click",
+      "target": {
+        "by": "role",
+        "role": "button",
+        "name": "Place order",
+        "exact": true
+      }
+    },
+    {
+      "action": "waitFor",
+      "target": {
+        "by": "role",
+        "role": "heading",
+        "name": "Order #",
+        "exact": false
+      },
+      "state": "visible"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "text",
+      "target": {
+        "by": "css",
+        "value": "main p.muted"
+      },
+      "contains": "Placed"
+    },
+    {
+      "kind": "textMatches",
+      "target": {
+        "by": "css",
+        "value": "main p.muted"
+      },
+      "pattern": "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}",
+      "negate": true
+    }
+  ],
+  "expected": "Formatted date without a raw ISO timestamp",
+  "actual": "Raw timestamp rendered",
+  "evidence": {
+    "screenshots": [
+      "shots/WR-005-buggy.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "reproduced": true,
+  "id": "WR-005",
+  "createdAt": "2026-10-20T13:27:01.661Z"
+}
