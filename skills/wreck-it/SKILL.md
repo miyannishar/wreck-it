@@ -1,6 +1,7 @@
 ---
 name: wreck-it
-description: Full wreck-it run against a locally running web app. It tests like normal users, ICP personas, rushed beginners, chaos monkeys and traffic spikes, then writes a scored bug report with source file:line and regression Playwright tests. Use when the user says "wreck my app", "wreck it", "test my app like a user", "find bugs before launch", "is my app ready to ship", or asks for a readiness score. Also for one feature: "test the checkout", "just test signup", "check the coupon flow" (a focused run). For a single stage ("just stress test my API", "only check accessibility"), use the matching wreck-* skill.
+description: >-
+  Full wreck-it run against a locally running web app. It tests like normal users, ICP personas, rushed beginners, chaos monkeys and traffic spikes, then writes a scored bug report with source file:line and regression Playwright tests. Use when the user says "wreck my app", "wreck it", "test my app like a user", "find bugs before launch", "is my app ready to ship", or asks for a readiness score. Also for one feature: "test the checkout", "just test signup", "check the coupon flow" (a focused run). For a single stage ("just stress test my API", "only check accessibility"), use the matching wreck-* skill.
 ---
 
 # wreck-it: Wreck your app before your users do
@@ -73,6 +74,10 @@ Not in v1: `WRECK run stage security skipped`.
 `WRECK finding list`: replay every `?` finding in a fresh context and set `reproduced: true` if it shows again (unreproduced findings score nothing). Then use the **wreck-trace** skill on every reproduced finding without a `source`.
 
 ### 10. Report
+Before generating the report, check each reproduced browser finding for a screenshot that shows the actual failure. Revisit findings from CLI sweeps too; follow the screenshot guidance in `references/recording-findings.md`. Verify the saved image files exist and resolve any missing-screenshot warnings. API-only or load findings may use request/metric evidence instead; say when a screenshot is not applicable or could not be captured.
+
+Generate the report and tests after the last finding update. If you change a finding afterward, regenerate both before presenting results so counts, severities, evidence, and tests agree with the stored findings.
+
 ```bash
 WRECK report && WRECK gen-tests && WRECK run stage report done
 ```
@@ -86,3 +91,15 @@ WRECK report && WRECK gen-tests && WRECK run stage report done
 ## Final message
 
 Short: the score and band, the "fix this first" finding with its `file:line`, counts by severity, incomplete stages, the paths `.wreck-it/report.html`, `.wreck-it/report.md`, `tests/wreck-it/`, and `npx playwright test tests/wreck-it`. Offer to fix the top findings; wait for a yes.
+
+When presenting a bug, attach its relevant screenshot beside the finding ID and explanation. Use the chat's image attachment support or a Markdown image with the actual saved file path; a report path alone does not show the evidence. Present the top findings in chat with their screenshots and keep the complete set in the reports. If an image is unavailable or not applicable, say why and link the request, trace, or metrics instead. Resolve stored `shots/...` paths relative to `.wreck-it/`.
+
+Use this shape for each browser finding you include in chat (replace the example with the actual finding and verified absolute image path):
+
+```markdown
+**WR-007 — Cart subtotal ignores quantity** (`lib/cart.ts:19`)
+Three $79.99 items should total $239.97; the page shows $79.99.
+![WR-007: quantity 3 with an incorrect subtotal](/absolute/project/.wreck-it/shots/WR-007-cart.png)
+```
+
+Before sending, open each image you plan to present and describe the state and values it actually shows. Verify that each browser finding you present has an image attachment or image embed. A list of image filenames or a statement that screenshots are saved is not an attachment. Keep the response concise by presenting fewer findings, with their evidence, and linking the complete report; leave the remaining browser findings in that report instead of adding an unillustrated list in chat.

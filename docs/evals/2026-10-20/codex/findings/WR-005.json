@@ -1,0 +1,75 @@
+{
+  "title": "Signup error wipes fields and hides validation detail",
+  "category": "ux",
+  "severity": "medium",
+  "persona": "rushed-beginner",
+  "route": "/signup",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "/signup"
+    },
+    {
+      "action": "fill",
+      "target": {
+        "by": "label",
+        "value": "Your name"
+      },
+      "value": "wreck-it new shopper"
+    },
+    {
+      "action": "fill",
+      "target": {
+        "by": "label",
+        "value": "Email"
+      },
+      "value": "wreck.benchmark+{{unique}}@gadgetly.test"
+    },
+    {
+      "action": "fill",
+      "target": {
+        "by": "label",
+        "value": "Password"
+      },
+      "value": "short"
+    },
+    {
+      "action": "click",
+      "target": {
+        "by": "role",
+        "role": "button",
+        "name": "Sign up"
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "visible",
+      "target": {
+        "by": "css",
+        "value": "input[value=\"wreck-it new shopper\"]"
+      }
+    }
+  ],
+  "expected": "Explain password length and preserve entered name and email",
+  "actual": "Gadgetly\nShop\nAbout\nLog in\nSign up\nCreate your account\nYour name\nEmail\nPassword\nAt least 8 characters.\n\nSomething went wrong\n\nSign up\n\nAlready have an account? Log in\n\nGadgetly\n\nSmall gadgets, big joy. Free shipping over $50.\n\n15 shoppers browsing right now\n\nAll products\nAbout us\nShipping & pricing\nTrack an order\nAccount",
+  "evidence": {
+    "screenshots": [
+      "shots/signup-errors.png"
+    ],
+    "console": [],
+    "network": [],
+    "trace": "shots/signup-errors.zip"
+  },
+  "source": {
+    "file": "app/signup/page.tsx",
+    "line": 30,
+    "snippet": "      setForm(EMPTY);",
+    "why": "Error handler discards all input and replaces server validation with a generic error.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "id": "WR-005",
+  "createdAt": "2026-10-20T02:09:52.446Z"
+}

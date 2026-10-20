@@ -1,0 +1,35 @@
+{
+  "title": "Duplicate of WR-008: rich sweep confirmation",
+  "category": "oddity",
+  "severity": "low",
+  "persona": "sweep",
+  "route": "/",
+  "steps": [
+    {
+      "action": "setViewport",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "action": "goto",
+      "url": "/"
+    },
+    {
+      "action": "http",
+      "method": "GET",
+      "url": "/pricng"
+    }
+  ],
+  "assertions": [],
+  "expected": "Links on the page lead to existing pages",
+  "actual": "Consolidated into WR-008.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "reproduced": false,
+  "auth": "main",
+  "id": "WR-030",
+  "createdAt": "2026-10-20T11:36:17.429Z"
+}

@@ -1,0 +1,34 @@
+{
+  "title": "a11y: Elements must meet minimum color contrast ratio thresholds (color-contrast)",
+  "category": "accessibility",
+  "severity": "medium",
+  "persona": "a11y-scan",
+  "route": "/products",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "http://localhost:4318/products"
+    }
+  ],
+  "assertions": [],
+  "expected": "Elements must meet minimum color contrast ratio thresholds (WCAG/axe rule color-contrast) satisfied on /products",
+  "actual": "axe-core reports 24 elements failing color-contrast (serious), e.g. article:nth-child(1) > .ProductCard-module__9j1fXa__price; see https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI\nFresh browser inspection: All products\nSearch products\nSearch\nAll\nAudio\nWearables\nHome\nAccessories\nCameras\nGaming\nAurora Wireless Earbuds\n\n★ 3.7 (28)\nAudio\n\n$79.99\n\nPulse Over-Ear Headphones\n\n★ 4.1 (27)\nAudio\n\n$149.99\n\nEcho Mini Speaker\n\n★ 4.0 (34)\nAudio\n\n$49.99\n\nStudio Desk Microphone\n\n★ 4.1 (31)\nAudio\n\n$119.99\n\nOrbit Smartwatch\n\n★ 3.9 (34)\nWearables\n\n$229.99\n\nStride Fitness Band\n\n★ undefined (0)\nWearables\n\n$59.99\n\nLumen Smart Ring\n\n★ 4.2 (20)\nWearables\n\n$279.99\n\nHalo Sleep Mask\n\n★ 3.9 (14)\nWearables\n\n$89.99\n\nNimbus Smart Bulb (4-pack)\n\n★ 4.1 (28)\nHome\n\n$39.99\n\nHearth Smart Thermostat\n\n★ 3.7 (34)\nHome\n\n$179.99\n\nSentinel Video Doorbell\n\n★ 3.5 (20)\nHome\n\n$129.99\n\nBreeze Air Purifier\n\n★ 3.7 (32)\nHome\n\n$159.99\n\nVolt 65W GaN Charger\n\n★ undefined (0)\nAccessories\n\n$44.99\n\nCoil Braided USB-C Cable\n\n★ 4.2 (20)\nAccessories\n\n$14.99\n\nDock Pro Hub\n\n★ 4.0 (17)\nAccessories\n\n$89.99\n\nFolio Tablet Stand\n\n★ 4.1 (22)\nAccessories\n\n$29.99\n\nSnap Instant Camera\n\n★ 3.9 (34)\nCameras\n\n$99.99\n\nVista Action Cam\n\n★ 4.2 (12)\nCameras\n\n$249.99\n\nPrism Webcam 4K\n\n★ undefined (0)\nCameras\n\n$139.99\n\nTripod Go\n\n★ 4.0 (24)\nCameras\n\n$34.99\n\nArcade Wireless Controller\n\n★ 4.0 (22)\nGaming\n\n$69.99\n\nQuest Gaming Mouse\n\n★ 4.2 (29)\nGaming\n\n$54.99\n\nForge Mechanical Keyboard\n\n★ 4.1 (24)\nGaming\n\n$129.99\n\nNova Gaming Headset\n\n★ undefined (0)\nGaming\n\n$99.99\nrgb(180, 184, 191)\nAlso on http://localhost:4318/cart (1 element).\nAlso on http://localhost:4318/products (24 elements).",
+  "evidence": {
+    "screenshots": [
+      "shots/WR-016-replay.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "components/ProductCard.module.css",
+    "line": 47,
+    "snippet": "  color: #b4b8bf;",
+    "why": "Light gray price text on white fails normal-text contrast threshold.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "id": "WR-016",
+  "createdAt": "2026-10-20T02:10:29.444Z"
+}

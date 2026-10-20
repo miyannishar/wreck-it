@@ -18,6 +18,7 @@ Rules:
 - Browser 3 is a real phone emulation (Pixel 7, touch). On it, don't `browser_resize` to a desktop size. On browsers 1–2, a phone persona uses `browser_resize` to its device size.
 - Follow the **wreck-explore** skill's "Pass 2: personas" section for your one persona. That covers the per-page checks, oddity script, coverage logging with `WRECK run visit <route> --persona <slug>`, time budget, and in-character behavior.
 - Record findings exactly as described in the wreck-it skill's `references/recording-findings.md`, with `"persona": "<your slug>"`. `WRECK finding add` is safe to call while other personas run.
+- Attach an inspected screenshot showing each browser bug in `evidence.screenshots`. In your handoff, include the saved screenshot path beside its finding ID so the dispatcher can attach it when presenting the bug.
 - Reproduce each finding **right after recording it**: close the browser (`browser_close`), replay the steps from scratch, then `WRECK finding update <id> '{"reproduced":true}'`. Don't leave this for later.
 - Do not run `run init`, `report` or `gen-tests`. The dispatcher owns those.
 - Do not fix code.

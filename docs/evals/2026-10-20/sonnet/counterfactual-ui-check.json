@@ -1,0 +1,17 @@
+{
+  "footer": {
+    "href": "/pricing",
+    "destination": "/pricing",
+    "pricingNavigationVerified": true
+  },
+  "aboutImage": {
+    "src": "/logo.svg",
+    "width": 150,
+    "loaded": true
+  },
+  "discount": {
+    "checkoutCents": 4499,
+    "chargedCents": 4499
+  },
+  "passed": true
+}

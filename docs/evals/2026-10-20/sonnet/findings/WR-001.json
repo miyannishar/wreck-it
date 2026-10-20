@@ -1,0 +1,48 @@
+{
+  "title": "Dead link: /pricng (404)",
+  "category": "oddity",
+  "severity": "low",
+  "persona": "sweep",
+  "route": "/",
+  "steps": [
+    {
+      "action": "setViewport",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "action": "goto",
+      "url": "/"
+    },
+    {
+      "action": "http",
+      "method": "GET",
+      "url": "/pricng"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "httpStatus",
+      "below": 400
+    }
+  ],
+  "expected": "Links on the page lead to existing pages",
+  "actual": "A link on / points to /pricng, which returns 404. Also on: /about, /account/settings, /cart, /checkout, /login, /orders, /pricing, /signup, ….",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "components/Footer.tsx",
+    "line": 16,
+    "snippet": "<Link href=\"/pricng\">",
+    "why": "Typo in footer href; page is /pricing",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-001",
+  "createdAt": "2026-10-20T01:55:12.127Z"
+}

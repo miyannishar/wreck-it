@@ -1,0 +1,48 @@
+{
+  "title": "Broken image: /images/team-photo.jpg",
+  "category": "oddity",
+  "severity": "low",
+  "persona": "sweep",
+  "route": "/about",
+  "steps": [
+    {
+      "action": "setViewport",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "action": "goto",
+      "url": "/about"
+    },
+    {
+      "action": "http",
+      "method": "GET",
+      "url": "/images/team-photo.jpg"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "httpStatus",
+      "below": 400
+    }
+  ],
+  "expected": "Every image on the page loads",
+  "actual": "http://localhost:4317/images/team-photo.jpg fails to load on /about.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "app/about/page.tsx",
+    "line": 9,
+    "snippet": "<img src=\"/images/team-photo.jpg\"",
+    "why": "public/images/team-photo.jpg does not exist",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-002",
+  "createdAt": "2026-10-20T01:55:18.329Z"
+}

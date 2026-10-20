@@ -1,0 +1,196 @@
+{
+  "stats": {
+    "startTime": "2026-10-20T11:44:08.703Z",
+    "duration": 420736.95,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 22,
+    "flaky": 0
+  },
+  "statusCounts": {
+    "failed": 21,
+    "timedOut": 1
+  },
+  "tests": [
+    {
+      "finding": "WR-001",
+      "status": "failed",
+      "durationMs": 23142,
+      "errors": [
+        "Error: expect(locator).toContainText(expected) failed\n\nLocator: locator('.summary-total').first()\nExpected substring: \"$299.98\"\nReceived string:    \"Total$149.99\"\nTimeout: 5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-002",
+      "status": "failed",
+      "durationMs": 21579,
+      "errors": [
+        "Error: expect(locator).toContainText(expected) failed\n\nLocator: locator('.summary-total').first()\nExpected substring: \"$134.99\"\nReceived string:    \"Total charged$121.49\"\nTimeout: 5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-003",
+      "status": "failed",
+      "durationMs": 26823,
+      "errors": [
+        "Error: expect(locator).toBeVisible() failed\n\nLocator: locator('input[value=\"wreck-it saved name\"]').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\n"
+      ]
+    },
+    {
+      "finding": "WR-004",
+      "status": "failed",
+      "durationMs": 19988,
+      "errors": [
+        "Error: expect(locator).toBeHidden() failed\n\nLocator:  locator('.cart-badge').first()\nExpected: hidden\nReceived: visible\nTimeout:  5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-005",
+      "status": "failed",
+      "durationMs": 16031,
+      "errors": [
+        "Error: expect(locator).toBeVisible() failed\n\nLocator: locator('input[value=\"wreck-it new shopper\"]').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\n"
+      ]
+    },
+    {
+      "finding": "WR-006",
+      "status": "failed",
+      "durationMs": 23050,
+      "errors": [
+        "Error: expect(locator).not.toContainText(expected) failed\n\nLocator: locator('tbody').first()\nExpected substring: not \"-$299.98\"\nReceived string: \"Pulse Over-Ear Headphones$149.99-$299.98Remove\"\nTimeout: 5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-007",
+      "status": "failed",
+      "durationMs": 14663,
+      "errors": [
+        "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 3\n\n- Array []\n+ Array [\n+   \"500 http://localhost:4318/api/cart/coupon\",\n+ ]"
+      ]
+    },
+    {
+      "finding": "WR-008",
+      "status": "failed",
+      "durationMs": 20376,
+      "errors": [
+        "Error: expect(page).toHaveURL(expected) failed\n\nExpected pattern: /\\/pricing/\nReceived string:  \"http://localhost:4318/pricng\"\nTimeout: 5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-010",
+      "status": "failed",
+      "durationMs": 9434,
+      "errors": [
+        "Error: expect(received).toBeLessThanOrEqual(expected)\n\nExpected: <= 390\nReceived:    736"
+      ]
+    },
+    {
+      "finding": "WR-011",
+      "status": "failed",
+      "durationMs": 12274,
+      "errors": [
+        "Error: expect(received).toBeGreaterThan(expected)\n\nExpected: > 0\nReceived:   0\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate"
+      ]
+    },
+    {
+      "finding": "WR-012",
+      "status": "failed",
+      "durationMs": 13996,
+      "errors": [
+        "Error: expect(locator).not.toContainText(expected) failed\n\nLocator: locator('main').first()\nExpected substring: not \"undefined\"\nReceived string: \"All productsSearch productsSearchallaudiowearableshomeaccessoriescamerasgamingAurora Wireless Earbuds\u2605 3.7 (28)audio$79.99Pulse Over-Ear Headphones\u2605 4.1 (27)audio$149.99Echo Mini Speaker\u2605 4.0 (34)audio$49.99Studio Desk Microphone\u2605 4.1 (31)audio$119.99Orbit Smartwatch\u2605 3.9 (34)wearables$229.99Stride Fitness Band\u2605 undefined (0)wearables$59.99Lumen Smart Ring\u2605 4.2 (20)wearables$279.99Halo Sleep Mask\u2605 3.9 (14)wearables$89.99Nimbus Smart Bulb (4-pack)\u2605 4.1 (28)home$39.99Hearth Smart Thermostat\u2605 3.7 (34)home$179.99Sentinel Video Doorbell\u2605 3.5 (20)home$12"
+      ]
+    },
+    {
+      "finding": "WR-015",
+      "status": "failed",
+      "durationMs": 13555,
+      "errors": [
+        "Error: expect(locator).toBeVisible() failed\n\nLocator: getByRole('button', { name: 'Cart' }).first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\n"
+      ]
+    },
+    {
+      "finding": "WR-016",
+      "status": "failed",
+      "durationMs": 7774,
+      "errors": [
+        "Error: expect(received).toBeGreaterThanOrEqual(expected)\n\nExpected: >= 4.5\nReceived:    1.9906773400118218"
+      ]
+    },
+    {
+      "finding": "WR-017",
+      "status": "failed",
+      "durationMs": 23342,
+      "errors": [
+        "Error: expect(locator).not.toContainText(expected) failed\n\nLocator: locator('main').first()\nExpected substring: not \"Loading your orders\"\nReceived string: \"Loading your orders\"\nTimeout: 5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-020",
+      "status": "failed",
+      "durationMs": 19974,
+      "errors": [
+        "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 3\n\n- Array []\n+ Array [\n+   \"500 http://localhost:4318/api/search?q=%25\",\n+ ]"
+      ]
+    },
+    {
+      "finding": "WR-024",
+      "status": "failed",
+      "durationMs": 16007,
+      "errors": [
+        "Error: expect(received).toHaveLength(expected)\n\nExpected length: 1\nReceived length: 2\nReceived array:  [{\"address\": \"wreck-it duplicate order\", \"couponCode\": null, \"createdAt\": \"2026-10-20T11:49:07.918Z\", \"discount\": 0, \"id\": \"1025\", \"items\": [{\"name\": \"Pulse Over-Ear Headphones\", \"price\": 14999, \"productId\": \"2\", \"quantity\": 1}], \"phone\": \"\", \"status\": \"placed\", \"subtotal\": 14999, \"total\": 14999, \"userId\": \"4902642d-9be7-4ad9-a288-c361eff770f8\"}, {\"address\": \"wreck-it duplicate order\", \"couponCode\": null, \"createdAt\": \"2026-10-20T11:49:08.113Z\", \"discount\": 0, \"id\": \"1026\", \"items\": [{\"name\": \"Pulse Over-Ear Headphones\", \"price\": 14999, \"productId\": \"2\", \"quantity\": 1}], \"phone\": \"\", \"statu",
+        "Error: apiRequestContext._wrapApiCall: ENOENT: no such file or directory, open '/private/var/folders/x4/20z6q0qs0x55_kqthl_1nksw0000gn/T/wreck-it-eval-2026-10-19-69m278wi/codex/test-results/.playwright-artifacts-15/traces/3bb9495f6bb590c45540-7e2c6b71de17c4825965-recording1.trace'",
+        "Error: browserContext._wrapApiCall: ENOENT: no such file or directory, open '/private/var/folders/x4/20z6q0qs0x55_kqthl_1nksw0000gn/T/wreck-it-eval-2026-10-19-69m278wi/codex/test-results/.playwright-artifacts-15/traces/3bb9495f6bb590c45540-7e2c6b71de17c4825965.trace'",
+        "Error: ENOENT: no such file or directory, open '/private/var/folders/x4/20z6q0qs0x55_kqthl_1nksw0000gn/T/wreck-it-eval-2026-10-19-69m278wi/codex/test-results/.playwright-artifacts-15/8a76503b10765a0f3f0130dce23f804e.zip'"
+      ]
+    },
+    {
+      "finding": "WR-025",
+      "status": "failed",
+      "durationMs": 11022,
+      "errors": [
+        "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 1"
+      ]
+    },
+    {
+      "finding": "WR-026",
+      "status": "failed",
+      "durationMs": 19844,
+      "errors": [
+        "Error: expect(locator).not.toContainText(expected) failed\n\nLocator: locator('main > div > p.muted:not(.small)').first()\nExpected substring: not \"Z \u00b7\"\nReceived string: \"Placed 2026-10-20T11:49:30.675Z \u00b7 placed\"\nTimeout: 5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-027",
+      "status": "failed",
+      "durationMs": 13685,
+      "errors": [
+        "Error: expect(locator).toBeVisible() failed\n\nLocator: getByLabel('Phone number').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\n"
+      ]
+    },
+    {
+      "finding": "WR-033",
+      "status": "failed",
+      "durationMs": 17085,
+      "errors": [
+        "Error: expect(locator).toHaveCount(expected) failed\n\nLocator:  getByRole('columnheader', { name: '', exact: true })\nExpected: 0\nReceived: 1\nTimeout:  5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-035",
+      "status": "timedOut",
+      "durationMs": 30503,
+      "errors": [
+        "Test timeout of 30000ms exceeded.",
+        "Error: expect(locator).toBeVisible() failed\n\nLocator: locator('main .error')\nExpected: visible\nError: element(s) not found\n\n"
+      ]
+    },
+    {
+      "finding": "WR-036",
+      "status": "failed",
+      "durationMs": 14564,
+      "errors": [
+        "Error: expect(locator).toBeVisible() failed\n\nLocator: locator('main')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\n"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "title": "Cart subtotal ignores quantity",
+  "category": "functional",
+  "severity": "high",
+  "persona": "normal-user",
+  "route": "/cart",
+  "steps": [
+    {
+      "action": "http",
+      "method": "DELETE",
+      "url": "/api/cart?productId=2"
+    },
+    {
+      "action": "http",
+      "method": "DELETE",
+      "url": "/api/cart/coupon"
+    },
+    {
+      "action": "http",
+      "method": "POST",
+      "url": "/api/cart",
+      "headers": {
+        "content-type": "application/json"
+      },
+      "body": "{\"productId\":\"2\",\"quantity\":1}"
+    },
+    {
+      "action": "goto",
+      "url": "/cart"
+    },
+    {
+      "action": "fill",
+      "target": {
+        "by": "role",
+        "role": "spinbutton",
+        "name": "Quantity for Pulse Over-Ear Headphones"
+      },
+      "value": "2"
+    },
+    {
+      "action": "press",
+      "key": "Tab",
+      "target": {
+        "by": "role",
+        "role": "spinbutton",
+        "name": "Quantity for Pulse Over-Ear Headphones"
+      }
+    },
+    {
+      "action": "wait",
+      "ms": 300
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "text",
+      "target": {
+        "by": "css",
+        "value": ".summary-total"
+      },
+      "contains": "$299.98"
+    }
+  ],
+  "expected": "Two $149.99 units total $299.98",
+  "actual": "Gadgetly\nShop\nOrders\nAbout\nHi, Demo Shopper\nLog out\n2\nYour cart\nProduct\tPrice\tQty\tTotal\t\nPulse Over-Ear Headphones\t$149.99\t\t$299.98\tRemove\nCoupon code\nApply\nSubtotal\n$149.99\nTotal\n$149.99\nCheckout\nGadgetly\n\nSmall gadgets, big joy. Free shipping over $50.\n\n15 shoppers browsing right now\n\nAll products\nAbout us\nShipping & pricing\nTrack an order\nAccount",
+  "evidence": {
+    "screenshots": [
+      "shots/quantity-total.png"
+    ],
+    "console": [],
+    "network": [
+      {
+        "method": "DELETE",
+        "url": "/api/cart?productId=2",
+        "status": 200
+      },
+      {
+        "method": "DELETE",
+        "url": "/api/cart/coupon",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "url": "/api/cart",
+        "status": 201
+      }
+    ],
+    "trace": "shots/quantity-total.zip"
+  },
+  "source": {
+    "file": "lib/cart.ts",
+    "line": 19,
+    "snippet": "  const subtotal = items.reduce((sum, item) => sum + item.price, 0);",
+    "why": "Subtotal sums unit price instead of lineTotal, dropping quantity.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-001",
+  "createdAt": "2026-10-20T02:09:29.005Z"
+}

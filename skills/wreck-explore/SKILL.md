@@ -20,7 +20,7 @@ After each navigation or meaningful action:
 2. Run the oddity script: `browser_evaluate` with the output of `WRECK oddity-script` (fetch it once and reuse it).
 3. Check `browser_console_messages` (errors) and `browser_network_requests` (4xx/5xx).
 4. Log coverage: `WRECK run visit <route> --persona <slug>`.
-5. Before recording a finding, take a screenshot with `browser_take_screenshot`.
+5. Before recording a finding, take a screenshot with `browser_take_screenshot` that shows the failure, inspect it, and attach its actual path in `evidence.screenshots`. Refresh the evidence during reproduction when needed; follow the shared recording guide for storage and presentation.
 
 ## Pass 1: normal-user (stage `normal`)
 

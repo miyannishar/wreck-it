@@ -53,9 +53,18 @@ If the CLI rejects the JSON, it prints `field.path: message` lines. Fix exactly 
   - asserting something the bug doesn't affect (checking a date when the bug is sort order)
   - pinning a value that changes per run (a random total, a stock count)
   - getting the direction backwards: for an invalid input the server wrongly accepts, use `{"kind":"httpStatus","atLeast":400}`, not `below`
+- **Check the completed action, not its pending state.** For asynchronous flows, wait for an observable completion state before checking retained input or saved values. For example, assert that validation feedback is visible before checking that a rejected sign-up kept the name and email; those fields can still be filled while the failing request is in flight, producing a false pass. `networkidle` alone does not establish the expected application state.
 - **auth**: when the steps start from a logged-in state, set `"auth": "<label>"` (an account in `.wreck-it/config.json`) and leave login steps out. The generated test loads that account's saved session (`.wreck-it/auth/<label>.json`, or `WRECK_IT_AUTH_<LABEL>` in CI). Never put passwords in steps.
 - **Re-runnable data**: put `{{unique}}` in values that must be fresh each run (sign-up emails, usernames), e.g. `wreck.tester+{{unique}}@example.com`. Generated tests replace it with a per-run value.
-- **screenshots**: pass the path the screenshot tool reported. The CLI copies it into `.wreck-it/shots/`. A missing file only produces a warning.
+- **screenshots**: capture the failure state, then pass the actual path the screenshot tool reported. The CLI copies images supplied to `finding add` into `.wreck-it/shots/`. Inspect the image to ensure it shows this bug at the relevant viewport; include before/after images when a change or stale state is the evidence. Resolve a missing-file warning before treating the screenshot as attached.
+
+## Screenshot evidence and presentation
+
+- Attach at least one relevant screenshot to each browser-visible bug, including findings created by `sweep` or an accessibility scan. Capture the error, wrong value, broken element, or affected state, rather than an unrelated view of the page. Screenshots support the steps and observations; an image alone does not prove persistence, timing, keyboard behavior, or an accessibility violation.
+- Prefer an image from the successful fresh-context reproduction. Inspect it before attaching it. Preserve enough page context to identify the route and affected element; use a detail image as an extra when useful.
+- For an existing finding, save the image under `.wreck-it/shots/` and patch `evidence.screenshots` with paths relative to `.wreck-it/`, such as `shots/WR-007-checkout-error.png`. `finding update` stores screenshot paths as supplied; it does not copy or normalize them. Preserve existing screenshots when adding another one.
+- A backend-only, API-only, or load finding may have no meaningful screenshot. Include the failing response, trace, or measured result and explain the exception. If browser capture fails, retain the finding and disclose the evidence gap; do not fabricate an attachment.
+- When showing findings to the user, attach or embed each presented bug's relevant screenshot with its finding ID and what it demonstrates. Link the complete report for the remaining findings. Stored `shots/...` paths resolve from `.wreck-it/`, not the project root.
 
 ## Severity
 

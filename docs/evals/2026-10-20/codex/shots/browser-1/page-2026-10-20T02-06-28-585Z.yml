@@ -1,0 +1,61 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Gadgetly" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - navigation "Main" [ref=e6]:
+        - link "Shop" [ref=e7] [cursor=pointer]:
+          - /url: /products
+        - link "About" [ref=e8] [cursor=pointer]:
+          - /url: /about
+      - generic [ref=e9]:
+        - link "Log in" [ref=e10] [cursor=pointer]:
+          - /url: /login
+        - link "Sign up" [ref=e11] [cursor=pointer]:
+          - /url: /signup
+        - button [ref=e13] [cursor=pointer]
+  - main [ref=e18]:
+    - generic [ref=e19]:
+      - heading "Small gadgets, big joy." [level=1] [ref=e20]
+      - paragraph [ref=e21]: Headphones, smart home, cameras and more. New here? Use code SAVE10 for 10% off your first order.
+      - link "Browse the shop" [ref=e22] [cursor=pointer]:
+        - /url: /products
+    - heading "Featured" [level=2] [ref=e23]
+    - generic [ref=e24]:
+      - link [ref=e25] [cursor=pointer]:
+        - /url: /products/2
+        - img "Pulse Over-Ear Headphones" [ref=e26]
+        - heading "Pulse Over-Ear Headphones" [level=3] [ref=e27]
+        - text: $149.99
+      - link [ref=e28] [cursor=pointer]:
+        - /url: /products/5
+        - img "Orbit Smartwatch" [ref=e29]
+        - heading "Orbit Smartwatch" [level=3] [ref=e30]
+        - text: $229.99
+      - link [ref=e31] [cursor=pointer]:
+        - /url: /products/15
+        - img "Dock Pro Hub" [ref=e32]
+        - heading "Dock Pro Hub" [level=3] [ref=e33]
+        - text: $89.99
+      - link [ref=e34] [cursor=pointer]:
+        - /url: /products/23
+        - img "Forge Mechanical Keyboard" [ref=e35]
+        - heading "Forge Mechanical Keyboard" [level=3] [ref=e36]
+        - text: $129.99
+  - contentinfo [ref=e37]:
+    - generic [ref=e38]:
+      - generic [ref=e39]:
+        - strong [ref=e40]: Gadgetly
+        - paragraph [ref=e41]: Small gadgets, big joy. Free shipping over $50.
+      - navigation "Footer" [ref=e42]:
+        - link "All products" [ref=e43] [cursor=pointer]:
+          - /url: /products
+        - link "About us" [ref=e44] [cursor=pointer]:
+          - /url: /about
+        - link "Shipping & pricing" [ref=e45] [cursor=pointer]:
+          - /url: /pricng
+        - link "Track an order" [ref=e46] [cursor=pointer]:
+          - /url: /orders
+        - link "Account" [ref=e47] [cursor=pointer]:
+          - /url: /account/settings
+  - alert [ref=e48]

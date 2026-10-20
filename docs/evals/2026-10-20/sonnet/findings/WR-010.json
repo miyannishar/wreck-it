@@ -1,0 +1,49 @@
+{
+  "title": "Stats endpoint stores every request's full headers in memory without bound",
+  "category": "performance",
+  "severity": "high",
+  "persona": "chaos-monkey",
+  "route": "/api/stats",
+  "steps": [
+    {
+      "action": "http",
+      "method": "GET",
+      "url": "/api/stats"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "text",
+      "target": {
+        "by": "css",
+        "value": "body"
+      },
+      "contains": "pageViews",
+      "negate": true
+    }
+  ],
+  "expected": "Lightweight counter that doesn't retain request headers (incl. cookies/auth) or grow forever",
+  "actual": "Soak of 60 s at 20 connections: RSS 104 -> 313 MB (97.6 MB/min, leak) and p99 36 -> 114 ms while rps fell 2000 -> 494; each call retains the full request headers (cookies, authorization) in a global array that is also filtered linearly",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": [
+      {
+        "method": "GET",
+        "url": "/api/stats",
+        "status": 200
+      }
+    ]
+  },
+  "source": {
+    "file": "app/api/stats/route.ts",
+    "line": 18,
+    "snippet": "visits.push({ ... headers ...})",
+    "why": "Unbounded global array retains full headers per request and is re-filtered each call",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "id": "WR-010",
+  "createdAt": "2026-10-20T01:55:54.804Z"
+}

@@ -1,0 +1,52 @@
+{
+  "title": "Cart PATCH accepts negative quantity (negative line total)",
+  "category": "chaos",
+  "severity": "high",
+  "persona": "chaos-monkey",
+  "route": "/api/cart",
+  "steps": [
+    {
+      "action": "http",
+      "method": "POST",
+      "url": "/api/cart",
+      "body": "{\"productId\": \"3\", \"quantity\": 1}"
+    },
+    {
+      "action": "http",
+      "method": "PATCH",
+      "url": "/api/cart",
+      "body": "{\"productId\":\"3\",\"quantity\":-5}"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "httpStatus",
+      "atLeast": 400
+    }
+  ],
+  "expected": "Negative/fractional quantities rejected with 400",
+  "actual": "200; cart has quantity -5 and lineTotal -$249.95",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": [
+      {
+        "method": "PATCH",
+        "url": "/api/cart",
+        "status": 200
+      }
+    ]
+  },
+  "source": {
+    "file": "app/api/cart/route.ts",
+    "line": 42,
+    "snippet": "else item.quantity = Math.trunc(quantity);",
+    "why": "Only checks finiteness; negative values and fractions that truncate are accepted",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-017",
+  "createdAt": "2026-10-20T01:55:58.070Z"
+}

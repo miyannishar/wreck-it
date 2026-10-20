@@ -1,0 +1,44 @@
+{
+  "title": "Fuzzy search blocks the server: a 24-character query takes ~3 s of CPU",
+  "category": "performance",
+  "severity": "high",
+  "persona": "chaos-monkey",
+  "route": "/api/search",
+  "steps": [
+    {
+      "action": "http",
+      "method": "GET",
+      "url": "/api/search?q=aaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "httpStatus",
+      "below": 400
+    }
+  ],
+  "expected": "Search answers in <500 ms for any query and never blocks other requests",
+  "actual": "Single request ~2.9 s (edit distance over every substring of all reviews, synchronous); with 10 concurrent connections p50 was 3032 ms and throughput 0.2 rps, so one user typing a long query stalls the whole site. Short queries like 'earbuds' already take ~180 ms",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": [
+      {
+        "method": "GET",
+        "url": "/api/search?q=aaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": 200
+      }
+    ]
+  },
+  "source": {
+    "file": "lib/search.ts",
+    "line": 18,
+    "snippet": "function bestMatch(query, text, tolerance)",
+    "why": "Synchronous edit-distance over every substring window blocks the event loop",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "id": "WR-023",
+  "createdAt": "2026-10-20T02:03:01.269Z"
+}

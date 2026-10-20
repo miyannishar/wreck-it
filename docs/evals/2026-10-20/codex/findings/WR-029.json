@@ -1,0 +1,39 @@
+{
+  "title": "Product list slow from sequential per-product reads",
+  "category": "performance",
+  "severity": "high",
+  "persona": "load-tester",
+  "route": "/api/products",
+  "steps": [
+    {
+      "action": "http",
+      "method": "GET",
+      "url": "/api/products"
+    }
+  ],
+  "assertions": [],
+  "expected": "p99 under 500 ms at 10 connections and no breaking point below 100 connections",
+  "actual": "Repeated local production load: p50 546ms, p99 1072ms at 10 connections; breaking point null. See .wreck-it/load and repeat transcripts. Concurrent browser and Lighthouse activity occurred during the initial runs; repeats confirm the signal.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": [
+      {
+        "method": "GET",
+        "url": "/api/products",
+        "status": 200
+      }
+    ]
+  },
+  "source": {
+    "file": "lib/catalog.ts",
+    "line": 13,
+    "snippet": "    const reviews = await db.reviewsFor(product.id);",
+    "why": "Each product sequentially awaits reviews and stock inside a loop: 48 sequential round trips for the catalog.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "id": "WR-029",
+  "createdAt": "2026-10-20T11:33:38.831Z"
+}

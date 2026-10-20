@@ -1,0 +1,30 @@
+{
+  "title": "Duplicate of WR-007: coupon fuzz confirmation",
+  "category": "chaos",
+  "severity": "high",
+  "persona": "fuzz",
+  "route": "/api/cart/coupon",
+  "steps": [
+    {
+      "action": "http",
+      "method": "POST",
+      "url": "/api/cart/coupon",
+      "headers": {
+        "content-type": "application/json"
+      },
+      "body": "{\"code\":\" SAVE10 \"}"
+    }
+  ],
+  "assertions": [],
+  "expected": "Bad input for code is rejected with a 4xx and a helpful message",
+  "actual": "Consolidated into WR-007; same padded-coupon root cause.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "reproduced": false,
+  "auth": "main",
+  "id": "WR-021",
+  "createdAt": "2026-10-20T05:03:09.023Z"
+}

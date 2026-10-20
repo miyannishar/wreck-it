@@ -1,0 +1,137 @@
+{
+  "stats": {
+    "startTime": "2026-10-20T11:32:47.291Z",
+    "duration": 29214.838,
+    "expected": 12,
+    "skipped": 4,
+    "unexpected": 3,
+    "flaky": 0
+  },
+  "statusCounts": {
+    "failed": 3,
+    "passed": 12,
+    "skipped": 4
+  },
+  "tests": [
+    {
+      "finding": "WR-001",
+      "status": "failed",
+      "durationMs": 1903,
+      "errors": [
+        "Error: expect(received).toBeLessThan(expected)\n\nExpected: < 400\nReceived:   404"
+      ]
+    },
+    {
+      "finding": "WR-002",
+      "status": "failed",
+      "durationMs": 1461,
+      "errors": [
+        "Error: expect(received).toBeLessThan(expected)\n\nExpected: < 400\nReceived:   404"
+      ]
+    },
+    {
+      "finding": "WR-003",
+      "status": "passed",
+      "durationMs": 2810,
+      "errors": []
+    },
+    {
+      "finding": "WR-004",
+      "status": "skipped",
+      "durationMs": 0,
+      "errors": []
+    },
+    {
+      "finding": "WR-005",
+      "status": "skipped",
+      "durationMs": 0,
+      "errors": []
+    },
+    {
+      "finding": "WR-006",
+      "status": "skipped",
+      "durationMs": 0,
+      "errors": []
+    },
+    {
+      "finding": "WR-007",
+      "status": "passed",
+      "durationMs": 1296,
+      "errors": []
+    },
+    {
+      "finding": "WR-008",
+      "status": "passed",
+      "durationMs": 1665,
+      "errors": []
+    },
+    {
+      "finding": "WR-009",
+      "status": "passed",
+      "durationMs": 286,
+      "errors": []
+    },
+    {
+      "finding": "WR-011",
+      "status": "failed",
+      "durationMs": 8682,
+      "errors": [
+        "Error: expect(locator).toContainText(expected) failed\n\nLocator: getByText('Total charged').first()\nExpected substring: \"$44.99\"\nReceived string:    \"Total charged\"\nTimeout: 5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-012",
+      "status": "skipped",
+      "durationMs": 0,
+      "errors": []
+    },
+    {
+      "finding": "WR-013",
+      "status": "passed",
+      "durationMs": 2686,
+      "errors": []
+    },
+    {
+      "finding": "WR-014",
+      "status": "passed",
+      "durationMs": 1810,
+      "errors": []
+    },
+    {
+      "finding": "WR-015",
+      "status": "passed",
+      "durationMs": 1062,
+      "errors": []
+    },
+    {
+      "finding": "WR-016",
+      "status": "passed",
+      "durationMs": 156,
+      "errors": []
+    },
+    {
+      "finding": "WR-017",
+      "status": "passed",
+      "durationMs": 156,
+      "errors": []
+    },
+    {
+      "finding": "WR-018",
+      "status": "passed",
+      "durationMs": 105,
+      "errors": []
+    },
+    {
+      "finding": "WR-019",
+      "status": "passed",
+      "durationMs": 165,
+      "errors": []
+    },
+    {
+      "finding": "WR-020",
+      "status": "passed",
+      "durationMs": 101,
+      "errors": []
+    }
+  ]
+}

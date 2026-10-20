@@ -1,0 +1,50 @@
+{
+  "title": "Fresh account orders spin forever",
+  "category": "ux",
+  "severity": "medium",
+  "persona": "normal-user",
+  "route": "/orders",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "/orders"
+    },
+    {
+      "action": "wait",
+      "ms": 5500
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "text",
+      "target": {
+        "by": "css",
+        "value": "main"
+      },
+      "contains": "Loading your orders",
+      "negate": true
+    }
+  ],
+  "expected": "Empty history resolves to an empty state and next action",
+  "actual": "Gadgetly\nShop\nOrders\nAbout\nHi, wreck-it fresh shopper\nLog out\nLoading your orders\nGadgetly\n\nSmall gadgets, big joy. Free shipping over $50.\n\n15 shoppers browsing right now\n\nAll products\nAbout us\nShipping & pricing\nTrack an order\nAccount",
+  "evidence": {
+    "screenshots": [
+      "shots/empty-orders.png"
+    ],
+    "console": [],
+    "network": [],
+    "trace": "shots/empty-orders.zip"
+  },
+  "source": {
+    "file": "app/orders/page.tsx",
+    "line": 22,
+    "snippet": "  if (orders.length === 0) return <Spinner label=\"Loading your orders\" />;",
+    "why": "Empty successful result is treated as still loading.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "fresh",
+  "id": "WR-017",
+  "createdAt": "2026-10-20T02:10:38.876Z"
+}

@@ -1,0 +1,67 @@
+{
+  "title": "Profile reports saved but name disappears on reload",
+  "category": "functional",
+  "severity": "high",
+  "persona": "normal-user",
+  "route": "/account/settings",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "/account/settings"
+    },
+    {
+      "action": "fill",
+      "target": {
+        "by": "label",
+        "value": "Display name"
+      },
+      "value": "wreck-it saved name"
+    },
+    {
+      "action": "click",
+      "target": {
+        "by": "role",
+        "role": "button",
+        "name": "Save changes"
+      }
+    },
+    {
+      "action": "wait",
+      "ms": 400
+    },
+    {
+      "action": "reload"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "visible",
+      "target": {
+        "by": "css",
+        "value": "input[value=\"wreck-it saved name\"]"
+      }
+    }
+  ],
+  "expected": "Saved name persists after reload",
+  "actual": "Gadgetly\nShop\nOrders\nAbout\nHi, Demo Shopper\nLog out\nAccount settings\n\nSigned in as demo@gadgetly.test\n\nDisplay name\nSave changes\nGadgetly\n\nSmall gadgets, big joy. Free shipping over $50.\n\n15 shoppers browsing right now\n\nAll products\nAbout us\nShipping & pricing\nTrack an order\nAccount",
+  "evidence": {
+    "screenshots": [
+      "shots/profile-persistence.png"
+    ],
+    "console": [],
+    "network": [],
+    "trace": "shots/profile-persistence.zip"
+  },
+  "source": {
+    "file": "lib/db.ts",
+    "line": 64,
+    "snippet": "    const updated = { ...user, ...patch };",
+    "why": "updateUser returns an updated object but never stores it in store.users.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-003",
+  "createdAt": "2026-10-20T02:09:42.674Z"
+}

@@ -1,0 +1,155 @@
+--- a/app/about/page.tsx
++++ b/app/about/page.tsx
+@@ -6,7 +6,7 @@
+   return (
+     <div style={{ maxWidth: 720 }}>
+       <h1>About Gadgetly</h1>
+-      <img src="/images/team-photo.jpg" alt="The Gadgetly team at our first pop-up shop" width={720} height={360} style={{ width: "100%", height: "auto", borderRadius: 12 }} />
++      <img src="/logo.svg" alt="The Gadgetly team at our first pop-up shop" width={720} height={360} style={{ width: "100%", height: "auto", borderRadius: 12 }} />
+       <p>
+         Gadgetly started in 2019 as a weekend market stall selling refurbished headphones. Today we&apos;re a small team of
+         gadget nerds who test everything we sell, so you don&apos;t have to.
+--- a/app/api/auth/signup/route.ts
++++ b/app/api/auth/signup/route.ts
+@@ -13,7 +13,7 @@
+   const email = String(body.email ?? "").trim();
+   const password = String(body.password ?? "");
+ 
+-  if (!displayName) return jsonError(400, "Please tell us your name");
++  if (!displayName || displayName.length > 60) return jsonError(400, "Name must contain 1 to 60 characters");
+   if (!EMAIL.test(email)) return jsonError(400, "Please enter a valid email address, like you@example.com");
+   if (password.length < 8) return jsonError(400, "Password must be at least 8 characters");
+   if (await db.findUserByEmail(email)) return jsonError(409, "An account with that email already exists");
+--- a/app/api/cart/coupon/route.ts
++++ b/app/api/cart/coupon/route.ts
+@@ -14,7 +14,7 @@
+   const active = await db.activeCouponCodes();
+   if (!active.includes(input.trim().toUpperCase())) return jsonError(400, "That coupon code isn't valid");
+ 
+-  const coupon = await db.getCoupon(input.toUpperCase());
++  const coupon = await db.getCoupon(input.trim().toUpperCase());
+   const cart = await db.getCart(user.id);
+   cart.coupon = { code: coupon.code, percent: coupon.percent };
+   await db.saveCart(user.id, cart);
+--- a/app/api/cart/route.ts
++++ b/app/api/cart/route.ts
+@@ -18,7 +18,8 @@
+   const product = await db.getProduct(String(body.productId ?? ""));
+   if (!product) return jsonError(404, "Product not found");
+ 
+-  const quantity = Number(body.quantity) || 1;
++  const quantity = Number(body.quantity ?? 1);
++  if (!Number.isInteger(quantity) || quantity < 1) return jsonError(400, "Quantity must be a positive integer");
+   const cart = await db.getCart(user.id);
+   const existing = cart.items.find((i) => i.productId === product.id);
+   if (existing) existing.quantity += quantity;
+@@ -33,7 +34,7 @@
+   if (!user) return jsonError(401, "Please log in");
+   const body = await readJson<{ productId: string; quantity: number }>(req);
+   const quantity = Number(body.quantity);
+-  if (!Number.isFinite(quantity)) return jsonError(400, "Quantity must be a number");
++  if (!Number.isInteger(quantity) || quantity < 0) return jsonError(400, "Quantity must be a nonnegative integer");
+ 
+   const cart = await db.getCart(user.id);
+   const item = cart.items.find((i) => i.productId === String(body.productId));
+--- a/app/api/orders/route.ts
++++ b/app/api/orders/route.ts
+@@ -9,7 +9,7 @@
+   const user = await currentUser();
+   if (!user) return jsonError(401, "Please log in");
+   const orders = await db.ordersFor(user.id);
+-  orders.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
++  orders.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+   return NextResponse.json({ orders });
+ }
+ 
+@@ -20,6 +20,7 @@
+   const address = String(body.address ?? "").trim();
+   const phone = String(body.phone ?? "").trim();
+   if (!address) return jsonError(400, "Please enter a delivery address");
++  if (phone && !/^[+()0-9 .-]{7,30}$/.test(phone)) return jsonError(400, "Please enter a valid phone number");
+ 
+   const cart = await db.getCart(user.id);
+   if (cart.items.length === 0) return jsonError(400, "Your cart is empty");
+@@ -35,7 +36,7 @@
+     items: cart.items.map((i) => ({ ...i })),
+     subtotal: summary.subtotal,
+     discount: summary.discount,
+-    total: applyCoupon(summary.total, cart.coupon),
++    total: summary.total,
+     couponCode: cart.coupon?.code ?? null,
+     address,
+     phone,
+--- a/app/api/search/route.ts
++++ b/app/api/search/route.ts
+@@ -6,7 +6,7 @@
+ 
+ export async function GET(req: NextRequest) {
+   const raw = req.nextUrl.searchParams.get("q") ?? "";
+-  const query = decodeURIComponent(raw).trim();
++  const query = raw.trim();
+ 
+   const [products, reviews] = await Promise.all([db.listProducts(), db.allReviews()]);
+   const summaries: ProductSummary[] = products.map((p) => {
+--- a/app/orders/[id]/page.tsx
++++ b/app/orders/[id]/page.tsx
+@@ -18,7 +18,7 @@
+       </p>
+       <h1>Order #{order.id}</h1>
+       <p className="muted">
+-        Placed {order.createdAt} · <span style={{ textTransform: "capitalize" }}>{order.status}</span>
++        Placed {new Date(order.createdAt).toLocaleDateString()} · <span style={{ textTransform: "capitalize" }}>{order.status}</span>
+       </p>
+       <table className="table">
+         <thead>
+--- a/components/Footer.tsx
++++ b/components/Footer.tsx
+@@ -13,7 +13,7 @@
+         <nav aria-label="Footer" className="footer-links">
+           <Link href="/products">All products</Link>
+           <Link href="/about">About us</Link>
+-          <Link href="/pricng">Shipping &amp; pricing</Link>
++          <Link href="/pricing">Shipping &amp; pricing</Link>
+           <Link href="/orders">Track an order</Link>
+           <Link href="/account/settings">Account</Link>
+         </nav>
+--- a/components/ProductCard.tsx
++++ b/components/ProductCard.tsx
+@@ -11,7 +11,7 @@
+         <h2 className={styles.name}>{product.name}</h2>
+       </Link>
+       <p className={styles.meta}>
+-        <span className={styles.rating}>★ {`${product.rating?.toFixed(1)} (${product.reviewCount})`}</span>
++        <span className={styles.rating}>★ {`${(product.rating?.toFixed(1) ?? "No reviews")} (${product.reviewCount})`}</span>
+         <span className={styles.category}>{product.category}</span>
+       </p>
+       <p className={styles.price}>{formatPrice(product.price)}</p>
+--- a/lib/cart.ts
++++ b/lib/cart.ts
+@@ -16,7 +16,7 @@
+ 
+ export function summarize(cart: Cart): CartView {
+   const items = cart.items.map((item) => ({ ...item, lineTotal: item.price * item.quantity }));
+-  const subtotal = items.reduce((sum, item) => sum + item.price, 0);
++  const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
+   const total = applyCoupon(subtotal, cart.coupon);
+   return {
+     items,
+@@ -24,6 +24,6 @@
+     subtotal,
+     discount: subtotal - total,
+     total,
+-    count: cart.count,
++    count: items.reduce((sum, item) => sum + item.quantity, 0),
+   };
+ }
+--- a/lib/db.ts
++++ b/lib/db.ts
+@@ -62,6 +62,7 @@
+     const user = store.users.get(id);
+     if (!user) return null;
+     const updated = { ...user, ...patch };
++    store.users.set(id, updated);
+     return updated;
+   },
+ 

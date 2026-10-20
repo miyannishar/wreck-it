@@ -1,0 +1,34 @@
+{
+  "title": "a11y: Elements must meet minimum color contrast ratio thresholds (color-contrast)",
+  "category": "accessibility",
+  "severity": "medium",
+  "persona": "a11y-scan",
+  "route": "/products",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "http://localhost:4317/products"
+    }
+  ],
+  "assertions": [],
+  "expected": "Elements must meet minimum color contrast ratio thresholds (WCAG/axe rule color-contrast) satisfied on /products",
+  "actual": "axe-core reports 24 elements failing color-contrast (serious), e.g. article:nth-child(1) > .ProductCard-module__9j1fXa__price; see https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "app/products/products.module.css",
+    "why": "Contrast failure on /products; exact rule not pinpointed",
+    "confidence": "low",
+    "candidates": [
+      "app/products/products.module.css",
+      "components/ProductCard.module.css",
+      "app/globals.css"
+    ]
+  },
+  "reproduced": true,
+  "id": "WR-006",
+  "createdAt": "2026-10-20T01:55:30.978Z"
+}

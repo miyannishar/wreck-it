@@ -1,0 +1,39 @@
+{
+  "title": "Duplicate of WR-023: repeated search latency",
+  "category": "performance",
+  "severity": "high",
+  "persona": "load-tester",
+  "route": "/api/search?q=headphones",
+  "steps": [
+    {
+      "action": "http",
+      "method": "GET",
+      "url": "/api/search?q=headphones"
+    }
+  ],
+  "assertions": [],
+  "expected": "p99 under 500 ms at 10 connections and no breaking point below 100 connections",
+  "actual": "Second measurement consolidated with WR-023.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": [
+      {
+        "method": "GET",
+        "url": "/api/search?q=headphones",
+        "status": 200
+      }
+    ]
+  },
+  "source": {
+    "file": "lib/search.ts",
+    "line": 23,
+    "snippet": "      const d = editDistance(query, text.slice(start, start + len));",
+    "why": "Nested substring windows run editDistance synchronously across each product and review, blocking concurrent requests; catalog loading adds sequential database delays.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": false,
+  "id": "WR-028",
+  "createdAt": "2026-10-20T11:33:37.843Z"
+}

@@ -1,0 +1,45 @@
+{
+  "title": "Broken image: /images/team-photo.jpg",
+  "category": "oddity",
+  "severity": "low",
+  "persona": "sweep",
+  "route": "/about",
+  "steps": [
+    {
+      "action": "setViewport",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "action": "goto",
+      "url": "/about"
+    },
+    {
+      "action": "http",
+      "method": "GET",
+      "url": "/images/team-photo.jpg"
+    }
+  ],
+  "assertions": [],
+  "expected": "Every image on the page loads",
+  "actual": "http://localhost:4318/images/team-photo.jpg fails to load on /about.\nFresh browser inspection: About Gadgetly\n\nGadgetly started in 2019 as a weekend market stall selling refurbished headphones. Today we're a small team of gadget nerds who test everything we sell, so you don't have to.\n\nEvery product ships within two business days, and you can return anything within 30 days. Questions? Email us at hello@gadgetly.test.\n\nStart shopping →\n[{\"src\":\"http://localhost:4318/images/team-photo.jpg\",\"naturalWidth\":0,\"complete\":true}]",
+  "evidence": {
+    "screenshots": [
+      "shots/WR-011-replay.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "app/about/page.tsx",
+    "line": 9,
+    "snippet": "      <img src=\"/images/team-photo.jpg\" alt=\"The Gadgetly team at our first pop-up shop\" width={720} height={360} style={{ width: \"100%\", height: \"auto\", borderRadius: 12 }} />",
+    "why": "Page references a missing public image; request returns 404.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-011",
+  "createdAt": "2026-10-20T02:10:16.792Z"
+}

@@ -1,0 +1,30 @@
+{
+  "title": "Duplicate of WR-012: rich sweep confirmation",
+  "category": "oddity",
+  "severity": "medium",
+  "persona": "sweep",
+  "route": "/products",
+  "steps": [
+    {
+      "action": "setViewport",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "action": "goto",
+      "url": "/products"
+    }
+  ],
+  "assertions": [],
+  "expected": "Missing values are shown as a sensible fallback (e.g. \"No reviews yet\"), never as raw placeholders",
+  "actual": "Consolidated into WR-012.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "reproduced": false,
+  "auth": "main",
+  "id": "WR-031",
+  "createdAt": "2026-10-20T11:36:24.490Z"
+}

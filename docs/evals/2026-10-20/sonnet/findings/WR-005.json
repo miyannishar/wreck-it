@@ -1,0 +1,32 @@
+{
+  "title": "a11y: Buttons must have discernible text (button-name)",
+  "category": "accessibility",
+  "severity": "high",
+  "persona": "a11y-scan",
+  "route": "/",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "http://localhost:4317/"
+    }
+  ],
+  "assertions": [],
+  "expected": "Buttons must have discernible text (WCAG/axe rule button-name) satisfied on /",
+  "actual": "axe-core reports 1 element failing button-name (critical), e.g. .cart-button; see https://dequeuniversity.com/rules/axe/4.14/button-name?application=axeAPI\nAlso on http://localhost:4317/about (1 element).\nAlso on http://localhost:4317/account/settings (1 element).\nAlso on http://localhost:4317/cart (1 element).\nAlso on http://localhost:4317/checkout (1 element).\nAlso on http://localhost:4317/login (1 element).\nAlso on http://localhost:4317/orders (1 element).\nAlso on http://localhost:4317/pricing (1 element).\nAlso on http://localhost:4317/products (1 element).\nAlso on http://localhost:4317/signup (1 element).\nAlso on http://localhost:4317/products/2 (1 element).\nAlso on http://localhost:4317/orders/1001 (1 element).",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "components/CartButton.tsx",
+    "line": 34,
+    "snippet": "<button type=\"button\" className=\"cart-button\"",
+    "why": "Icon-only button without aria-label",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "id": "WR-005",
+  "createdAt": "2026-10-20T01:55:30.971Z"
+}

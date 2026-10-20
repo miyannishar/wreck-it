@@ -1,0 +1,142 @@
+{
+  "cliExit": 0,
+  "generated": 22,
+  "cliFixmeCount": 7,
+  "finalFixmeCount": 0,
+  "changedCount": 22,
+  "comparison": [
+    {
+      "file": "WR-001.spec.ts",
+      "cliFixme": false,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-002.spec.ts",
+      "cliFixme": false,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-003.spec.ts",
+      "cliFixme": false,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-004.spec.ts",
+      "cliFixme": false,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-005.spec.ts",
+      "cliFixme": false,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-006.spec.ts",
+      "cliFixme": false,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-007.spec.ts",
+      "cliFixme": false,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-008.spec.ts",
+      "cliFixme": false,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-010.spec.ts",
+      "cliFixme": true,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-011.spec.ts",
+      "cliFixme": true,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-012.spec.ts",
+      "cliFixme": false,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-015.spec.ts",
+      "cliFixme": false,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-016.spec.ts",
+      "cliFixme": true,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-017.spec.ts",
+      "cliFixme": false,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-020.spec.ts",
+      "cliFixme": false,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-024.spec.ts",
+      "cliFixme": true,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-025.spec.ts",
+      "cliFixme": true,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-026.spec.ts",
+      "cliFixme": false,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-027.spec.ts",
+      "cliFixme": false,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-033.spec.ts",
+      "cliFixme": true,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-035.spec.ts",
+      "cliFixme": false,
+      "finalFixme": false,
+      "changed": true
+    },
+    {
+      "file": "WR-036.spec.ts",
+      "cliFixme": true,
+      "finalFixme": false,
+      "changed": true
+    }
+  ],
+  "note": "Comparison only: final agent output was not regenerated or changed."
+}

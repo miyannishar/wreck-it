@@ -1,0 +1,67 @@
+{
+  "title": "Display name change is reported saved but never persisted",
+  "category": "functional",
+  "severity": "high",
+  "persona": "normal-user",
+  "route": "/account/settings",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "/account/settings"
+    },
+    {
+      "action": "fill",
+      "target": {
+        "by": "label",
+        "value": "Display name"
+      },
+      "value": "Wreck Tester"
+    },
+    {
+      "action": "click",
+      "target": {
+        "by": "role",
+        "role": "button",
+        "name": "Save changes"
+      }
+    },
+    {
+      "action": "wait",
+      "ms": 1000
+    },
+    {
+      "action": "reload"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "text",
+      "target": {
+        "by": "css",
+        "value": ".greeting"
+      },
+      "contains": "Wreck Tester"
+    }
+  ],
+  "expected": "After save and reload the new name shows in the header and form",
+  "actual": "'Your changes have been saved.' appears but after reload the name is still 'Demo Shopper' (PATCH /api/account returns the updated copy without writing it back to the store)",
+  "evidence": {
+    "screenshots": [
+      "shots/ui-settings.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "lib/db.ts",
+    "line": 64,
+    "snippet": "const updated = { ...user, ...patch };",
+    "why": "updateUser builds a copy but never writes it back to store.users",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-013",
+  "createdAt": "2026-10-20T01:55:56.301Z"
+}

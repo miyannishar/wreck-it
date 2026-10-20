@@ -1,0 +1,60 @@
+{
+  "title": "Percent search returns a server error",
+  "category": "chaos",
+  "severity": "high",
+  "persona": "chaos-monkey",
+  "route": "/products",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "/products"
+    },
+    {
+      "action": "fill",
+      "target": {
+        "by": "label",
+        "value": "Search products"
+      },
+      "value": "%"
+    },
+    {
+      "action": "click",
+      "target": {
+        "by": "role",
+        "role": "button",
+        "name": "Search"
+      }
+    },
+    {
+      "action": "wait",
+      "ms": 1000
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "noServerErrors"
+    }
+  ],
+  "expected": "Arbitrary search text is handled without a server error",
+  "actual": "Gadgetly\nShop\nOrders\nAbout\nHi, Demo Shopper\nLog out\n1\nResults for “%”\nSearch products\nSearch\nAll\nAudio\nWearables\nHome\nAccessories\nCameras\nGaming\n\nSorry, we couldn't load products. Please try again.\n\nGadgetly\n\nSmall gadgets, big joy. Free shipping over $50.\n\n12 shoppers browsing right now\n\nAll products\nAbout us\nShipping & pricing\nTrack an order\nAccount",
+  "evidence": {
+    "screenshots": [
+      "shots/search-percent.png"
+    ],
+    "console": [],
+    "network": [],
+    "trace": "shots/search-percent.zip"
+  },
+  "source": {
+    "file": "app/api/search/route.ts",
+    "line": 9,
+    "snippet": "  const query = decodeURIComponent(raw).trim();",
+    "why": "URLSearchParams has decoded the value already; decoding a literal percent throws URIError.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-020",
+  "createdAt": "2026-10-20T04:48:06.560Z"
+}

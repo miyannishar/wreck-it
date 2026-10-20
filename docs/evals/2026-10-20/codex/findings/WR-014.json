@@ -1,0 +1,30 @@
+{
+  "title": "Duplicate of WR-010: consolidated scan result",
+  "category": "ux",
+  "severity": "medium",
+  "persona": "sweep",
+  "route": "/products",
+  "steps": [
+    {
+      "action": "setViewport",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "action": "goto",
+      "url": "/products"
+    }
+  ],
+  "assertions": [],
+  "expected": "Page fits a 390px-wide viewport without sideways scrolling",
+  "actual": "Same root cause and evidence as WR-010; excluded from scoring.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "reproduced": false,
+  "auth": "main",
+  "id": "WR-014",
+  "createdAt": "2026-10-20T02:10:29.403Z"
+}

@@ -1,0 +1,24 @@
+{
+  "title": "Duplicate of WR-027: rich sweep confirmation",
+  "category": "accessibility",
+  "severity": "high",
+  "persona": "a11y-scan",
+  "route": "/checkout",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "http://localhost:4318/checkout"
+    }
+  ],
+  "assertions": [],
+  "expected": "Form elements must have labels (WCAG/axe rule label) satisfied on /checkout",
+  "actual": "Consolidated into WR-027.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "reproduced": false,
+  "id": "WR-034",
+  "createdAt": "2026-10-20T11:36:31.282Z"
+}

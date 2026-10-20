@@ -1,0 +1,160 @@
+{
+  "stats": {
+    "startTime": "2026-10-20T02:06:21.804Z",
+    "duration": 114046.432,
+    "expected": 0,
+    "skipped": 4,
+    "unexpected": 15,
+    "flaky": 0
+  },
+  "statusCounts": {
+    "failed": 15,
+    "skipped": 4
+  },
+  "tests": [
+    {
+      "finding": "WR-001",
+      "status": "failed",
+      "durationMs": 5418,
+      "errors": [
+        "Error: expect(received).toBeLessThan(expected)\n\nExpected: < 400\nReceived:   404"
+      ]
+    },
+    {
+      "finding": "WR-002",
+      "status": "failed",
+      "durationMs": 5237,
+      "errors": [
+        "Error: expect(received).toBeLessThan(expected)\n\nExpected: < 400\nReceived:   404"
+      ]
+    },
+    {
+      "finding": "WR-003",
+      "status": "failed",
+      "durationMs": 10186,
+      "errors": [
+        "Error: expect(locator).not.toContainText(expected) failed\n\nLocator: locator('body').first()\nExpected substring: not \"undefined\"\nReceived string: \"GadgetlyShopOrdersAboutHi, Demo ShopperLog out1All productsSearch productsSearchallaudiowearableshomeaccessoriescamerasgamingAurora Wireless Earbuds\u2605 3.7 (28)audio$79.99Pulse Over-Ear Headphones\u2605 4.1 (27)audio$149.99Echo Mini Speaker\u2605 4.0 (34)audio$49.99Studio Desk Microphone\u2605 4.1 (31)audio$119.99Orbit Smartwatch\u2605 3.9 (34)wearables$229.99Stride Fitness"
+      ]
+    },
+    {
+      "finding": "WR-004",
+      "status": "skipped",
+      "durationMs": 0,
+      "errors": []
+    },
+    {
+      "finding": "WR-005",
+      "status": "skipped",
+      "durationMs": 0,
+      "errors": []
+    },
+    {
+      "finding": "WR-006",
+      "status": "skipped",
+      "durationMs": 0,
+      "errors": []
+    },
+    {
+      "finding": "WR-007",
+      "status": "failed",
+      "durationMs": 10404,
+      "errors": [
+        "Error: expect(locator).toContainText(expected) failed\n\nLocator: locator('.summary-total').first()\nExpected substring: \"$239.97\"\nReceived string:    \"Total$79.99\"\nTimeout: 5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-008",
+      "status": "failed",
+      "durationMs": 15400,
+      "errors": [
+        "Error: expect(locator).toContainText(expected) failed\n\nLocator: locator('.cart-badge').first()\nExpected substring: \"1\"\nReceived string:    \"8\"\nTimeout: 5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-009",
+      "status": "failed",
+      "durationMs": 540,
+      "errors": [
+        "Error: expect(received).toBeGreaterThanOrEqual(expected)\n\nExpected: >= 400\nReceived:    201"
+      ]
+    },
+    {
+      "finding": "WR-011",
+      "status": "failed",
+      "durationMs": 17805,
+      "errors": [
+        "Error: expect(locator).toContainText(expected) failed\n\nLocator: getByText('Total charged').first()\nExpected substring: \"$44.99\"\nReceived string:    \"Total charged\"\nTimeout: 5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-012",
+      "status": "skipped",
+      "durationMs": 0,
+      "errors": []
+    },
+    {
+      "finding": "WR-013",
+      "status": "failed",
+      "durationMs": 21327,
+      "errors": [
+        "Error: expect(locator).toContainText(expected) failed\n\nLocator: locator('.greeting').first()\nExpected substring: \"Wreck Tester\"\nReceived string:    \"Hi, Demo Shopper\"\nTimeout: 5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-014",
+      "status": "failed",
+      "durationMs": 10969,
+      "errors": [
+        "Error: expect(locator).not.toContainText(expected) failed\n\nLocator: locator('tbody tr:first-child').first()\nExpected substring: not \"#1001\"\nReceived string: \"#1001Sep 28, 20261delivered$79.99\"\nTimeout: 5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-015",
+      "status": "failed",
+      "durationMs": 10206,
+      "errors": [
+        "Error: expect(locator).not.toContainText(expected) failed\n\nLocator: locator('main').first()\nExpected substring: not \"T0\"\nReceived string: \"\u2190 All ordersOrder #1001Placed 2026-09-29T01:51:33.171Z \u00b7 deliveredProductQtyPriceAurora Wireless Earbuds1$79.99Subtotal$79.99Total charged$79.99Shipping to 12 Elm Street, Springfield \u00b7 555-0101\"\nTimeout: 5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-016",
+      "status": "failed",
+      "durationMs": 72,
+      "errors": [
+        "Error: expect(received).toBeLessThan(expected)\n\nExpected: < 500\nReceived:   500"
+      ]
+    },
+    {
+      "finding": "WR-017",
+      "status": "failed",
+      "durationMs": 258,
+      "errors": [
+        "Error: expect(received).toBeGreaterThanOrEqual(expected)\n\nExpected: >= 400\nReceived:    200"
+      ]
+    },
+    {
+      "finding": "WR-018",
+      "status": "failed",
+      "durationMs": 221,
+      "errors": [
+        "Error: expect(received).toBeGreaterThanOrEqual(expected)\n\nExpected: >= 400\nReceived:    201"
+      ]
+    },
+    {
+      "finding": "WR-019",
+      "status": "failed",
+      "durationMs": 130,
+      "errors": [
+        "Error: expect(received).toBeLessThan(expected)\n\nExpected: < 500\nReceived:   500"
+      ]
+    },
+    {
+      "finding": "WR-020",
+      "status": "failed",
+      "durationMs": 138,
+      "errors": [
+        "Error: expect(received).toBeGreaterThanOrEqual(expected)\n\nExpected: >= 400\nReceived:    201"
+      ]
+    }
+  ]
+}

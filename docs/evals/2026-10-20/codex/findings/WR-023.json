@@ -1,0 +1,39 @@
+{
+  "title": "Search latency breaks at 10 concurrent users",
+  "category": "performance",
+  "severity": "high",
+  "persona": "load-tester",
+  "route": "/api/search?q=headphones",
+  "steps": [
+    {
+      "action": "http",
+      "method": "GET",
+      "url": "/api/search?q=headphones"
+    }
+  ],
+  "assertions": [],
+  "expected": "p99 under 500 ms at 10 connections and no breaking point below 100 connections",
+  "actual": "Repeated local production load: p50 1575ms, p99 2553ms at 10 connections; breaking point [object Object]. See .wreck-it/load and repeat transcripts. Concurrent browser and Lighthouse activity occurred during the initial runs; repeats confirm the signal.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": [
+      {
+        "method": "GET",
+        "url": "/api/search?q=headphones",
+        "status": 200
+      }
+    ]
+  },
+  "source": {
+    "file": "lib/search.ts",
+    "line": 23,
+    "snippet": "      const d = editDistance(query, text.slice(start, start + len));",
+    "why": "Nested substring windows run editDistance synchronously across each product and review, blocking concurrent requests; catalog loading adds sequential database delays.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "id": "WR-023",
+  "createdAt": "2026-10-20T11:32:34.758Z"
+}

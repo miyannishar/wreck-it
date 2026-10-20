@@ -1,0 +1,39 @@
+{
+  "title": "GET /api/products takes ~480 ms at any load (sequential per-product queries, N+1)",
+  "category": "performance",
+  "severity": "medium",
+  "persona": "chaos-monkey",
+  "route": "/api/products",
+  "steps": [
+    {
+      "action": "http",
+      "method": "GET",
+      "url": "/api/products"
+    }
+  ],
+  "assertions": [],
+  "expected": "Product list responds in well under 200 ms",
+  "actual": "p50 477-484 ms and p99 up to 657 ms from 10 to 100 connections; listProductsWithRatings awaits reviews and stock one product at a time (24 products x 2 round trips); /products also scores CLS 0.41 on mobile Lighthouse",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": [
+      {
+        "method": "GET",
+        "url": "/api/products",
+        "status": 200
+      }
+    ]
+  },
+  "source": {
+    "file": "lib/catalog.ts",
+    "line": 15,
+    "snippet": "for (const product of products) { await db.reviewsFor; await db.stockFor }",
+    "why": "Sequential awaits per product (N+1), each a simulated 5-15 ms round trip",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "id": "WR-022",
+  "createdAt": "2026-10-20T02:02:48.618Z"
+}

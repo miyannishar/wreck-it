@@ -1,0 +1,261 @@
+{
+  "findings": 23,
+  "confirmed": 23,
+  "severity": {
+    "low": 5,
+    "medium": 8,
+    "high": 8,
+    "critical": 2
+  },
+  "categories": {
+    "oddity": 4,
+    "ux": 3,
+    "accessibility": 2,
+    "functional": 4,
+    "performance": 4,
+    "chaos": 6
+  },
+  "screenshot_checks": [
+    {
+      "finding": "WR-001",
+      "category": "oddity",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    },
+    {
+      "finding": "WR-002",
+      "category": "oddity",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    },
+    {
+      "finding": "WR-003",
+      "category": "oddity",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    },
+    {
+      "finding": "WR-004",
+      "category": "ux",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    },
+    {
+      "finding": "WR-005",
+      "category": "accessibility",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    },
+    {
+      "finding": "WR-006",
+      "category": "accessibility",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    },
+    {
+      "finding": "WR-007",
+      "category": "functional",
+      "reproduced": true,
+      "images": [
+        {
+          "path": "shots/ui-cart-subtotal.png",
+          "exists": true,
+          "bytes": 74353,
+          "sha256": "1ec058daca74de17a9ea047d72a8c0c6739295a8a36828642fba2df3debad10b",
+          "dimensions": [
+            1280,
+            800
+          ]
+        }
+      ],
+      "has_existing_image": true
+    },
+    {
+      "finding": "WR-008",
+      "category": "functional",
+      "reproduced": true,
+      "images": [
+        {
+          "path": "shots/ui-cart-badge.png",
+          "exists": true,
+          "bytes": 66232,
+          "sha256": "afc4a2b9e5f07301f365fce08047b369a6a54f702aa3a3915636daedd39058a7",
+          "dimensions": [
+            1280,
+            800
+          ]
+        }
+      ],
+      "has_existing_image": true
+    },
+    {
+      "finding": "WR-009",
+      "category": "ux",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    },
+    {
+      "finding": "WR-010",
+      "category": "performance",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    },
+    {
+      "finding": "WR-011",
+      "category": "functional",
+      "reproduced": true,
+      "images": [
+        {
+          "path": "shots/ui-order-detail.png",
+          "exists": true,
+          "bytes": 66099,
+          "sha256": "0496e32ec5e33bd41a7359e9119d1bb76617ac48a0e30b9b38010ebbf858cc0c",
+          "dimensions": [
+            1280,
+            800
+          ]
+        }
+      ],
+      "has_existing_image": true
+    },
+    {
+      "finding": "WR-012",
+      "category": "chaos",
+      "reproduced": true,
+      "images": [
+        {
+          "path": "shots/ui-orders-list.png",
+          "exists": true,
+          "bytes": 70419,
+          "sha256": "8f071199d2f382bebe0bbd6b976170a60bd8d4e0baee97fbff54771f5ad13541",
+          "dimensions": [
+            1280,
+            800
+          ]
+        }
+      ],
+      "has_existing_image": true
+    },
+    {
+      "finding": "WR-013",
+      "category": "functional",
+      "reproduced": true,
+      "images": [
+        {
+          "path": "shots/ui-settings.png",
+          "exists": true,
+          "bytes": 51832,
+          "sha256": "815066f42d940ba7e48d7a95304fd9772be183a272e3e16dec727afd9e6b4c22",
+          "dimensions": [
+            1280,
+            800
+          ]
+        }
+      ],
+      "has_existing_image": true
+    },
+    {
+      "finding": "WR-014",
+      "category": "ux",
+      "reproduced": true,
+      "images": [
+        {
+          "path": "shots/ui-orders-list.png",
+          "exists": true,
+          "bytes": 70419,
+          "sha256": "8f071199d2f382bebe0bbd6b976170a60bd8d4e0baee97fbff54771f5ad13541",
+          "dimensions": [
+            1280,
+            800
+          ]
+        }
+      ],
+      "has_existing_image": true
+    },
+    {
+      "finding": "WR-015",
+      "category": "oddity",
+      "reproduced": true,
+      "images": [
+        {
+          "path": "shots/ui-order-detail.png",
+          "exists": true,
+          "bytes": 66099,
+          "sha256": "0496e32ec5e33bd41a7359e9119d1bb76617ac48a0e30b9b38010ebbf858cc0c",
+          "dimensions": [
+            1280,
+            800
+          ]
+        }
+      ],
+      "has_existing_image": true
+    },
+    {
+      "finding": "WR-016",
+      "category": "chaos",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    },
+    {
+      "finding": "WR-017",
+      "category": "chaos",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    },
+    {
+      "finding": "WR-018",
+      "category": "chaos",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    },
+    {
+      "finding": "WR-019",
+      "category": "chaos",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    },
+    {
+      "finding": "WR-020",
+      "category": "chaos",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    },
+    {
+      "finding": "WR-021",
+      "category": "performance",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    },
+    {
+      "finding": "WR-022",
+      "category": "performance",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    },
+    {
+      "finding": "WR-023",
+      "category": "performance",
+      "reproduced": true,
+      "images": [],
+      "has_existing_image": false
+    }
+  ],
+  "confirmed_with_screenshot": 7,
+  "missing_image_files": [],
+  "generated_specs": 19
+}

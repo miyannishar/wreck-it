@@ -1,0 +1,66 @@
+{
+  "title": "Double-clicking Place order creates duplicate orders",
+  "category": "chaos",
+  "severity": "high",
+  "persona": "rushed-beginner",
+  "route": "/checkout",
+  "steps": [
+    {
+      "action": "http",
+      "method": "POST",
+      "url": "/api/cart",
+      "body": "{\"productId\": \"3\", \"quantity\": 1}"
+    },
+    {
+      "action": "goto",
+      "url": "/checkout"
+    },
+    {
+      "action": "fill",
+      "target": {
+        "by": "label",
+        "value": "Delivery address"
+      },
+      "value": "1 Wreck St"
+    },
+    {
+      "action": "click",
+      "target": {
+        "by": "role",
+        "role": "button",
+        "name": "Place order"
+      },
+      "count": 2
+    },
+    {
+      "action": "wait",
+      "ms": 2500
+    },
+    {
+      "action": "goto",
+      "url": "/api/orders"
+    }
+  ],
+  "assertions": [],
+  "expected": "One order per checkout; button disabled while submitting",
+  "actual": "Two orders with identical contents are created (seen as #1004 and #1005) and stock is reserved twice",
+  "evidence": {
+    "screenshots": [
+      "shots/ui-orders-list.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "app/checkout/page.tsx",
+    "line": 75,
+    "snippet": "onClick={placeOrder}",
+    "why": "Place order button has no submitting/disabled state; POST /api/orders (app/api/orders/route.ts:16) has no idempotency",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-012",
+  "createdAt": "2026-10-20T01:55:55.846Z"
+}

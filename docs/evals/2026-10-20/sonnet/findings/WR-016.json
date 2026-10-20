@@ -1,0 +1,44 @@
+{
+  "title": "Search with a percent sign returns HTTP 500",
+  "category": "chaos",
+  "severity": "high",
+  "persona": "chaos-monkey",
+  "route": "/api/search",
+  "steps": [
+    {
+      "action": "http",
+      "method": "GET",
+      "url": "/api/search?q=%25"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "httpStatus",
+      "below": 500
+    }
+  ],
+  "expected": "Query treated as text and returns results/400",
+  "actual": "500: decodeURIComponent throws URIError on the already-decoded '%'",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": [
+      {
+        "method": "GET",
+        "url": "/api/search?q=%25",
+        "status": 500
+      }
+    ]
+  },
+  "source": {
+    "file": "app/api/search/route.ts",
+    "line": 9,
+    "snippet": "decodeURIComponent(raw)",
+    "why": "searchParams is already decoded; decoding again throws URIError on a lone '%'",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "id": "WR-016",
+  "createdAt": "2026-10-20T01:55:57.667Z"
+}

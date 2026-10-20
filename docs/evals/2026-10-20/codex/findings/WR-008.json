@@ -1,0 +1,49 @@
+{
+  "title": "Shipping information link opens missing page",
+  "category": "functional",
+  "severity": "medium",
+  "persona": "normal-user",
+  "route": "/",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "/"
+    },
+    {
+      "action": "click",
+      "target": {
+        "by": "role",
+        "role": "link",
+        "name": "Shipping & pricing"
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "url",
+      "contains": "/pricing"
+    }
+  ],
+  "expected": "Shipping information link opens /pricing",
+  "actual": "Gadgetly\nShop\nOrders\nAbout\nHi, Demo Shopper\nLog out\n6\nPage not found\n\nWe couldn't find what you were looking for.\n\nBack to the shop\nGadgetly\n\nSmall gadgets, big joy. Free shipping over $50.\n\n15 shoppers browsing right now\n\nAll products\nAbout us\nShipping & pricing\nTrack an order\nAccount",
+  "evidence": {
+    "screenshots": [
+      "shots/shipping-link.png"
+    ],
+    "console": [],
+    "network": [],
+    "trace": "shots/shipping-link.zip"
+  },
+  "source": {
+    "file": "components/Footer.tsx",
+    "line": 16,
+    "snippet": "          <Link href=\"/pricng\">Shipping &amp; pricing</Link>",
+    "why": "Footer links to a misspelled route with no page.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-008",
+  "createdAt": "2026-10-20T02:10:08.649Z"
+}

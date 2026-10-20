@@ -1,0 +1,34 @@
+{
+  "title": "Server crashed under load at 20 connections",
+  "category": "performance",
+  "severity": "critical",
+  "persona": "load",
+  "route": "/api/stats",
+  "steps": [
+    {
+      "action": "http",
+      "method": "GET",
+      "url": "http://localhost:4318/api/stats"
+    }
+  ],
+  "assertions": [],
+  "expected": "GET /api/stats keeps responding (or degrades with 503s) under 20 concurrent connections",
+  "actual": "Server stopped accepting connections during the \"soak-6\" phase of the soak load test and came back after 8.5 s.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "app/api/stats/route.ts",
+    "why": "Stats retains every visit and scans its full history, but soak wall duration was 2596s for a requested 180s. Concurrent work and scheduling interruption prevent confidently attributing the reported crash. Kept unconfirmed.",
+    "confidence": "low",
+    "candidates": [
+      "app/api/stats/route.ts",
+      "lib/search.ts"
+    ]
+  },
+  "reproduced": false,
+  "id": "WR-019",
+  "createdAt": "2026-10-20T03:12:22.903Z"
+}

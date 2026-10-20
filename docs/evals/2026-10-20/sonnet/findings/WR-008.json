@@ -1,0 +1,64 @@
+{
+  "title": "Cart badge count stays stale after removing an item or changing quantity",
+  "category": "functional",
+  "severity": "medium",
+  "persona": "deal-hunter-mobile",
+  "route": "/cart",
+  "steps": [
+    {
+      "action": "http",
+      "method": "POST",
+      "url": "/api/cart",
+      "body": "{\"productId\": \"1\", \"quantity\": 3}"
+    },
+    {
+      "action": "http",
+      "method": "POST",
+      "url": "/api/cart",
+      "body": "{\"productId\": \"3\", \"quantity\": 1}"
+    },
+    {
+      "action": "goto",
+      "url": "/cart"
+    },
+    {
+      "action": "click",
+      "target": {
+        "by": "role",
+        "role": "button",
+        "name": "Remove"
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "text",
+      "target": {
+        "by": "css",
+        "value": ".cart-badge"
+      },
+      "contains": "1"
+    }
+  ],
+  "expected": "Badge reflects remaining items after removal (1)",
+  "actual": "Badge keeps showing the old count (4) after removing the 3-quantity line; count is only incremented, never decremented",
+  "evidence": {
+    "screenshots": [
+      "shots/ui-cart-badge.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "app/api/cart/route.ts",
+    "line": 26,
+    "snippet": "cart.count += quantity;",
+    "why": "count is only incremented in POST; PATCH/DELETE never update it, and the header badge reads cart.count instead of summing items",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-008",
+  "createdAt": "2026-10-20T01:55:53.715Z"
+}

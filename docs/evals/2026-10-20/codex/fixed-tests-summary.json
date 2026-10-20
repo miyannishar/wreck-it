@@ -1,0 +1,168 @@
+{
+  "stats": {
+    "startTime": "2026-10-20T11:48:58.032Z",
+    "duration": 213734.866,
+    "expected": 13,
+    "skipped": 0,
+    "unexpected": 9,
+    "flaky": 0
+  },
+  "statusCounts": {
+    "passed": 13,
+    "failed": 8,
+    "timedOut": 1
+  },
+  "tests": [
+    {
+      "finding": "WR-001",
+      "status": "passed",
+      "durationMs": 4434,
+      "errors": []
+    },
+    {
+      "finding": "WR-002",
+      "status": "passed",
+      "durationMs": 4779,
+      "errors": []
+    },
+    {
+      "finding": "WR-003",
+      "status": "passed",
+      "durationMs": 5095,
+      "errors": []
+    },
+    {
+      "finding": "WR-004",
+      "status": "passed",
+      "durationMs": 4496,
+      "errors": []
+    },
+    {
+      "finding": "WR-005",
+      "status": "passed",
+      "durationMs": 1209,
+      "errors": []
+    },
+    {
+      "finding": "WR-006",
+      "status": "passed",
+      "durationMs": 5920,
+      "errors": []
+    },
+    {
+      "finding": "WR-007",
+      "status": "passed",
+      "durationMs": 4135,
+      "errors": []
+    },
+    {
+      "finding": "WR-008",
+      "status": "passed",
+      "durationMs": 4988,
+      "errors": []
+    },
+    {
+      "finding": "WR-010",
+      "status": "failed",
+      "durationMs": 6415,
+      "errors": [
+        "Error: expect(received).toBeLessThanOrEqual(expected)\n\nExpected: <= 390\nReceived:    736"
+      ]
+    },
+    {
+      "finding": "WR-011",
+      "status": "passed",
+      "durationMs": 5124,
+      "errors": []
+    },
+    {
+      "finding": "WR-012",
+      "status": "passed",
+      "durationMs": 6983,
+      "errors": []
+    },
+    {
+      "finding": "WR-015",
+      "status": "failed",
+      "durationMs": 13478,
+      "errors": [
+        "Error: expect(locator).toBeVisible() failed\n\nLocator: getByRole('button', { name: 'Cart' }).first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\n"
+      ]
+    },
+    {
+      "finding": "WR-016",
+      "status": "failed",
+      "durationMs": 11146,
+      "errors": [
+        "Error: expect(received).toBeGreaterThanOrEqual(expected)\n\nExpected: >= 4.5\nReceived:    1.9906773400118218"
+      ]
+    },
+    {
+      "finding": "WR-017",
+      "status": "failed",
+      "durationMs": 27174,
+      "errors": [
+        "Error: expect(locator).not.toContainText(expected) failed\n\nLocator: locator('main').first()\nExpected substring: not \"Loading your orders\"\nReceived string: \"Loading your orders\"\nTimeout: 5000ms\n\n"
+      ]
+    },
+    {
+      "finding": "WR-020",
+      "status": "passed",
+      "durationMs": 11339,
+      "errors": []
+    },
+    {
+      "finding": "WR-024",
+      "status": "failed",
+      "durationMs": 5717,
+      "errors": [
+        "Error: expect(received).toHaveLength(expected)\n\nExpected length: 1\nReceived length: 2\nReceived array:  [{\"address\": \"wreck-it duplicate order\", \"couponCode\": null, \"createdAt\": \"2026-10-20T11:51:11.886Z\", \"discount\": 0, \"id\": \"1005\", \"items\": [{\"name\": \"Pulse Over-Ear Headphones\", \"price\": 14999, \"productId\": \"2\", \"quantity\": 1}], \"phone\": \"\", \"status\": \"placed\", \"subtotal\": 14999, \"total\": 14999, \"userId\": \"da4d5189-585b-4786-b1fe-22ad3af11cc8\"}, {\"address\": \"wreck-it duplicate order\", \"couponCode\": null, \"createdAt\": \"2026-10-20T11:51:11.843Z\", \"discount\": 0, \"id\": \"1004\", \"items\": [{\"name\": \"Pulse Over-Ear Headphones\", \"price\": 14999, \"productId\": \"2\", \"quantity\": 1}], \"phone\": \"\", \"statu"
+      ]
+    },
+    {
+      "finding": "WR-025",
+      "status": "passed",
+      "durationMs": 4567,
+      "errors": []
+    },
+    {
+      "finding": "WR-026",
+      "status": "passed",
+      "durationMs": 5839,
+      "errors": []
+    },
+    {
+      "finding": "WR-027",
+      "status": "failed",
+      "durationMs": 10134,
+      "errors": [
+        "Error: expect(locator).toBeVisible() failed\n\nLocator: getByLabel('Phone number').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\n"
+      ]
+    },
+    {
+      "finding": "WR-033",
+      "status": "timedOut",
+      "durationMs": 30369,
+      "errors": [
+        "Test timeout of 30000ms exceeded.",
+        "Error: locator.waitFor: Test timeout of 30000ms exceeded.\n"
+      ]
+    },
+    {
+      "finding": "WR-035",
+      "status": "failed",
+      "durationMs": 11891,
+      "errors": [
+        "Error: expect(locator).toBeVisible() failed\n\nLocator: locator('main .error')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\n"
+      ]
+    },
+    {
+      "finding": "WR-036",
+      "status": "failed",
+      "durationMs": 9941,
+      "errors": [
+        "Error: expect(locator).toBeVisible() failed\n\nLocator: locator('main')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\n"
+      ]
+    }
+  ]
+}

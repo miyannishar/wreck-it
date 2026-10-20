@@ -13,7 +13,7 @@ wreck-it turns your coding agent (Claude Code, Codex, Cursor, Gemini CLI, Copilo
 - **Chaos monkeys** feeding it hostile input, killing the network and tampering with sessions
 - **Traffic spikes** and slow pages
 
-Then it hands you a scored bug report that points at the code responsible, plus a regression test for every bug.
+Then it hands you a scored bug report that points at the code responsible, plus candidate Playwright regression tests for supported findings.
 
 ```
 Readiness 41/100 (Not ready) → .wreck-it/report.html
@@ -21,11 +21,11 @@ Fix this first: WR-004 Double-clicking "Place order" creates two orders
                 app/api/orders/route.ts:18 — no idempotency key; each POST inserts
 ```
 
-Every finding comes with:
+Reports include:
 
 - **Repro steps and screenshots**, replayed in a fresh browser before the finding counts
 - **The likely `file:line`** and *why* it causes the bug. When wreck-it can't pin a line, it lists candidate files instead of guessing.
-- **A Playwright regression test** (`tests/wreck-it/WR-NNN.spec.ts`) that fails while the bug exists and passes once it's fixed
+- **Candidate Playwright regression tests** (`tests/wreck-it/WR-NNN.spec.ts`). Review and run them: unsupported assertions become skipped tests, and generated checks can need correction before they reliably distinguish the bug from its fix.
 
 On top of that you get a deterministic **readiness score** (0–100) you can compare across runs and agents.
 
@@ -327,7 +327,7 @@ npm i -D @playwright/test
 npx playwright test tests/wreck-it
 ```
 
-Each test replays the finding's steps and asserts the **correct** behavior, so it fails while the bug exists and passes once you've fixed it. Findings without a checkable assertion are generated as `test.fixme`. Performance findings don't get tests.
+Each test replays the finding's steps and asserts the intended **correct** behavior. Verify that it fails for the actual defect and passes after a fix; a failure alone can also come from an incorrect locator or fixture. Findings without a checkable assertion are generated as `test.fixme`. Performance findings don't get tests. See the [latest test-quality evaluation](docs/evals/2026-10-20-benchmark.md#generated-regression-tests) for measured limitations.
 
 | Variable | Overrides |
 |---|---|
@@ -455,7 +455,7 @@ cd examples/buggy-app && npm install && npm run dev   # demo login: demo@gadgetl
 node ../../scripts/eval.mjs --app .    # recall and false positives vs. the seeded-bug manifest
 ```
 
-The release gate is ≥ 80% recall with ≤ 2 false positives. On 2026-10-04, Claude Code with Sonnet found **22 of 23 bugs with 0 false positives** in about 17 minutes ([eval notes](docs/evals/2026-10-04-release-gate.md)). That run predates the login and data-safety features; a second-agent run is pending.
+The detection threshold is ≥ 80% recall with ≤ 2 false positives according to the scorer. The latest evaluation found **19/23 seeded bugs with Claude Code Sonnet and 21/23 with Codex after reviewing root-cause matches**. Both cleared the recall threshold; the automatic scorer reported no unmatched findings, but a matching error inflated its raw Codex result to 22/23. Screenshot coverage, generated-test quality, and procedure-compliance gaps remain documented in the [October 20 evaluation](docs/evals/2026-10-20-benchmark.md). These results describe one seeded demo, not a general accuracy guarantee. The [October 4 evaluation](docs/evals/2026-10-04-release-gate.md) remains available as a historical result.
 
 ## Troubleshooting
 

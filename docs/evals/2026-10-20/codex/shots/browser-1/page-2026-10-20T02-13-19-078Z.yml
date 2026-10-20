@@ -1,0 +1,51 @@
+- generic [active] [ref=f4e1]:
+  - banner [ref=f4e2]:
+    - generic [ref=f4e3]:
+      - link "Gadgetly" [ref=f4e4] [cursor=pointer]:
+        - /url: /
+      - navigation "Main" [ref=f4e6]:
+        - link "Shop" [ref=f4e7] [cursor=pointer]:
+          - /url: /products
+        - link "Orders" [ref=f4e8] [cursor=pointer]:
+          - /url: /orders
+        - link "About" [ref=f4e9] [cursor=pointer]:
+          - /url: /about
+      - generic [ref=f4e10]:
+        - link "Hi, Demo Shopper" [ref=f4e11] [cursor=pointer]:
+          - /url: /account/settings
+        - button "Log out" [ref=f4e13] [cursor=pointer]
+        - button [ref=f4e15] [cursor=pointer]
+  - main [ref=f4e20]:
+    - heading "Results for “%”" [level=1] [ref=f4e21]
+    - search [ref=f4e22]:
+      - generic [ref=f4e23]: Search products
+      - searchbox "Search products" [ref=f4e24]: "%"
+      - button "Search" [ref=f4e25] [cursor=pointer]
+    - generic [ref=f4e26]:
+      - button "all" [pressed] [ref=f4e27] [cursor=pointer]
+      - button "audio" [ref=f4e28] [cursor=pointer]
+      - button "wearables" [ref=f4e29] [cursor=pointer]
+      - button "home" [ref=f4e30] [cursor=pointer]
+      - button "accessories" [ref=f4e31] [cursor=pointer]
+      - button "cameras" [ref=f4e32] [cursor=pointer]
+      - button "gaming" [ref=f4e33] [cursor=pointer]
+    - status [ref=f4e34]:
+      - generic [ref=f4e36]: Loading products
+  - contentinfo [ref=f4e37]:
+    - generic [ref=f4e38]:
+      - generic [ref=f4e39]:
+        - strong [ref=f4e40]: Gadgetly
+        - paragraph [ref=f4e41]: Small gadgets, big joy. Free shipping over $50.
+        - paragraph [ref=f4e42]: 16 shoppers browsing right now
+      - navigation "Footer" [ref=f4e43]:
+        - link "All products" [ref=f4e44] [cursor=pointer]:
+          - /url: /products
+        - link "About us" [ref=f4e45] [cursor=pointer]:
+          - /url: /about
+        - link "Shipping & pricing" [ref=f4e46] [cursor=pointer]:
+          - /url: /pricng
+        - link "Track an order" [ref=f4e47] [cursor=pointer]:
+          - /url: /orders
+        - link "Account" [ref=f4e48] [cursor=pointer]:
+          - /url: /account/settings
+  - alert [ref=f4e49]

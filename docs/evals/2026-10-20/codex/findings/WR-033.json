@@ -1,0 +1,35 @@
+{
+  "title": "a11y: Table header text should not be empty (empty-table-header)",
+  "category": "accessibility",
+  "severity": "low",
+  "persona": "a11y-scan",
+  "route": "/cart",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "http://localhost:4318/cart"
+    }
+  ],
+  "assertions": [],
+  "expected": "Table header text should not be empty (WCAG/axe rule empty-table-header) satisfied on /cart",
+  "actual": "axe-core reports 1 element failing empty-table-header (minor), e.g. th:nth-child(5); see https://dequeuniversity.com/rules/axe/4.14/empty-table-header?application=axeAPI",
+  "evidence": {
+    "screenshots": [
+      "shots/WR-033-cart-header.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "app/cart/page.tsx",
+    "line": 70,
+    "snippet": "            <th />",
+    "why": "Actions column header is empty, leaving a table header without an accessible name.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-033",
+  "createdAt": "2026-10-20T11:36:31.271Z"
+}

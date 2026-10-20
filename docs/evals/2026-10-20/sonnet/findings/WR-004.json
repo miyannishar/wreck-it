@@ -1,0 +1,38 @@
+{
+  "title": "/products scrolls horizontally at 390px (mobile)",
+  "category": "ux",
+  "severity": "medium",
+  "persona": "sweep",
+  "route": "/products",
+  "steps": [
+    {
+      "action": "setViewport",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "action": "goto",
+      "url": "/products"
+    }
+  ],
+  "assertions": [],
+  "expected": "Page fits a 390px-wide viewport without sideways scrolling",
+  "actual": "On /products at 390px: page scrollWidth 736px exceeds viewport 390px.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "app/products/products.module.css",
+    "line": 16,
+    "snippet": "width: 720px;",
+    "why": "Fixed 720px element overflows a 390px viewport",
+    "confidence": "medium",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-004",
+  "createdAt": "2026-10-20T01:55:30.969Z"
+}

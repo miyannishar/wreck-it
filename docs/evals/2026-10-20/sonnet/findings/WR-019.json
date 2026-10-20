@@ -1,0 +1,43 @@
+{
+  "title": "POST /api/cart/coupon returns 500 when code is padded with spaces",
+  "category": "chaos",
+  "severity": "high",
+  "persona": "fuzz",
+  "route": "/api/cart/coupon",
+  "steps": [
+    {
+      "action": "http",
+      "method": "POST",
+      "url": "/api/cart/coupon",
+      "headers": {
+        "content-type": "application/json"
+      },
+      "body": "{\"code\":\" SAVE10 \"}"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "httpStatus",
+      "below": 500
+    }
+  ],
+  "expected": "Bad input for code is rejected with a 4xx and a helpful message",
+  "actual": "POST /api/cart/coupon answered 500 (server error) for code = padded with spaces: \" SAVE10 \". Also failed for: nothing else.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "app/api/cart/coupon/route.ts",
+    "line": 17,
+    "snippet": "db.getCoupon(input.toUpperCase())",
+    "why": "Validation uses trimmed input but lookup uses untrimmed, so getCoupon returns undefined and coupon.code throws",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-019",
+  "createdAt": "2026-10-20T01:56:27.478Z"
+}

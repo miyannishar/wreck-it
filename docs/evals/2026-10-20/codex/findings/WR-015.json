@@ -1,0 +1,43 @@
+{
+  "title": "a11y: Buttons must have discernible text (button-name)",
+  "category": "accessibility",
+  "severity": "high",
+  "persona": "a11y-scan",
+  "route": "/",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "http://localhost:4318/"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "visible",
+      "target": {
+        "by": "role",
+        "role": "button",
+        "name": "Cart"
+      }
+    }
+  ],
+  "expected": "Buttons must have discernible text (WCAG/axe rule button-name) satisfied on /",
+  "actual": "axe-core reports 1 element failing button-name (critical), e.g. .cart-button; see https://dequeuniversity.com/rules/axe/4.14/button-name?application=axeAPI\nAlso on http://localhost:4318/about (1 element).\nAlso on http://localhost:4318/account/settings (1 element).\nAlso on http://localhost:4318/cart (1 element).\nAlso on http://localhost:4318/checkout (1 element).\nAlso on http://localhost:4318/login (1 element).\nAlso on http://localhost:4318/orders (1 element).\nAlso on http://localhost:4318/pricing (1 element).\nAlso on http://localhost:4318/products (1 element).\nAlso on http://localhost:4318/signup (1 element).\nAlso on http://localhost:4318/products/2 (1 element).\nAlso on http://localhost:4318/orders/1001 (1 element).\nFresh browser inspection: Small gadgets, big joy.\n\nHeadphones, smart home, cameras and more. New here? Use code SAVE10 for 10% off your first order.\n\nBrowse the shop\nFeatured\nPulse Over-Ear Headphones\n$149.99\nOrbit Smartwatch\n$229.99\nDock Pro Hub\n$89.99\nForge Mechanical Keyboard\n$129.99\n<button type=\"button\" class=\"cart-button\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"9\" cy=\"21\" r=\"1\"></circle><circle cx=\"20\" cy=\"21\" r=\"1\"></circle><path d=\"M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6\"></path></svg></button>",
+  "evidence": {
+    "screenshots": [
+      "shots/WR-015-replay.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "components/CartButton.tsx",
+    "line": 34,
+    "snippet": "      <button type=\"button\" className=\"cart-button\" onClick={() => router.push(\"/cart\")}>",
+    "why": "Icon-only button has no aria-label, title or text, so screen readers cannot identify it.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "id": "WR-015",
+  "createdAt": "2026-10-20T02:10:29.414Z"
+}

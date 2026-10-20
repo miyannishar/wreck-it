@@ -1,0 +1,30 @@
+{
+  "title": "Duplicate of WR-010: rich sweep confirmation",
+  "category": "ux",
+  "severity": "medium",
+  "persona": "sweep",
+  "route": "/products",
+  "steps": [
+    {
+      "action": "setViewport",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "action": "goto",
+      "url": "/products"
+    }
+  ],
+  "assertions": [],
+  "expected": "Page fits a 390px-wide viewport without sideways scrolling",
+  "actual": "Consolidated into WR-010.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "reproduced": false,
+  "auth": "main",
+  "id": "WR-032",
+  "createdAt": "2026-10-20T11:36:31.168Z"
+}

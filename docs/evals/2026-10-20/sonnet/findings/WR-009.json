@@ -1,0 +1,52 @@
+{
+  "title": "Checkout accepts nonsense phone number",
+  "category": "ux",
+  "severity": "low",
+  "persona": "rushed-beginner",
+  "route": "/checkout",
+  "steps": [
+    {
+      "action": "http",
+      "method": "POST",
+      "url": "/api/cart",
+      "body": "{\"productId\": \"3\", \"quantity\": 1}"
+    },
+    {
+      "action": "http",
+      "method": "POST",
+      "url": "/api/orders",
+      "body": "{\"address\":\"1 Wreck St\",\"phone\":\"not a phone\"}"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "httpStatus",
+      "atLeast": 400
+    }
+  ],
+  "expected": "Invalid or empty phone is rejected with a specific message",
+  "actual": "201 order placed with phone 'not a phone'",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": [
+      {
+        "method": "POST",
+        "url": "/api/orders",
+        "status": 201
+      }
+    ]
+  },
+  "source": {
+    "file": "app/api/orders/route.ts",
+    "line": 21,
+    "snippet": "const phone = String(body.phone ?? \"\").trim();",
+    "why": "Phone is never validated, only address is checked",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-009",
+  "createdAt": "2026-10-20T01:55:54.233Z"
+}

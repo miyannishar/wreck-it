@@ -1,0 +1,70 @@
+{
+  "title": "Cart subtotal ignores item quantity",
+  "category": "functional",
+  "severity": "critical",
+  "persona": "normal-user",
+  "route": "/cart",
+  "steps": [
+    {
+      "action": "http",
+      "method": "DELETE",
+      "url": "/api/cart?productId=1"
+    },
+    {
+      "action": "http",
+      "method": "DELETE",
+      "url": "/api/cart?productId=2"
+    },
+    {
+      "action": "http",
+      "method": "DELETE",
+      "url": "/api/cart?productId=3"
+    },
+    {
+      "action": "http",
+      "method": "DELETE",
+      "url": "/api/cart/coupon"
+    },
+    {
+      "action": "http",
+      "method": "POST",
+      "url": "/api/cart",
+      "body": "{\"productId\":\"1\",\"quantity\":3}"
+    },
+    {
+      "action": "goto",
+      "url": "/cart"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "text",
+      "target": {
+        "by": "css",
+        "value": ".summary-total"
+      },
+      "contains": "$239.97"
+    }
+  ],
+  "expected": "Subtotal and total equal sum of price x quantity ($239.97 for 3 x $79.99 earbuds, plus any other lines)",
+  "actual": "Line total shows $239.97 but Subtotal/Total show $79.99 (price counted once per line); checkout total is understated",
+  "evidence": {
+    "screenshots": [
+      "shots/ui-cart-subtotal.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "lib/cart.ts",
+    "line": 19,
+    "snippet": "items.reduce((sum, item) => sum + item.price, 0)",
+    "why": "Subtotal sums price without multiplying by quantity (lineTotal is correct)",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-007",
+  "createdAt": "2026-10-20T01:55:53.065Z"
+}

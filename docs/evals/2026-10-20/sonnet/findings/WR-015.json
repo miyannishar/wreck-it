@@ -1,0 +1,45 @@
+{
+  "title": "Order detail shows raw ISO timestamp while list shows formatted date",
+  "category": "oddity",
+  "severity": "low",
+  "persona": "normal-user",
+  "route": "/orders/[id]",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "/orders/1001"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "text",
+      "target": {
+        "by": "css",
+        "value": "main"
+      },
+      "contains": "T0",
+      "negate": true
+    }
+  ],
+  "expected": "Date formatted like the list (e.g. Sep 28, 2026)",
+  "actual": "Detail shows 'Placed 2026-10-20T01:55:07.088Z'",
+  "evidence": {
+    "screenshots": [
+      "shots/ui-order-detail.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "app/orders/[id]/page.tsx",
+    "line": 21,
+    "snippet": "Placed {order.createdAt}",
+    "why": "Raw ISO string rendered; list formats with toLocaleDateString",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-015",
+  "createdAt": "2026-10-20T01:55:57.163Z"
+}

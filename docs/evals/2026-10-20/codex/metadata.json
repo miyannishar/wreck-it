@@ -1,0 +1,36 @@
+{
+  "agent": "Codex CLI",
+  "cliVersion": "0.163.0",
+  "model": "CLI default; model ID not exposed in the JSON transcript",
+  "sourceCommit": "3000da6dd652106f7fb33c6c37ba2e6ab289ed8c",
+  "skillSha256": {
+    "skills/wreck-chaos/SKILL.md": "8740a45bfa4d8e7335de870d64736be10ce7d3a1767110f9ea1c6941c976b00e",
+    "skills/wreck-explore/SKILL.md": "185c5f89568c7a61986555a280e864bf5dcb82057bebbafb40ce8d5e4e87bcaa",
+    "skills/wreck-it/SKILL.md": "e34eed5e2323aadf61c94acacb6329ae71cb84098b2b4927fef30f04ebe218ff",
+    "skills/wreck-it/references/recording-findings.md": "51958c295031903dfa0ae892af9eb8bd17ac51c83235a680f415f22a7ca8d907",
+    "skills/wreck-load/SKILL.md": "70bdff789f7c88f8d6a3340c33eb6d61b96273c72cb43d59fd9f1335b0c2ed26",
+    "skills/wreck-personas/SKILL.md": "768f89931b793a73b796a1d77272809b2227edb9e7b2db83a955a5a77ce6ecd6",
+    "skills/wreck-trace/SKILL.md": "a2f02cd95ca688e8cc9ecda3bb96e278557e85f60310a5b2d34c53d468ed5bbb"
+  },
+  "cliArchiveSha256": "24faff9019ca16a4778dca4693fd81fda838b114e958135e0630195565ceeaf6",
+  "runtimeVersions": {
+    "playwright": "1.63.0",
+    "lighthouse": "13.5.0",
+    "axe-core": "4.13.0"
+  },
+  "startedAt": "2026-10-20T02:06:03.555807+00:00",
+  "finishedAt": "2026-10-20T11:42:23.975993+00:00",
+  "elapsedMonotonicSeconds": 2244.48,
+  "timingNote": "Run interrupted by network/host scheduling. Timestamp wall duration and monotonic duration differ substantially; do not treat this as a clean runtime benchmark. Soak remained inconclusive.",
+  "usage": [
+    {
+      "input_tokens": 6126352,
+      "cached_input_tokens": 5890560,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 36552,
+      "reasoning_output_tokens": 7605
+    }
+  ],
+  "sourceUnchanged": true,
+  "testsNote": "Final tests include agent-written fixtures and custom assertions after CLI generation. All 22 specs differ from CLI-only output; seven CLI fixme cases were filled by the agent."
+}

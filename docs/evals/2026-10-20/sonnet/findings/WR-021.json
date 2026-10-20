@@ -1,0 +1,37 @@
+{
+  "title": "CLS 0.41 on /products (mobile)",
+  "category": "performance",
+  "severity": "medium",
+  "persona": "perf-scan",
+  "route": "/products",
+  "steps": [
+    {
+      "action": "setViewport",
+      "width": 412,
+      "height": 823
+    },
+    {
+      "action": "goto",
+      "url": "/products"
+    }
+  ],
+  "assertions": [],
+  "expected": "CLS within Google's \"poor\" threshold (0.25) on a mid-range phone on slow 4G",
+  "actual": "Layout shift score 0.41 on a mid-range phone on slow 4G (Lighthouse performance score 79). Report: .wreck-it/perf/localhost-4317-products-mobile.html",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "components/ProductCard.tsx",
+    "line": 10,
+    "snippet": "<img ... width={240} height={160}/> in client-loaded grid",
+    "why": "Product grid renders after a fetch so content shifts when the spinner is replaced; layout space not reserved",
+    "confidence": "medium",
+    "candidates": []
+  },
+  "reproduced": true,
+  "id": "WR-021",
+  "createdAt": "2026-10-20T02:00:37.384Z"
+}

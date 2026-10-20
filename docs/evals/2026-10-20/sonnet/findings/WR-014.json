@@ -1,0 +1,49 @@
+{
+  "title": "Orders list is oldest-first instead of newest-first",
+  "category": "ux",
+  "severity": "medium",
+  "persona": "gadget-shopper",
+  "route": "/orders",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "/orders"
+    },
+    {
+      "action": "wait",
+      "ms": 800
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "text",
+      "target": {
+        "by": "css",
+        "value": "tbody tr:first-child"
+      },
+      "contains": "#1001",
+      "negate": true
+    }
+  ],
+  "expected": "Most recent order listed first",
+  "actual": "#1001 (oldest) is at the top and the newest order is at the bottom",
+  "evidence": {
+    "screenshots": [
+      "shots/ui-orders-list.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "app/api/orders/route.ts",
+    "line": 12,
+    "snippet": "orders.sort((a, b) => a.createdAt.localeCompare(b.createdAt))",
+    "why": "Ascending sort; should be descending",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-014",
+  "createdAt": "2026-10-20T01:55:56.735Z"
+}

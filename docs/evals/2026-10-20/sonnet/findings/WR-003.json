@@ -1,0 +1,48 @@
+{
+  "title": "Page renders \"undefined\" as visible text",
+  "category": "oddity",
+  "severity": "medium",
+  "persona": "sweep",
+  "route": "/products",
+  "steps": [
+    {
+      "action": "setViewport",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "action": "goto",
+      "url": "/products"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "text",
+      "target": {
+        "by": "css",
+        "value": "body"
+      },
+      "contains": "undefined",
+      "negate": true
+    }
+  ],
+  "expected": "Missing values are shown as a sensible fallback (e.g. \"No reviews yet\"), never as raw placeholders",
+  "actual": "Visible text on /products contains \"undefined\", e.g. \"undefined (0)\".",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "components/ProductCard.tsx",
+    "line": 14,
+    "snippet": "product.rating?.toFixed(1)",
+    "why": "Products without reviews have rating undefined, so the template renders 'undefined'",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-003",
+  "createdAt": "2026-10-20T01:55:24.643Z"
+}

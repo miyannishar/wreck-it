@@ -1,0 +1,30 @@
+{
+  "title": "Duplicate of WR-012: consolidated scan result",
+  "category": "oddity",
+  "severity": "medium",
+  "persona": "sweep",
+  "route": "/products",
+  "steps": [
+    {
+      "action": "setViewport",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "action": "goto",
+      "url": "/products"
+    }
+  ],
+  "assertions": [],
+  "expected": "Missing values are shown as a sensible fallback (e.g. \"No reviews yet\"), never as raw placeholders",
+  "actual": "Same root cause and evidence as WR-012; excluded from scoring.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "reproduced": false,
+  "auth": "main",
+  "id": "WR-013",
+  "createdAt": "2026-10-20T02:10:23.087Z"
+}

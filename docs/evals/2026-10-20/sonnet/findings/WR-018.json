@@ -1,0 +1,46 @@
+{
+  "title": "Add to cart accepts negative quantity and ignores stock",
+  "category": "chaos",
+  "severity": "medium",
+  "persona": "chaos-monkey",
+  "route": "/api/cart",
+  "steps": [
+    {
+      "action": "http",
+      "method": "POST",
+      "url": "/api/cart",
+      "body": "{\"productId\":\"2\",\"quantity\":-3}"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "httpStatus",
+      "atLeast": 400
+    }
+  ],
+  "expected": "Quantity must be a positive integer within stock",
+  "actual": "201 with a negative quantity; quantities above stock (e.g. 100000) are also accepted and stock goes negative at checkout",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": [
+      {
+        "method": "POST",
+        "url": "/api/cart",
+        "status": 201
+      }
+    ]
+  },
+  "source": {
+    "file": "app/api/cart/route.ts",
+    "line": 21,
+    "snippet": "const quantity = Number(body.quantity) || 1;",
+    "why": "No positive-integer or stock check on add; orders/route.ts:28 reserveStock never checks availability",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-018",
+  "createdAt": "2026-10-20T01:55:58.570Z"
+}

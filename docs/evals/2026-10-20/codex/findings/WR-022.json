@@ -1,0 +1,26 @@
+{
+  "title": "Duplicate of WR-020: search fuzz confirmation",
+  "category": "chaos",
+  "severity": "high",
+  "persona": "fuzz",
+  "route": "/api/search",
+  "steps": [
+    {
+      "action": "http",
+      "method": "GET",
+      "url": "/api/search?q=100%25"
+    }
+  ],
+  "assertions": [],
+  "expected": "Bad input for query parameter q is rejected with a 4xx and a helpful message",
+  "actual": "Consolidated into WR-020; same double-decoding root cause.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "reproduced": false,
+  "auth": "main",
+  "id": "WR-022",
+  "createdAt": "2026-10-20T05:03:09.030Z"
+}

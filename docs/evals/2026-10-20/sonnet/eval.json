@@ -1,0 +1,191 @@
+{
+  "total": 23,
+  "found": 19,
+  "recall": 0.8260869565217391,
+  "bugs": [
+    {
+      "id": "B01",
+      "title": "Cart subtotal ignores item quantity",
+      "category": "functional",
+      "found": true,
+      "finding": "WR-007"
+    },
+    {
+      "id": "B02",
+      "title": "Display name change shows success but doesn't persist after reload",
+      "category": "functional",
+      "found": true,
+      "finding": "WR-013"
+    },
+    {
+      "id": "B03",
+      "title": "Header cart badge keeps old count after removing or changing items",
+      "category": "functional",
+      "found": true,
+      "finding": "WR-008"
+    },
+    {
+      "id": "B04",
+      "title": "Coupon discount applied twice to the order total",
+      "category": "functional",
+      "found": true,
+      "finding": "WR-011"
+    },
+    {
+      "id": "B05",
+      "title": "Orders listed oldest first",
+      "category": "ux",
+      "found": true,
+      "finding": "WR-014"
+    },
+    {
+      "id": "B06",
+      "title": "Product cards render 'undefined' rating for products without reviews",
+      "category": "oddity",
+      "found": true,
+      "finding": "WR-003"
+    },
+    {
+      "id": "B07",
+      "title": "Broken team photo on About page",
+      "category": "oddity",
+      "found": true,
+      "finding": "WR-002"
+    },
+    {
+      "id": "B08",
+      "title": "Footer 'Shipping & pricing' link is dead (/pricng)",
+      "category": "oddity",
+      "found": true,
+      "finding": "WR-001"
+    },
+    {
+      "id": "B09",
+      "title": "Order detail shows raw ISO timestamp, unlike the list's formatted date",
+      "category": "oddity",
+      "found": true,
+      "finding": "WR-015"
+    },
+    {
+      "id": "B10",
+      "title": "Orders page spins forever for users with no orders",
+      "category": "ux",
+      "found": false,
+      "finding": null
+    },
+    {
+      "id": "B11",
+      "title": "Sign-up errors say 'Something went wrong' and wipe the form",
+      "category": "ux",
+      "found": false,
+      "finding": null
+    },
+    {
+      "id": "B12",
+      "title": "Empty cart has no guidance or link back to products",
+      "category": "ux",
+      "found": false,
+      "finding": null
+    },
+    {
+      "id": "B13",
+      "title": "Coupon code with surrounding spaces causes a 500",
+      "category": "chaos",
+      "found": true,
+      "finding": "WR-019"
+    },
+    {
+      "id": "B14",
+      "title": "Negative quantities accepted in the cart (negative line totals)",
+      "category": "chaos",
+      "found": true,
+      "finding": "WR-017"
+    },
+    {
+      "id": "B15",
+      "title": "Double-clicking 'Place order' creates duplicate orders",
+      "category": "chaos",
+      "found": true,
+      "finding": "WR-012"
+    },
+    {
+      "id": "B16",
+      "title": "Search containing '%' returns a 500 (double URI decode)",
+      "category": "chaos",
+      "found": true,
+      "finding": "WR-016"
+    },
+    {
+      "id": "B17",
+      "title": "/api/products does N+1 sequential review and stock lookups",
+      "category": "performance",
+      "found": true,
+      "finding": "WR-022"
+    },
+    {
+      "id": "B18",
+      "title": "Search does a synchronous fuzzy scan that blocks the event loop",
+      "category": "performance",
+      "found": true,
+      "finding": "WR-023"
+    },
+    {
+      "id": "B19",
+      "title": "/api/stats leaks memory by keeping every visit forever",
+      "category": "performance",
+      "found": true,
+      "finding": "WR-010"
+    },
+    {
+      "id": "B20",
+      "title": "Icon-only cart button has no accessible name",
+      "category": "accessibility",
+      "found": true,
+      "finding": "WR-005"
+    },
+    {
+      "id": "B21",
+      "title": "Checkout phone input has no label",
+      "category": "accessibility",
+      "found": false,
+      "finding": null
+    },
+    {
+      "id": "B22",
+      "title": "Product prices have insufficient color contrast",
+      "category": "accessibility",
+      "found": true,
+      "finding": "WR-006"
+    },
+    {
+      "id": "B23",
+      "title": "Category filter row overflows horizontally on mobile",
+      "category": "ux",
+      "found": true,
+      "finding": "WR-004"
+    }
+  ],
+  "falsePositives": [],
+  "duplicates": [
+    {
+      "finding": "WR-018",
+      "bug": "B14"
+    },
+    {
+      "finding": "WR-021",
+      "bug": "B06"
+    }
+  ],
+  "extras": [
+    {
+      "finding": "WR-009",
+      "extra": "X02"
+    },
+    {
+      "finding": "WR-020",
+      "extra": "X03"
+    }
+  ],
+  "unconfirmed": [],
+  "pass": true
+}

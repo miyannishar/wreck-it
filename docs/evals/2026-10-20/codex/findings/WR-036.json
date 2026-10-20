@@ -1,0 +1,36 @@
+{
+  "title": "Cart API failure crashes the page",
+  "category": "chaos",
+  "severity": "high",
+  "persona": "chaos-monkey",
+  "route": "/cart",
+  "steps": [
+    {
+      "action": "goto",
+      "url": "/cart"
+    }
+  ],
+  "assertions": [],
+  "expected": "Show an error and retry control without crashing",
+  "actual": "With **/api/cart intercepted to return HTTP 500 JSON {\"error\":\"wreck-it forced error\"}, This page couldn’t load\n\nReload to try again, or go back.\n\nReload\nBack",
+  "evidence": {
+    "screenshots": [
+      "shots/cart-forced500.png"
+    ],
+    "console": [],
+    "network": [],
+    "trace": "shots/cart-forced500.zip"
+  },
+  "source": {
+    "file": "app/cart/page.tsx",
+    "line": 19,
+    "snippet": "      setCart(await res.json());",
+    "why": "Non-401 errors are parsed as a valid cart; render dereferences cart.items.length on an error object.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-036",
+  "createdAt": "2026-10-20T11:37:48.998Z"
+}

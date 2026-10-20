@@ -1,0 +1,35 @@
+{
+  "title": "Duplicate of WR-008: consolidated scan result",
+  "category": "oddity",
+  "severity": "low",
+  "persona": "sweep",
+  "route": "/",
+  "steps": [
+    {
+      "action": "setViewport",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "action": "goto",
+      "url": "/"
+    },
+    {
+      "action": "http",
+      "method": "GET",
+      "url": "/pricng"
+    }
+  ],
+  "assertions": [],
+  "expected": "Links on the page lead to existing pages",
+  "actual": "Same root cause and evidence as WR-008; excluded from scoring.",
+  "evidence": {
+    "screenshots": [],
+    "console": [],
+    "network": []
+  },
+  "reproduced": false,
+  "auth": "main",
+  "id": "WR-009",
+  "createdAt": "2026-10-20T02:10:10.548Z"
+}

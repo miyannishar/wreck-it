@@ -1,0 +1,40 @@
+{
+  "title": "CLS 0.43 on /products (mobile)",
+  "category": "performance",
+  "severity": "medium",
+  "persona": "perf-scan",
+  "route": "/products",
+  "steps": [
+    {
+      "action": "setViewport",
+      "width": 412,
+      "height": 823
+    },
+    {
+      "action": "goto",
+      "url": "/products"
+    }
+  ],
+  "assertions": [],
+  "expected": "CLS within Google's \"poor\" threshold (0.25) on a mid-range phone on slow 4G",
+  "actual": "Layout shift score 0.43 on a mid-range phone on slow 4G (Lighthouse performance score 81). Report: .wreck-it/perf/localhost-4318-products-mobile.html\nFresh browser inspection: All products\nSearch products\nSearch\nAll\nAudio\nWearables\nHome\nAccessories\nCameras\nGaming\nLoading products",
+  "evidence": {
+    "screenshots": [
+      "shots/WR-018-replay.png",
+      "shots/undefined-rating.png"
+    ],
+    "console": [],
+    "network": []
+  },
+  "source": {
+    "file": "app/products/page.tsx",
+    "line": 77,
+    "snippet": "      <div className=\"grid\">",
+    "why": "Products arrive asynchronously and replace a short spinner with an unreserved multi-row grid, moving the footer.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "id": "WR-018",
+  "createdAt": "2026-10-20T02:10:44.751Z"
+}

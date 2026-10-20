@@ -1,0 +1,69 @@
+{
+  "title": "Checkout phone input has no accessible label",
+  "category": "accessibility",
+  "severity": "medium",
+  "persona": "normal-user",
+  "route": "/checkout",
+  "steps": [
+    {
+      "action": "http",
+      "method": "DELETE",
+      "url": "/api/cart?productId=2"
+    },
+    {
+      "action": "http",
+      "method": "POST",
+      "url": "/api/cart",
+      "headers": {
+        "content-type": "application/json"
+      },
+      "body": "{\"productId\":\"2\",\"quantity\":1}"
+    },
+    {
+      "action": "goto",
+      "url": "/checkout"
+    }
+  ],
+  "assertions": [
+    {
+      "kind": "visible",
+      "target": {
+        "by": "label",
+        "value": "Phone number"
+      }
+    }
+  ],
+  "expected": "Phone input has a programmatically associated label",
+  "actual": "Gadgetly\nShop\nOrders\nAbout\nHi, Test User\nLog out\n1\nCheckout\nDelivery address\nPhone number\nPlace order\nOrder summary\nPulse Over-Ear Headphones × 1\n$149.99\nTotal\n$149.99\nGadgetly\n\nSmall gadgets, big joy. Free shipping over $50.\n\n12 shoppers browsing right now\n\nAll products\nAbout us\nShipping & pricing\nTrack an order\nAccount",
+  "evidence": {
+    "screenshots": [
+      "shots/phone-label.png"
+    ],
+    "console": [],
+    "network": [
+      {
+        "method": "DELETE",
+        "url": "/api/cart?productId=2",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "url": "/api/cart",
+        "status": 201
+      }
+    ],
+    "trace": "shots/phone-label.zip"
+  },
+  "source": {
+    "file": "app/checkout/page.tsx",
+    "line": 71,
+    "snippet": "            <div className=\"field-label\">Phone number</div>",
+    "why": "Visual div label is not associated with the tel input.",
+    "confidence": "high",
+    "candidates": []
+  },
+  "reproduced": true,
+  "auth": "main",
+  "id": "WR-027",
+  "createdAt": "2026-10-20T11:33:28.622Z"
+}

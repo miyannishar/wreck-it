@@ -1,0 +1,23 @@
+{
+  "stats": {
+    "startTime": "2026-10-20T11:56:57.023Z",
+    "duration": 23259.942,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  },
+  "statusCounts": {
+    "failed": 1
+  },
+  "tests": [
+    {
+      "finding": "WR-024",
+      "status": "failed",
+      "durationMs": 21196,
+      "errors": [
+        "Error: expect(received).toHaveLength(expected)\n\nExpected length: 1\nReceived length: 2\nReceived array:  [{\"address\": \"wreck-it duplicate order\", \"couponCode\": null, \"createdAt\": \"2026-10-20T11:57:12.320Z\", \"discount\": 0, \"id\": \"1030\", \"items\": [{\"name\": \"Pulse Over-Ear Headphones\", \"price\": 14999, \"productId\": \"2\", \"quantity\": 1}], \"phone\": \"\", \"status\": \"placed\", \"subtotal\": 14999, \"total\": 14999, \"userId\": \"1b33b1bc-ee4a-44b5-89d2-4ec65e45860e\"}, {\"address\": \"wreck-it duplicate order\", \"couponCode\": null, \"createdAt\": \"2026-10-20T11:57:12.322Z\", \"discount\": 0, \"id\": \"1031\", \"items\": [{\"name\": \"Pulse Over-Ear Headphones\", \"price\": 14999, \"productId\": \"2\", \"quantity\": 1}], \"phone\": \"\", \"statu"
+      ]
+    }
+  ]
+}
