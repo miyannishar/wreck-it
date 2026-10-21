@@ -5,7 +5,7 @@ description: Derive realistic user personas (the app's ideal customers plus buil
 
 # wreck-personas
 
-`WRECK` means `npx @miyannishar/wreck-it`.
+`WRECK` means `npx @miyanishar/wreck-it`.
 
 Output: `.wreck-it/personas.md`. The user may edit this file. If it already exists, **reuse it unchanged** and just summarize it. Regenerate only when the user asks.
 

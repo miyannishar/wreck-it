@@ -5,7 +5,7 @@ description: Trace wreck-it findings to the source code responsible. It maps the
 
 # wreck-trace
 
-`WRECK` means `npx @miyannishar/wreck-it`.
+`WRECK` means `npx @miyanishar/wreck-it`.
 
 `WRECK run stage trace running`
 

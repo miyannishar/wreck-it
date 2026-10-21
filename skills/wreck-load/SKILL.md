@@ -5,7 +5,7 @@ description: Page speed and load testing for a local web app with the wreck-it C
 
 # wreck-load
 
-`WRECK` means `npx @miyannishar/wreck-it`.
+`WRECK` means `npx @miyanishar/wreck-it`.
 
 `WRECK run stage load running`
 

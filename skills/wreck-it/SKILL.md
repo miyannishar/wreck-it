@@ -6,7 +6,7 @@ description: >-
 
 # wreck-it: Wreck your app before your users do
 
-`WRECK` below means `npx @miyannishar/wreck-it`. The CLI does the deterministic work (setup, discovery, sweeps, fuzzing, page speed, load, findings, score, report, tests). You drive the browser through Playwright MCP, play the personas, judge what's a bug and trace it to code.
+`WRECK` below means `npx @miyanishar/wreck-it`. The CLI does the deterministic work (setup, discovery, sweeps, fuzzing, page speed, load, findings, score, report, tests). You drive the browser through Playwright MCP, play the personas, judge what's a bug and trace it to code.
 
 Report only. **Don't fix bugs** during a run unless the user asks after the report.
 

@@ -92,7 +92,7 @@ const launchForLighthouse = (port: number): Promise<Browser> => launchChromium({
 
 async function loadLighthouse(): Promise<any> {
   try { return (await import("lighthouse")).default; }
-  catch (e) { throw new WreckError(`Lighthouse could not be loaded (${(e as Error).message.split("\n")[0]}); it needs Node 22.19+. Run: npx @miyannishar/wreck-it setup`, 1); }
+  catch (e) { throw new WreckError(`Lighthouse could not be loaded (${(e as Error).message.split("\n")[0]}); it needs Node 22.19+. Run: npx @miyanishar/wreck-it setup`, 1); }
 }
 
 export interface PerfOptions { urls?: string[]; baseUrl?: string; formFactor?: FormFactor; maxPages?: number; record?: boolean; iOwnThis?: boolean; account?: string }

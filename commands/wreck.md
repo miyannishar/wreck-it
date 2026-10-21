@@ -3,7 +3,7 @@ description: Wreck your app before your users do. Run wreck-it (or one stage) ag
 argument-hint: "[focus <feature> | stage: setup | login | explore | chaos | fuzz | perf | load | a11y | trace | report] [notes]"
 ---
 
-`WRECK` means `npx @miyannishar/wreck-it`.
+`WRECK` means `npx @miyanishar/wreck-it`.
 
 Use the **wreck-it** skill to test this project's locally running web app.
 

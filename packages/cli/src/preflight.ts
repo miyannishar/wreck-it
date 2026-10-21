@@ -62,7 +62,7 @@ export async function runPreflight(opts: { root: string; url?: string; iOwnThis?
   const devScript = disc?.devScript ?? (pkg?.scripts?.dev ? "npm run dev" : undefined);
   if (!(await readFile(join(root, ".gitignore"), "utf8").catch(() => "")).includes(".wreck-it")) warnings.push(".gitignore does not mention .wreck-it/ (findings, screenshots and saved logins may be committed)");
   const sources = await mcpSources(root, /playwright/i);
-  if (!sources.length) warnings.push("Playwright MCP not found in any agent config; run `npx @miyannishar/wreck-it setup --dry-run`, then `setup`");
+  if (!sources.length) warnings.push("Playwright MCP not found in any agent config; run `npx @miyanishar/wreck-it setup --dry-run`, then `setup`");
 
   const net = check.ok ? await checkReachable(url, opts.wait ?? 0) : { reachable: false };
   if (check.ok && !net.reachable) warnings.push(devScript ? `app not reachable at ${url}; start it with: ${devScript}` : `app not reachable at ${url}`);

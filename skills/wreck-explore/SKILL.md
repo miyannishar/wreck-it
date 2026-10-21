@@ -5,7 +5,7 @@ description: Explore a running local web app through Playwright MCP as a normal 
 
 # wreck-explore
 
-`WRECK` means `npx @miyannishar/wreck-it`.
+`WRECK` means `npx @miyanishar/wreck-it`.
 
 Two passes:
 1. **Normal-user pass**, persona `normal-user`.

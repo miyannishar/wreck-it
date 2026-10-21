@@ -223,8 +223,8 @@ export function formatSetup(r: SetupResult, dryRun = false): string {
   const l = [`agents: ${r.agents.join(", ") || "none detected"}`, ""];
   for (const s of r.steps) l.push(`${icon[s.action]} ${s.label}: ${s.action === "already" ? "already set up" : s.action === "would-run" ? `will run: ${s.detail}` : s.detail}`);
   l.push("");
-  if (dryRun) l.push("Dry run: nothing was changed. Run `npx @miyannishar/wreck-it setup` to apply.");
-  else if (!r.ok) l.push("Some steps failed; fix them (see above) and run `npx @miyannishar/wreck-it setup` again.");
+  if (dryRun) l.push("Dry run: nothing was changed. Run `npx @miyanishar/wreck-it setup` to apply.");
+  else if (!r.ok) l.push("Some steps failed; fix them (see above) and run `npx @miyanishar/wreck-it setup` again.");
   else l.push("Everything wreck-it uses is ready.");
   if (r.restartNeeded) l.push("Restart your agent so it loads the new MCP servers, then ask it again to wreck your app.");
   return l.join("\n") + "\n";

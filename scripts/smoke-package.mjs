@@ -14,7 +14,7 @@ const arg = (name) => { const i = args.indexOf(name); return i < 0 ? undefined :
 assert(arg('--project') && arg('--version'), 'Supply --project and --version');
 const project = resolve(arg('--project'));
 const version = arg('--version');
-const installed = join(project, 'node_modules/@miyannishar/wreck-it');
+const installed = join(project, 'node_modules/@miyanishar/wreck-it');
 const pkg = JSON.parse(readFileSync(join(installed, 'package.json'), 'utf8'));
 const bin = join(project, 'node_modules/.bin/wreck-it');
 const run = (...argv) => execFileSync(bin, argv, { cwd: project, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30_000 });

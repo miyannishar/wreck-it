@@ -21,7 +21,7 @@ export async function launchChromium(opts: LaunchOptions = {}): Promise<Browser>
     installing ??= (async () => {
       process.stderr.write("wreck-it: Chromium isn't installed yet; downloading it once (about 150 MB)…\n");
       const r = await playwrightInstall("chromium");
-      if (!r.ok) throw new WreckError(`could not download Chromium (${r.out.split("\n").pop()}); run: npx @miyannishar/wreck-it setup`, 1);
+      if (!r.ok) throw new WreckError(`could not download Chromium (${r.out.split("\n").pop()}); run: npx @miyanishar/wreck-it setup`, 1);
     })();
     await installing;
     return chromium.launch(opts);

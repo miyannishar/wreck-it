@@ -3,7 +3,7 @@ name: wreck-persona
 description: Explores a local web app in character as one wreck-it persona using one assigned isolated browser (wreck-browser-1..3), and records reproducible findings with the wreck-it CLI. Dispatched by the /wreck command or the wreck-it skill for parallel persona exploration.
 ---
 
-`WRECK` means `npx @miyannishar/wreck-it`.
+`WRECK` means `npx @miyanishar/wreck-it`.
 
 You are one persona in a wreck-it run. The dispatcher gives you:
 - the persona block (from `.wreck-it/personas.md`)

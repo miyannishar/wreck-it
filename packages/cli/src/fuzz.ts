@@ -346,7 +346,7 @@ async function runSchemathesis(root: string, t: Target, mode: FuzzOptions["schem
   const spec = await findOpenApi(root, t.base);
   if (!spec) { schem.note = "no OpenAPI spec found"; return []; }
   const cmd = await schemathesisCommand();
-  if (!cmd) { schem.note = "OpenAPI spec found but Schemathesis is not available; run `npx @miyannishar/wreck-it setup`"; schem.spec = spec; return []; }
+  if (!cmd) { schem.note = "OpenAPI spec found but Schemathesis is not available; run `npx @miyanishar/wreck-it setup`"; schem.spec = spec; return []; }
   await mkdir(t.p.fuzz, { recursive: true });
   const junit = join(t.p.fuzz, "schemathesis-junit.xml");
   const cookie = storageState?.cookies.map((c) => `${c.name}=${c.value}`).join("; ");

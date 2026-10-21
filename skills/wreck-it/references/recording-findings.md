@@ -1,6 +1,6 @@
 # Recording findings
 
-`WRECK` means `npx @miyannishar/wreck-it`.
+`WRECK` means `npx @miyanishar/wreck-it`.
 
 Every wreck-it stage records bugs the same way. The CLI validates and stores them, so the report, score and generated tests stay deterministic.
 

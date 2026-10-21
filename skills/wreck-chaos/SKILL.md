@@ -5,7 +5,7 @@ description: Chaos-test a running local web app as the chaos-monkey persona, usi
 
 # wreck-chaos
 
-`WRECK` means `npx @miyannishar/wreck-it`. Persona: `chaos-monkey`: curious and adversarial, but only against the user's local app. Follow the wreck-it skill's rules (fake data, no paid side effects in loops, never log out the shared account).
+`WRECK` means `npx @miyanishar/wreck-it`. Persona: `chaos-monkey`: curious and adversarial, but only against the user's local app. Follow the wreck-it skill's rules (fake data, no paid side effects in loops, never log out the shared account).
 
 `WRECK run stage chaos running`
 

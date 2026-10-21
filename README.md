@@ -1,7 +1,7 @@
 # wreck-it
 
-[![npm](https://img.shields.io/npm/v/@miyannishar/wreck-it?label=npm%20%40miyannishar%2Fwreck-it)](https://www.npmjs.com/package/@miyannishar/wreck-it)
-[![license](https://img.shields.io/npm/l/@miyannishar/wreck-it)](LICENSE)
+[![npm](https://img.shields.io/npm/v/@miyanishar/wreck-it?label=npm%20%40miyanishar%2Fwreck-it)](https://www.npmjs.com/package/@miyanishar/wreck-it)
+[![license](https://img.shields.io/npm/l/@miyanishar/wreck-it)](LICENSE)
 
 **Wreck your app before your users do.**
 
@@ -69,7 +69,7 @@ wreck-it has two halves:
 | Part | Does |
 |---|---|
 | **Skills** (`skills/`) | The judgment: derive personas, drive the browser through Playwright MCP, decide what's a bug, trace it to code |
-| **CLI** (`npx @miyannishar/wreck-it`) | Everything deterministic: setup, discovery, page sweeps, API fuzzing, Lighthouse, load tests, accessibility scans, finding storage, scoring, reports, test generation |
+| **CLI** (`npx @miyanishar/wreck-it`) | Everything deterministic: setup, discovery, page sweeps, API fuzzing, Lighthouse, load tests, accessibility scans, finding storage, scoring, reports, test generation |
 
 The CLI never calls an LLM and needs no API key. Your agent does the thinking; the CLI keeps results consistent so scores are comparable across runs and agents.
 
@@ -101,8 +101,8 @@ npm run dev
 npx skills add miyannishar/wreck-it
 
 # 3. Install the browsers and MCP servers wreck-it uses
-npx @miyannishar/wreck-it setup --dry-run   # see what it will do
-npx @miyannishar/wreck-it setup
+npx @miyanishar/wreck-it setup --dry-run   # see what it will do
+npx @miyanishar/wreck-it setup
 ```
 
 Restart your agent so it loads the new MCP servers, then ask it:
@@ -136,7 +136,7 @@ Personas run as up to three parallel subagents, each in its own browser. The fir
 
 ```bash
 npx skills add miyannishar/wreck-it
-npx @miyannishar/wreck-it setup
+npx @miyanishar/wreck-it setup
 ```
 
 `setup` finds the agents on your machine and adds Playwright MCP and Chrome DevTools MCP to each:
@@ -164,10 +164,12 @@ Then run `npx @playwright/mcp@0.0.83 install-browser chromium` once.
 
 ### The CLI on npm
 
-The CLI is published as [`@miyannishar/wreck-it`](https://www.npmjs.com/package/@miyannishar/wreck-it). You don't need to install it: the skills and the plugin call it with `npx`, which fetches the latest version on first use. To pin a version or run it in CI, add it to a project:
+Version 0.2.0 uses `@miyanishar/wreck-it` under the new npm account. Use this package name to receive the current release; the source repository is still [miyannishar/wreck-it](https://github.com/miyannishar/wreck-it).
+
+The CLI is published as [`@miyanishar/wreck-it`](https://www.npmjs.com/package/@miyanishar/wreck-it). You don't need to install it: the skills and the plugin call it with `npx`, which fetches the latest version on first use. To pin a version or run it in CI, add it to a project:
 
 ```bash
-npm i -D @miyannishar/wreck-it
+npm i -D @miyanishar/wreck-it
 npx wreck-it --version
 ```
 
@@ -213,9 +215,9 @@ A full run on a small app takes roughly 15–30 minutes with a Sonnet- or Opus-c
 Agents can't (and shouldn't) type a Google password, so wreck-it uses the standard approach: you log in once and every later step reuses the session.
 
 ```bash
-npx @miyannishar/wreck-it login                  # a browser window opens
-npx @miyannishar/wreck-it login --label second   # optional: a second user, for "B can't see A's data" checks
-npx @miyannishar/wreck-it login --check          # is the saved session still valid?
+npx @miyanishar/wreck-it login                  # a browser window opens
+npx @miyanishar/wreck-it login --label second   # optional: a second user, for "B can't see A's data" checks
+npx @miyanishar/wreck-it login --check          # is the saved session still valid?
 ```
 
 1. A window opens at your app's login page. It uses your real Chrome when installed, which Google is less likely to block.
@@ -379,7 +381,7 @@ Sign-up tests use a fresh email on every run, so they can run again and again.
 | `exclude` | Routes never to visit (prefix match) |
 | `thresholds` | Load-test limits: p99 latency in ms, and error rate |
 
-`npx @miyannishar/wreck-it schema config` prints the full JSON Schema.
+`npx @miyanishar/wreck-it schema config` prints the full JSON Schema.
 
 ## CLI reference
 
@@ -467,13 +469,13 @@ The detection threshold is ≥ 80% recall with ≤ 2 false positives according t
 
 | Problem | Fix |
 |---|---|
-| "Playwright MCP not found" | `npx @miyannishar/wreck-it setup`, then restart your agent |
-| A browser tool says "Browser … is not installed" | `npx @miyannishar/wreck-it setup --skip playwright-mcp devtools-mcp` |
+| "Playwright MCP not found" | `npx @miyanishar/wreck-it setup`, then restart your agent |
+| A browser tool says "Browser … is not installed" | `npx @miyanishar/wreck-it setup --skip playwright-mcp devtools-mcp` |
 | Preflight exit 4 (not reachable) | Start the app, check `baseUrl` (the port!), then `preflight --wait 60` |
 | Preflight exit 3 (refused) | The target isn't local. Use your local dev server, or `--i-own-this` for a server you own |
 | Google says "This browser or app may not be secure" | Install Google Chrome (`login` uses it when present) and try again |
 | `login` reports `check: unknown` | Set `"authCheck"` to a page that requires login |
-| Session `expired` | Run `npx @miyannishar/wreck-it login` again |
+| Session `expired` | Run `npx @miyanishar/wreck-it login` again |
 | `fuzz` refuses: database is remote | Confirm it's not production, then set `"allowRemoteDb": true` |
 | `perf` numbers look terrible | You're on a dev server. Run a production build (`npm run build && npm start`) and measure again |
 | "Lighthouse could not be loaded" | Upgrade to Node 22.19+ |

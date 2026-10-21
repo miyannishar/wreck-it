@@ -2,7 +2,7 @@
 
 ## wreck-it: testing this app
 
-When asked to "wreck", test or QA this app, or for a readiness score, follow this procedure. `WRECK` means `npx @miyannishar/wreck-it`. Test only the local app, use fake data, and report bugs without fixing them.
+When asked to "wreck", test or QA this app, or for a readiness score, follow this procedure. `WRECK` means `npx @miyanishar/wreck-it`. Test only the local app, use fake data, and report bugs without fixing them.
 
 1. **Start.** `WRECK run init && WRECK discover && WRECK setup --dry-run && WRECK preflight --wait 5`.
    - If `setup --dry-run` lists anything missing, ask once and run `WRECK setup`; new MCP servers need an agent restart. Without browser tools, do a CLI-only run (sweep, fuzz, perf, load, report) and say what was skipped.

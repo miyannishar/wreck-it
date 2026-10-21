@@ -1,5 +1,5 @@
 {
-  "name": "@miyannishar/wreck-it",
+  "name": "@miyanishar/wreck-it",
   "version": "0.2.0",
   "description": "Wreck your app before your users do. Agent-driven testing for vibe-coded apps.",
   "type": "module",
