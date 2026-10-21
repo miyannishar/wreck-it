@@ -9,7 +9,7 @@
       "name": "wreck-it",
       "source": "./",
       "description": "Agent-driven testing for vibe-coded web apps: personas, chaos, accessibility, load, scored report, regression tests.",
-      "version": "0.1.0"
+      "version": "0.2.0"
     }
   ]
 }

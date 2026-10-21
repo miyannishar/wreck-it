@@ -5,7 +5,7 @@ describe("cli", () => {
   it("prints version", async () => {
     const r = await runCli(["--version"]);
     expect(r.code).toBe(0);
-    expect(r.stdout.trim()).toBe("0.1.0");
+    expect(r.stdout.trim()).toBe("0.2.0");
   });
   it("unknown command exits non-zero", async () => {
     const r = await runCli(["nope"]);

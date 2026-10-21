@@ -19,4 +19,8 @@ npx @miyannishar/wreck-it report && npx @miyannishar/wreck-it gen-tests
 
 The CLI never calls an LLM, needs no API key, and refuses non-local targets unless you pass `--i-own-this`. Requires Node ≥ 22.19.
 
+Version 0.2.0 adds completion waits, input-value and text-pattern assertions, and checks of rendered images and links. Generated app URLs honor `WRECK_IT_BASE_URL`. Regeneration preserves edited specs and sidecar fixtures; inspect its warnings when findings change. Use `gen-tests --force` only when intentionally replacing custom WR specs. Generated tests need review and `@playwright/test` to run.
+
+See the [release notes and validation](https://github.com/miyannishar/wreck-it/blob/main/docs/releases/0.2.0.md).
+
 MIT

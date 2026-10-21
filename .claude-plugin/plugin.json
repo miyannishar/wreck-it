@@ -1,6 +1,6 @@
 {
   "name": "wreck-it",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Wreck your app before your users do. Your agent tests your local web app like real users, beginners, chaos monkeys and traffic spikes, then writes a scored bug report with file:line and regression Playwright tests.",
   "author": {
     "name": "wreck-it contributors"
