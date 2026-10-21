@@ -14,7 +14,7 @@ This is a focused verification of known defects and revised checks, not another 
 - `.wreck-it/generated-tests.json` records the hashes of generated specs. Regeneration replaces or removes unchanged owned specs, preserves edited or pre-existing untracked specs, and warns about them. Sidecar fixtures remain intact. `gen-tests --force` explicitly replaces custom WR specs and removes stale ones. Preserved specs must be reconciled when findings change.
 - The skill now explains the label-versus-value locator mistake, complete ISO timestamp patterns, isolated setup, completion waits, regeneration warnings, and relevant screenshot presentation.
 
-These CLI changes are in the local source build. They have not been published as a new npm release. Use that build for verification; the npm package must be released before advertising these CLI capabilities as available in the published installation.
+These checks originally used the local source build. On October 21, the changes were published as `@miyanishar/wreck-it@0.2.0` under the new npm account, with the same GitHub source repository. The [release verification](../releases/0.2.0-verification.json) records successful clean installs from both the tarball and npm registry.
 
 ## Verification method
 
@@ -106,7 +106,7 @@ There are no unmatched or ambiguous findings under this updated known-issue inve
 
 All 216 CLI tests, 10 scorer tests, the TypeScript check, build, and skill validator pass. The focused results and screenshots are saved beside this document. The harness stops its servers when finished.
 
-The remaining missed seeded bugs, incomplete full-run procedure coverage, and other unsupported regression assertions remain documented in the original benchmark. This follow-up addresses the identified reliability defects without claiming a new full-run result or validating the four skipped Sonnet checks. Publish and smoke-test the updated CLI installation before moving to the demonstration video.
+The remaining missed seeded bugs, incomplete full-run procedure coverage, and other unsupported regression assertions remain documented in the original benchmark. This follow-up addresses the identified reliability defects without claiming a new full-run result or validating the four skipped Sonnet checks. The [October 21 release verification](../releases/0.2.0-verification.json) completes the publishing and installation checks needed before the demonstration video.
 
 To reproduce, prepare a directory containing Next.js and `@playwright/test` dependencies, then run:
 

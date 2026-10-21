@@ -335,7 +335,7 @@ Regeneration preserves edited specs and sidecar fixtures. It records generated-f
 
 Structured findings support completion waits (`waitFor`), input values (`value`), text patterns (`textMatches`), and checks of rendered images and links (`imageLoaded`, `linkResolves`). See the [regression guidance](skills/wreck-it/references/regression-tests.md) for choosing checks that survive the fix.
 
-The [reliability follow-up](docs/evals/2026-10-20-reliability-fixes.md) verifies six affected checks against buggy and corrected copies. These CLI changes are in source and await a new npm release.
+The [reliability follow-up](docs/evals/2026-10-20-reliability-fixes.md) verifies six affected checks against buggy and corrected copies. These CLI changes are available in `@miyanishar/wreck-it@0.2.0`; the [release verification](docs/releases/0.2.0-verification.json) includes clean tarball and registry-install checks.
 
 | Variable | Overrides |
 |---|---|

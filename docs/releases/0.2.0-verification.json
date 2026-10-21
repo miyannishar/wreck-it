@@ -1,0 +1,76 @@
+{
+  "version": "0.2.0",
+  "package": "@miyanishar/wreck-it",
+  "sourceRepository": "https://github.com/miyannishar/wreck-it",
+  "sourceCommit": "cf19b43973d47da8d7c49c1d5c9b17343088d1e4",
+  "status": "Published; clean registry install and generated browser check passed",
+  "tarball": {
+    "filename": "miyanishar-wreck-it-0.2.0.tgz",
+    "bytes": 68951,
+    "integrity": "sha512-VAwUjbB/YDuykOUT62Sfx89RTjmB8rTCn8L6IpHHPvDDkNGKqRuZuqY+XC34tNa5EOQbbMA1Z86Sxjs/Qz4imQ==",
+    "sha256": "91b6f4407eb337594a545b7dae3a27fce275afe8b8dcc3406e725efbe43c57b7",
+    "files": [
+      "LICENSE",
+      "README.md",
+      "dist/cli.js",
+      "package.json"
+    ]
+  },
+  "checks": {
+    "cliTests": 216,
+    "scorerTests": 10,
+    "typecheck": "passed",
+    "packagedInstall": {
+      "version": "0.2.0",
+      "installedPackage": "@miyanishar/wreck-it",
+      "cliVersion": "0.2.0",
+      "newSchemaKinds": true,
+      "regenerationPreservesEdits": true,
+      "forceReplacesSpec": true,
+      "sidecarPreserved": true,
+      "htmlAndMarkdownReports": true,
+      "generatedBrowserCheck": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "appOriginOverride": true,
+      "completedAt": "2026-10-21T23:22:26.959Z",
+      "node": "v26.10.0"
+    },
+    "registryInstall": {
+      "version": "0.2.0",
+      "installedPackage": "@miyanishar/wreck-it",
+      "cliVersion": "0.2.0",
+      "newSchemaKinds": true,
+      "regenerationPreservesEdits": true,
+      "forceReplacesSpec": true,
+      "sidecarPreserved": true,
+      "htmlAndMarkdownReports": true,
+      "generatedBrowserCheck": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "appOriginOverride": true,
+      "completedAt": "2026-10-21T23:28:22.168Z",
+      "node": "v26.10.0"
+    }
+  },
+  "completedAt": "2026-10-21T23:29:22.644775+00:00",
+  "packageUrl": "https://www.npmjs.com/package/@miyanishar/wreck-it",
+  "githubRelease": "https://github.com/miyannishar/wreck-it/releases/tag/v0.2.0",
+  "registry": {
+    "name": "@miyanishar/wreck-it",
+    "version": "0.2.0",
+    "integrity": "sha512-VAwUjbB/YDuykOUT62Sfx89RTjmB8rTCn8L6IpHHPvDDkNGKqRuZuqY+XC34tNa5EOQbbMA1Z86Sxjs/Qz4imQ==",
+    "repository": {
+      "url": "git+https://github.com/miyannishar/wreck-it.git",
+      "type": "git",
+      "directory": "packages/cli"
+    },
+    "homepage": "https://github.com/miyannishar/wreck-it#readme",
+    "publisher": "miyanishar",
+    "npxVersion": "0.2.0"
+  }
+}
