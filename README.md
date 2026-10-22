@@ -1,9 +1,11 @@
-# wreck-it
+# wreck-it: AI QA testing for local web apps
 
 [![npm](https://img.shields.io/npm/v/@miyanishar/wreck-it?label=npm%20%40miyanishar%2Fwreck-it)](https://www.npmjs.com/package/@miyanishar/wreck-it)
 [![license](https://img.shields.io/npm/l/@miyanishar/wreck-it)](LICENSE)
 
 **Wreck your app before your users do.**
+
+**wreck-it** is an open-source AI QA testing skill and CLI for **Claude Code, Codex, Cursor, Gemini CLI, and GitHub Copilot**. It uses Playwright to help your coding agent test user flows, reproduce bugs with screenshots, trace findings to source code, and generate candidate regression tests.
 
 [![Watch the wreck-it product demo](docs/demo/wreck-it-demo-poster.jpg)](docs/demo/wreck-it-demo.mp4)
 
@@ -11,7 +13,7 @@
 
 Demonstrated on the seeded Gadgetly app.
 
-wreck-it turns your coding agent (Claude Code, Codex, Cursor, Gemini CLI, Copilot, …) into a QA team for your **locally running web app**. It tests the app the way real people break it:
+Test your locally running web app the way real people break it:
 
 - **Normal users** walking every core flow
 - **Your ideal customers**, built from what your app actually does

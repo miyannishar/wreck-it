@@ -41,6 +41,26 @@ These figures are a dated snapshot, not live counters.
 
 Sources: [GitHub repository](https://github.com/miyannishar/wreck-it), [npm registry metadata](https://registry.npmjs.org/@miyannishar%2fwreck-it), [dated monthly downloads](https://api.npmjs.org/downloads/point/2026-09-19:2026-10-18/@miyannishar/wreck-it), [dated weekly downloads](https://api.npmjs.org/downloads/point/2026-10-12:2026-10-18/@miyannishar/wreck-it), and authenticated GitHub traffic analytics.
 
+## Search discoverability review on October 21
+
+The repository is reachable and searchable inside GitHub. The main opportunities are clearer product identification and more independent discovery links. Web search checks did not surface the repository directly for the tested brand queries. This observation does not establish its exact Google index status or a universal ranking position.
+
+| Finding | Evidence | Impact and action |
+|---|---|---|
+| No obvious crawl block | The public repository returned HTTP 200, no `noindex` meta tag or `X-Robots-Tag`, and GitHub's robots rules permitted the repository root for Googlebot and Bingbot. | No crawl-blocking change was indicated by these checks. This establishes crawl eligibility, not confirmed Google indexing. |
+| GitHub search already works | GitHub's repository search API returned the project for `repo:miyannishar/wreck-it` and the owner-qualified name query. Eight relevant topics were already configured. | Preserve the existing topics and add accurate categories for browser testing, AI testing, regression testing, Codex, and Cursor. |
+| The name is crowded | `wreck-it in:name` returned 169 matching repositories, including longer game-related names. Web searches also surfaced a different AI project at [wreckit.app](https://wreckit.app/). | Use the descriptor “AI QA testing for local web apps” consistently. The evidence suggests ambiguous search intent; it does not reveal the search engine's exact ranking reasons. |
+| The product category appeared too late | The README heading contained only the name, and its explanation followed the demo. The About description began with the slogan. GitHub's rendered HTML used that description in its title and metadata. | Put the QA testing category and supported agents in the heading/lead paragraph, and replace the About description with a concise product description. |
+| External search visibility remains limited | The tested queries included `wrect it github`, `wreck it github`, `"wreck-it" "miyannishar"`, `"miyannishar/wreck-it"`, and `site:github.com/miyannishar/wreck-it`. Results included another project, the owner profile, and an older npm-scope reference. | Earn relevant links through the owner's site/profile, genuine directory listings, and useful demonstrations. No backlink inventory or Search Console data was available, so link authority was not quantified. |
+
+The README now leads with “wreck-it: AI QA testing for local web apps” and explains the skill, supported coding agents, Playwright workflow, and evidence before the demo. The repository About description and expanded topic list reinforce that description. These are discoverability improvements, not a promise of ranking for the broad or misspelled brand query.
+
+Useful checks are `wreck-it QA testing`, `wreck-it miyannishar`, and the owner-qualified GitHub query `wreck-it user:miyannishar`. Do not add misspellings to the product copy or manufacture installs, stars, or backlinks.
+
+The next web SEO step is an owned project landing page with a descriptive title, installation instructions, the final demo, and a link to the repository. Verify that site in Search Console and submit its URLs there. GitHub controls the repository page's outer HTML and robots configuration; adding a robots file or meta tags to the README would not configure `github.com`.
+
+Google says crawling can take days to weeks and that a crawl request does not guarantee indexing. Its `site:` operator is not an exhaustive index check. Recheck discovery after the changes have been crawled; do not interpret an immediate unchanged result as a failed fix. Sources: [GitHub repository search](https://docs.github.com/en/search-github/searching-on-github/searching-for-repositories), [GitHub topics](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/classifying-your-repository-with-topics), [Google recrawling guidance](https://developers.google.com/search/docs/crawling-indexing/ask-google-to-recrawl), and [Google site-search limitations](https://developers.google.com/search/docs/monitor-debug/search-operators/all-search-site).
+
 ## Marketing gaps
 
 - No demo video, product screenshots, public sample report, testimonials, or real-user case studies were present in the repository at the baseline date.
