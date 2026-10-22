@@ -1,0 +1,15 @@
+Published CLI: @miyanishar/wreck-it 0.2.0
+
+Generated check: WR-001 — Checkout total ignores item quantity
+Expected checkout total: $239.97
+
+BUGGY COPY
+Received: Total $79.99
+1 failed at toContainText('$239.97'); 0 skipped
+
+CORRECTED COPY
+Received: Total $239.97
+1 passed; 0 skipped
+
+Identical test; only lib/cart.ts subtotal expression differs.
+Scripted known-bug replay, not a new discovery benchmark.

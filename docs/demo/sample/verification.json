@@ -1,0 +1,31 @@
+{
+  "kind": "scripted-product-demo",
+  "verifiedAt": "2026-10-21T23:47:49.746Z",
+  "cliPackage": "@miyanishar/wreck-it",
+  "cliVersion": "0.2.0",
+  "playwrightVersion": "1.63.0",
+  "finding": "WR-001",
+  "source": "lib/cart.ts:19",
+  "patch": {
+    "before": "const subtotal = items.reduce((sum, item) => sum + item.price, 0);",
+    "after": "const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);"
+  },
+  "reproducedInFreshContexts": 2,
+  "results": {
+    "buggy": {
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "exitCode": 1
+    },
+    "fixed": {
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0
+    }
+  },
+  "sameSpecSha256": "8b054689297e90120130cbbac4b2d03233f93fcf274f2be27d4cce1b9ca95c92",
+  "originalCartSourceSha256": "9a5b8178565394d58fb0d3dd51f237ca8bce708b6866384585cc6d92be89727a",
+  "originalFixtureUnchanged": true
+}

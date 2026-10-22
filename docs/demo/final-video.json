@@ -1,0 +1,29 @@
+{
+  "status": "final",
+  "selectedSource": "1021.mov",
+  "sourceSha256": "9ee6eff6f0673685435a7265379667466eb90faeafe6c07754802f6a529f80ba",
+  "file": "wreck-it-demo.mp4",
+  "sha256": "b44c038d101dd803f4a60309f6e0860494c1c59d3fb1ef09eea35df4a6e11101",
+  "poster": "wreck-it-demo-poster.jpg",
+  "durationSeconds": 36.47,
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "videoCodec": "H.264",
+  "audioCodec": "AAC",
+  "audioPacketsPreserved": true,
+  "timelinePreserved": true,
+  "fastStart": true,
+  "fullDecodeCheck": "pass",
+  "sizeBytes": 3382662,
+  "context": "User-selected CapCut edit of the seeded-app product demonstration.",
+  "browserPlayback": {
+    "passed": true,
+    "duration": 36.466667,
+    "width": 1920,
+    "height": 1080,
+    "error": null,
+    "pageErrors": [],
+    "mobileOverflow": false
+  }
+}

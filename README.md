@@ -5,6 +5,12 @@
 
 **Wreck your app before your users do.**
 
+[![Watch the wreck-it product demo](docs/demo/wreck-it-demo-poster.jpg)](docs/demo/wreck-it-demo.mp4)
+
+[Watch the demo · 37 seconds](docs/demo/wreck-it-demo.mp4) · [Sample report with screenshots](docs/demo/sample/report.md)
+
+Demonstrated on the seeded Gadgetly app.
+
 wreck-it turns your coding agent (Claude Code, Codex, Cursor, Gemini CLI, Copilot, …) into a QA team for your **locally running web app**. It tests the app the way real people break it:
 
 - **Normal users** walking every core flow
@@ -456,6 +462,8 @@ Add `.wreck-it/` to `.gitignore`. Commit `tests/wreck-it/` if you want the regre
 ## The demo app and benchmark
 
 [`examples/buggy-app`](examples/buggy-app) is a small Next.js shop with **23 seeded bugs** across every category: functional, UX, oddity, chaos, performance and accessibility. It's both the demo and the benchmark.
+
+For a repeatable product recording, see the [walkthrough script and AI voiceover setup](DEMO_WALKTHROUGH.md). It prepares separate buggy and corrected copies plus a labeled sample report with screenshot evidence.
 
 ```bash
 cd examples/buggy-app && npm install && npm run dev   # demo login: demo@gadgetly.test / gadgetly123

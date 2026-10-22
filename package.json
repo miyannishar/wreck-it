@@ -9,6 +9,12 @@
     "test": "npm test -w packages/cli",
     "typecheck": "npm run typecheck -w packages/cli",
     "eval": "node scripts/eval.mjs --app examples/buggy-app",
-    "test:scripts": "node --test scripts/*.test.mjs"
+    "test:scripts": "node --test scripts/*.test.mjs",
+    "demo:prepare": "node scripts/demo.mjs prepare",
+    "demo:start": "node scripts/demo.mjs start",
+    "demo:verify": "node scripts/demo.mjs verify",
+    "demo:agent": "node scripts/demo.mjs agent",
+    "demo:preview": "node scripts/demo-preview.mjs",
+    "demo:export": "node scripts/demo-export.mjs"
   }
 }

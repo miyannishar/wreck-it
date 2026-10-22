@@ -1,0 +1,13 @@
+Meet wreck it. It turns your coding agent into a QA team for your local web app.
+
+Start your app locally, install the skills, and set up the browser tools. Your agent uses them to explore the app and record what breaks.
+
+Ask it to test your app, or focus on one flow, like checkout. The agent walks through the flow, checks edge cases, and reproduces the problems it finds.
+
+Here is a seeded demo bug. Three pairs of earbuds should total two hundred thirty-nine dollars and ninety-seven cents. Checkout displays just seventy-nine ninety-nine.
+
+The finding includes reproduction steps, relevant screenshots, and the source location. Here, the subtotal adds each unit price once, ignoring the quantity.
+
+Open the report and review the generated Playwright test. This check fails on the buggy copy, then passes after the subtotal calculation is corrected.
+
+Try wreck it on your next local build. Wreck your app before your users do.

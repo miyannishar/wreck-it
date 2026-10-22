@@ -1,0 +1,7 @@
+/wreck focus checkout
+
+The app is running at http://127.0.0.1:3100. This is a local, in-memory demo with fake data and no external payments or messages.
+Use demo@gadgetly.test / gadgetly123 if login is needed.
+Scope the cart and checkout pages plus their supporting local APIs. Check quantity changes and totals as part of the normal-user pass, then the other applicable focused-run checks.
+Reproduce findings in a fresh browser context, trace them to source, and attach the relevant inspected screenshots when presenting each browser bug. Generate the report and candidate regression tests. Run supported tests and disclose their outcomes.
+Report findings before making fixes. Stay within this app directory; do not read the parent repository's benchmark answer key, evaluation results, or scripted demo harness.

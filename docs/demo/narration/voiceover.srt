@@ -1,0 +1,69 @@
+1
+00:00:00,100 --> 00:00:01,893
+Meet wreck it.
+
+2
+00:00:01,894 --> 00:00:06,494
+It turns your coding agent into a QA team for
+your local web app.
+
+3
+00:00:07,152 --> 00:00:12,012
+Start your app locally, install the skills, and
+set up the browser tools.
+
+4
+00:00:12,013 --> 00:00:16,407
+Your agent uses them to explore the app and
+record what breaks.
+
+5
+00:00:17,060 --> 00:00:21,559
+Ask it to test your app, or focus on one flow,
+like checkout.
+
+6
+00:00:21,560 --> 00:00:27,527
+The agent walks through the flow, checks edge
+cases, and reproduces the problems it finds.
+
+7
+00:00:28,192 --> 00:00:30,719
+Here is a seeded demo bug.
+
+8
+00:00:30,720 --> 00:00:36,145
+Three pairs of earbuds should total two hundred
+thirty-nine dollars and ninety-seven cents.
+
+9
+00:00:36,146 --> 00:00:39,599
+Checkout displays just seventy-nine ninety-nine.
+
+10
+00:00:40,260 --> 00:00:45,880
+The finding includes reproduction steps,
+relevant screenshots, and the source location.
+
+11
+00:00:45,881 --> 00:00:50,855
+Here, the subtotal adds each unit price once,
+ignoring the quantity.
+
+12
+00:00:51,512 --> 00:00:55,470
+Open the report and review the generated
+Playwright test.
+
+13
+00:00:55,471 --> 00:01:01,437
+This check fails on the buggy copy, then passes
+after the subtotal calculation is corrected.
+
+14
+00:01:02,092 --> 00:01:04,980
+Try wreck it on your next local build.
+
+15
+00:01:04,981 --> 00:01:07,881
+Wreck your app before your users do.
