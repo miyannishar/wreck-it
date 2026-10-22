@@ -26,5 +26,16 @@
     "pageErrors": [],
     "mobileOverflow": false
   },
-  "githubAttachmentUrl": "https://github.com/user-attachments/assets/2e9e3048-bbfc-4951-bcc1-d89bdbbbd8da"
+  "githubAttachmentUrl": "https://github.com/user-attachments/assets/2e9e3048-bbfc-4951-bcc1-d89bdbbbd8da",
+  "githubReadmePlayback": {
+    "url": "https://github.com/miyannishar/wreck-it#readme",
+    "anonymousBrowser": true,
+    "videoElements": 1,
+    "currentTimeSeconds": 1.012994,
+    "durationSeconds": 36.466667,
+    "width": 1920,
+    "height": 1080,
+    "mediaError": null,
+    "publicStreamMatchesVersionedMp4": true
+  }
 }

@@ -4,7 +4,7 @@ The final product video is the user-selected CapCut edit `1021.mov`, saved for t
 
 [Open the final video player](docs/demo/index.html) · [Download the final MP4](docs/demo/wreck-it-demo.mp4)
 
-The final video is embedded near the top of the README using a native GitHub video attachment. The adjacent links open the player, download the versioned MP4, and show the sample report. A repository file-view link does not embed a video player in the README. The attachment URL is recorded in [final-video.json](docs/demo/final-video.json); keep the bare URL in its own paragraph so GitHub renders the player.
+The final video is embedded near the top of the README using a native GitHub video attachment. The adjacent links download the versioned MP4 and show the sample report. A repository file-view link does not embed a video player in the README. The attachment URL is recorded in [final-video.json](docs/demo/final-video.json); keep the bare URL in its own paragraph so GitHub renders the player. Use the attachment URL as an embed, since opening it directly outside GitHub's rendered attachment context can return 404. Anonymous playback is verified on the actual repository README.
 
 The script, narration, and export instructions below are production references; regenerating their drafts does not replace the selected final video.
 
