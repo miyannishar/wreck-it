@@ -7,9 +7,9 @@
 
 **wreck-it** is an open-source AI QA testing skill and CLI for **Claude Code, Codex, Cursor, Gemini CLI, and GitHub Copilot**. It uses Playwright to help your coding agent test user flows, reproduce bugs with screenshots, trace findings to source code, and generate candidate regression tests.
 
-[![Watch the wreck-it product demo](docs/demo/wreck-it-demo-poster.jpg)](docs/demo/wreck-it-demo.mp4)
+https://github.com/user-attachments/assets/2e9e3048-bbfc-4951-bcc1-d89bdbbbd8da
 
-[Watch the demo · 37 seconds](docs/demo/wreck-it-demo.mp4) · [Sample report with screenshots](docs/demo/sample/report.md)
+[Open video · 37 seconds](https://github.com/user-attachments/assets/2e9e3048-bbfc-4951-bcc1-d89bdbbbd8da) · [Download MP4](https://github.com/miyannishar/wreck-it/raw/refs/heads/main/docs/demo/wreck-it-demo.mp4) · [Sample report with screenshots](docs/demo/sample/report.md)
 
 Demonstrated on the seeded Gadgetly app.
 

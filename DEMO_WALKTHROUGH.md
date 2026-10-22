@@ -4,7 +4,9 @@ The final product video is the user-selected CapCut edit `1021.mov`, saved for t
 
 [Open the final video player](docs/demo/index.html) · [Download the final MP4](docs/demo/wreck-it-demo.mp4)
 
-The final video and poster are linked near the top of the README. The script, narration, and export instructions below are production references; regenerating their drafts does not replace the selected final video.
+The final video is embedded near the top of the README using a native GitHub video attachment. The adjacent links open the player, download the versioned MP4, and show the sample report. A repository file-view link does not embed a video player in the README. The attachment URL is recorded in [final-video.json](docs/demo/final-video.json); keep the bare URL in its own paragraph so GitHub renders the player.
+
+The script, narration, and export instructions below are production references; regenerating their drafts does not replace the selected final video.
 
 ## Original production plan
 
@@ -119,4 +121,4 @@ In the editor, put the voiceover on the audio track, import the SRT captions, an
 
 ## Completion
 
-The selected CapCut edit is the final video, with a poster and sample report linked near the top of the README. The clip retains the seeded-app replay context. The video, poster, sample report, and production references are versioned with the project.
+The selected CapCut edit is the final video and uses a native video attachment in the README. The clip retains the seeded-app replay context. The versioned MP4, poster, sample report, and production references remain with the project.

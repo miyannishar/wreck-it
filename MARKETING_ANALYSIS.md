@@ -14,7 +14,7 @@ The [reliability follow-up](docs/evals/2026-10-20-reliability-fixes.md) now addr
 
 ## What is already done
 
-Priority two's assets are complete: the user selected their CapCut export `1021.mov` as the final product video. The [36.47-second MP4](docs/demo/wreck-it-demo.mp4), its poster, and the [sample report with relevant screenshots](docs/demo/sample/report.md) are linked near the top of the README. This selected edit supersedes the originally planned 60–90 second duration. The MP4 preserves the edited timeline and original audio, and passed full decoding and browser playback checks. The known-bug replay fails on the buggy copy and passes on the corrected copy with the same generated test. The [walkthrough guide](DEMO_WALKTHROUGH.md) retains the production references.
+Priority two's assets are complete: the user selected their CapCut export `1021.mov` as the final product video. The [36.47-second MP4](docs/demo/wreck-it-demo.mp4) is embedded as a native GitHub video attachment near the top of the README, alongside the [sample report with relevant screenshots](docs/demo/sample/report.md). This selected edit supersedes the originally planned 60–90 second duration. The MP4 preserves the edited timeline and original audio, and passed full decoding and browser playback checks. The known-bug replay fails on the buggy copy and passes on the corrected copy with the same generated test. The [walkthrough guide](DEMO_WALKTHROUGH.md) retains the production references.
 
 | Area | Current state |
 |---|---|
