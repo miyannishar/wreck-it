@@ -102,6 +102,16 @@ The score uses deterministic arithmetic, but findings depend on model behavior a
 
 Priority one was authorized on October 19, 2026. Record its outcome in a new dated file under `docs/evals/`; update this document’s status afterward without overwriting the original baseline.
 
+### Priority three status on October 24
+
+| Item | Status |
+|---|---|
+| Versioned GitHub release | Done: [v0.2.0](https://github.com/miyannishar/wreck-it/releases/tag/v0.2.0), October 21. |
+| npm keywords | Added to `packages/cli/package.json` with a description matching the README. Visible on npm only after the next publish. |
+| Bug-report template | Added at `.github/ISSUE_TEMPLATE/bug_report.md`. |
+| skills.sh | All six pages still show "isn't available". `npx skills add miyannishar/wreck-it --list` discovers the skills correctly, so the listing now waits on genuine installs (priority four). Add the badge once the pages resolve. |
+| Anthropic directory | `claude plugin validate .` passes. Submission through the developer portal is pending and must be done by the owner; approval belongs to Anthropic. |
+
 ## Audience and positioning
 
 Start with Claude Code users building local web apps and approaching a first launch. That audience matches the existing plugin experience and strongest documented evaluation. Expand agent-specific claims as fresh evidence becomes available.

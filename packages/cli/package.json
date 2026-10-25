@@ -1,7 +1,23 @@
 {
   "name": "@miyanishar/wreck-it",
   "version": "0.2.0",
-  "description": "Wreck your app before your users do. Agent-driven testing for vibe-coded apps.",
+  "description": "AI QA testing for local web apps: your coding agent tests user flows, hostile inputs, accessibility and load, then reports reproduced bugs with code locations.",
+  "keywords": [
+    "qa",
+    "testing",
+    "ai-testing",
+    "e2e",
+    "playwright",
+    "browser-testing",
+    "regression-testing",
+    "accessibility",
+    "load-testing",
+    "claude-code",
+    "codex",
+    "cursor",
+    "agent-skills",
+    "coding-agent"
+  ],
   "type": "module",
   "bin": {
     "wreck-it": "dist/cli.js"
