@@ -3,6 +3,8 @@
 [![npm](https://img.shields.io/npm/v/@miyanishar/wreck-it?label=npm%20%40miyanishar%2Fwreck-it)](https://www.npmjs.com/package/@miyanishar/wreck-it)
 [![license](https://img.shields.io/npm/l/@miyanishar/wreck-it)](LICENSE)
 
+Also on [ClaudePluginHub](https://www.claudepluginhub.com/plugins/miyannishar-wreck-it) and [Awesome Skills](https://www.awesomeskills.dev/en/skill/wreck-it-wreck-it). See [where wreck-it is listed](#where-wreck-it-is-listed).
+
 **Wreck your app before your users do.**
 
 **wreck-it** is an open-source AI QA testing skill and CLI for **Claude Code, Codex, Cursor, Gemini CLI, and GitHub Copilot**. It uses Playwright to help your coding agent test user flows, reproduce bugs with screenshots, trace findings to source code, and generate candidate regression tests.
@@ -196,6 +198,15 @@ npx wreck-it --version
 | Chromium | Scans, Lighthouse, persona browsers | downloaded automatically on first use, or by `setup` |
 
 Playwright MCP is pinned to a fixed version so the browser it expects doesn't change under you. Chrome DevTools MCP runs with Google's usage statistics and CrUX lookups turned off.
+
+### Where wreck-it is listed
+
+| Directory | Link |
+|---|---|
+| npm | [@miyanishar/wreck-it](https://www.npmjs.com/package/@miyanishar/wreck-it) |
+| Claude Code plugin marketplace (this repo) | `/plugin marketplace add miyannishar/wreck-it` |
+| ClaudePluginHub | [miyannishar-wreck-it](https://www.claudepluginhub.com/plugins/miyannishar-wreck-it) |
+| Awesome Skills | [wreck-it](https://www.awesomeskills.dev/en/skill/wreck-it-wreck-it) |
 
 ## Running it
 
