@@ -1,7 +1,6 @@
 ---
 name: wreck-it
-description: >-
-  Full wreck-it run against a locally running web app. It tests like normal users, ICP personas, rushed beginners, chaos monkeys and traffic spikes, then writes a scored bug report with source file:line and regression Playwright tests. Use when the user says "wreck my app", "wreck it", "test my app like a user", "find bugs before launch", "is my app ready to ship", or asks for a readiness score. Also for one feature: "test the checkout", "just test signup", "check the coupon flow" (a focused run). For a single stage ("just stress test my API", "only check accessibility"), use the matching wreck-* skill.
+description: Full wreck-it run against a locally running web app. It tests like normal users, ICP personas, rushed beginners, chaos monkeys and traffic spikes, then writes a scored bug report with source file:line and regression Playwright tests. Use when the user says "wreck my app", "wreck it", "test my app like a user", "find bugs before launch", "is my app ready to ship", or asks for a readiness score. Also for one feature, such as "test the checkout", "just test signup", "check the coupon flow" (a focused run). For a single stage ("just stress test my API", "only check accessibility"), use the matching wreck-* skill.
 ---
 
 # wreck-it: Wreck your app before your users do

@@ -110,7 +110,8 @@ Priority one was authorized on October 19, 2026. Record its outcome in a new dat
 | npm keywords | Added to `packages/cli/package.json` with a description matching the README. Visible on npm only after the next publish. |
 | Bug-report template | Added at `.github/ISSUE_TEMPLATE/bug_report.md`. |
 | skills.sh | All six pages still show "isn't available". `npx skills add miyannishar/wreck-it --list` discovers the skills correctly, so the listing now waits on genuine installs (priority four). Add the badge once the pages resolve. |
-| Anthropic directory | `claude plugin validate .` passes. Submission through the developer portal is pending and must be done by the owner; approval belongs to Anthropic. |
+| Anthropic directory | `claude plugin validate .` passes. Blocked: submitting needs a paid claude.ai plan (Pro/Max) on the owner's personal account; the work org account is not an owner. |
+| Free directories (October 25) | Listed on [awesomeskills.dev](https://www.awesomeskills.dev/skill/wreck-it-wreck-it). PR opened to [karanb192/awesome-claude-skills#535](https://github.com/karanb192/awesome-claude-skills/pull/535). ComposioHQ/awesome-claude-skills now accepts PRs from collaborators only. ClaudePluginHub needs the owner to sign in at its submit page, or it may discover the repo automatically. |
 
 ## Audience and positioning
 
